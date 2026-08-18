@@ -2,7 +2,7 @@
 <html lang="pl">
 <head>
 <meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
-<title>Eltrox RKS – Supabase v6</title>
+<title>Eltrox RKS – Supabase v7</title>
 <style>
 :root{--o:#f36f21;--od:#d85d12;--bg:#eef1f4;--w:#fff;--line:#d9dde3;--t:#242424;--m:#6b7280;--r:#c9372c;--g:#25894b;--b:#2f71c8;--sh:0 8px 24px rgba(0,0,0,.08)}
 *{box-sizing:border-box}html,body{margin:0;min-height:100%;font-family:Arial,Helvetica,sans-serif;background:var(--bg);color:var(--t)}button,input,select,textarea{font:inherit}button{cursor:pointer}.hidden{display:none!important}
@@ -39,13 +39,17 @@ input,select,textarea{width:100%;padding:9px 10px;border:1px solid var(--line);b
 .dropzone{border:2px dashed #cfd5dd;border-radius:12px;padding:18px;text-align:center;background:#fafbfc}.file-row{display:flex;justify-content:space-between;gap:10px;align-items:center;border:1px solid var(--line);border-radius:9px;padding:9px;margin:7px 0}.file-name{font-weight:800;font-size:12px}.file-meta{font-size:10px;color:var(--m)}
 .print-only{display:none}.bonus-total{font-size:28px;font-weight:900;color:var(--o)}.bonus-grid{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:10px}
 .admin-only.hidden-role{display:none!important}.read-only-note{padding:9px;background:#f8fafc;border:1px solid var(--line);border-radius:9px;font-size:11px;color:var(--m)}
+
+.io-grid{display:grid;grid-template-columns:360px 1fr;gap:12px}.io-actions{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:8px}.io-note{font-size:11px;color:var(--m);line-height:1.45}.io-preview{max-height:420px;overflow:auto}.io-preview table{font-size:11px}.backup-card{border:1px solid var(--line);border-radius:12px;padding:13px;background:#fff}.backup-card h4{margin:0 0 5px}.danger-zone{border-color:#efb0ad;background:#fffafa}
+@media(max-width:950px){.io-grid{grid-template-columns:1fr}.io-actions{grid-template-columns:1fr}}
+
 @media(max-width:950px){.meeting-grid,.bonus-grid{grid-template-columns:1fr}.rec-row{grid-template-columns:1fr}.searchbox{min-width:180px}}
 @media print{.header,.nav,.btn,.controls,.no-print{display:none!important}.view{display:none!important}.view.active{display:block!important}.main{width:100%;padding:0}.panel,.card{box-shadow:none}.print-only{display:block}}
 
 @media(max-width:950px){.g2,.g3,.g4{grid-template-columns:1fr}.header{align-items:flex-start;flex-direction:column}.nav{top:108px}}
 </style></head>
 <body>
-<div id="loginView" class="login-shell"><div class="login-card"><div class="brand"><h1>Eltrox RKS</h1><p>Wersja online v6</p></div><form id="loginForm" class="form"><label>E-mail<input id="loginEmail" type="email" required></label><label>Hasło<input id="loginPassword" type="password" required></label><button class="btn primary">Zaloguj</button><div id="loginMsg" class="msg"></div></form></div></div>
+<div id="loginView" class="login-shell"><div class="login-card"><div class="brand"><h1>Eltrox RKS</h1><p>Wersja online v7</p></div><form id="loginForm" class="form"><label>E-mail<input id="loginEmail" type="email" required></label><label>Hasło<input id="loginPassword" type="password" required></label><button class="btn primary">Zaloguj</button><div id="loginMsg" class="msg"></div></form></div></div>
 
 <div id="appView" class="hidden">
 <header class="header"><div><h1>Eltrox RKS – v6</h1><small id="headerUser"></small></div><div class="ha">
@@ -57,7 +61,7 @@ input,select,textarea{width:100%;padding:9px 10px;border:1px solid var(--line);b
 <button id="importBackupBtn" class="btn">Przywróć kopię</button><input id="importBackupFile" type="file" accept=".json,application/json" hidden>
 <button id="logoutBtn" class="btn">Wyloguj</button></div></header>
 <nav class="nav">
-<button class="tab active" data-v="dashboard">Na dziś</button><button class="tab" data-v="analysis">Analiza regionu</button><button class="tab" data-v="comparison">Porównanie regionów</button><button class="tab" data-v="branchCompare">Porównanie oddziałów</button><button class="tab" data-v="regionMap">Mapa regionu</button><button class="tab" data-v="branches">Oddziały</button><button class="tab" data-v="contacts">Kontakty</button><button class="tab" data-v="contactLogs">Rejestr kontaktów</button><button class="tab" data-v="meetings">1:1</button><button class="tab" data-v="tasks">Terminarz</button><button class="tab" data-v="visits">Wizyty</button><button class="tab" data-v="sales">UK / Detal</button><button class="tab" data-v="kpis">KPI / Controlling</button><button class="tab" data-v="notes">Notatki</button><button class="tab" data-v="branchCard">Karta oddziału</button><button class="tab" data-v="history">Historia</button><button class="tab" data-v="attachments">Załączniki</button><button class="tab" data-v="reportsBonus">Raporty / premia</button>
+<button class="tab active" data-v="dashboard">Na dziś</button><button class="tab" data-v="analysis">Analiza regionu</button><button class="tab" data-v="comparison">Porównanie regionów</button><button class="tab" data-v="branchCompare">Porównanie oddziałów</button><button class="tab" data-v="regionMap">Mapa regionu</button><button class="tab" data-v="branches">Oddziały</button><button class="tab" data-v="contacts">Kontakty</button><button class="tab" data-v="contactLogs">Rejestr kontaktów</button><button class="tab" data-v="meetings">1:1</button><button class="tab" data-v="tasks">Terminarz</button><button class="tab" data-v="visits">Wizyty</button><button class="tab" data-v="sales">UK / Detal</button><button class="tab" data-v="kpis">KPI / Controlling</button><button class="tab" data-v="notes">Notatki</button><button class="tab" data-v="branchCard">Karta oddziału</button><button class="tab" data-v="history">Historia</button><button class="tab" data-v="attachments">Załączniki</button><button class="tab" data-v="dataIO">Import / eksport</button><button class="tab" data-v="reportsBonus">Raporty / premia</button>
 </nav>
 
 <div id="tabOrderBackdrop" class="tab-order-backdrop hidden">
@@ -160,6 +164,59 @@ input,select,textarea{width:100%;padding:9px 10px;border:1px solid var(--line);b
   </div>
 </section>
 
+
+<section id="dataIO" class="view">
+  <div class="head"><div><h2>Import / eksport danych</h2><p>Excel, JSON oraz kopie bezpieczeństwa zapisywane na dysku komputera.</p></div></div>
+  <div class="io-grid">
+    <div>
+      <div class="panel">
+        <h3>Dane jednej zakładki</h3>
+        <div class="form">
+          <label>Zakładka / typ danych
+            <select id="ioModule">
+              <option value="branches">Oddziały</option>
+              <option value="contacts">Kontakty</option>
+              <option value="contact_logs">Rejestr kontaktów</option>
+              <option value="meeting_notes">1:1</option>
+              <option value="tasks">Terminarz</option>
+              <option value="visits">Wizyty</option>
+              <option value="sales_results">UK / Detal</option>
+              <option value="monthly_kpis">KPI / Controlling</option>
+              <option value="branch_notes">Notatki</option>
+            </select>
+          </label>
+          <div class="io-actions">
+            <button id="exportModuleExcelBtn" class="btn">Eksport Excel</button>
+            <button id="exportModuleJsonBtn" class="btn">Eksport JSON</button>
+            <button id="downloadTemplateBtn" class="btn">Wzór Excel</button>
+            <button id="refreshIoPreviewBtn" class="btn">Podgląd danych</button>
+          </div>
+          <label>Import pliku Excel / JSON
+            <input id="moduleImportFile" type="file" accept=".xlsx,.xls,.json,application/json,application/vnd.openxmlformats-officedocument.spreadsheetml.sheet,application/vnd.ms-excel">
+          </label>
+          <label>Sposób importu
+            <select id="moduleImportMode"><option value="append">Dodaj nowe rekordy</option><option value="upsert">Aktualizuj / dodaj</option></select>
+          </label>
+          <button id="importModuleBtn" class="btn primary">Importuj wybraną zakładkę</button>
+          <div id="ioMsg" class="msg"></div>
+          <div class="io-note">Excel może używać polskich nazw kolumn. Dla danych przypisanych do oddziału możesz wpisać nazwę oddziału zamiast UUID. Najbezpieczniej pobrać najpierw „Wzór Excel”.</div>
+        </div>
+      </div>
+      <div class="backup-card" style="margin-top:12px">
+        <h4>Kopia aktywnego regionu</h4>
+        <div class="io-note">Zapisuje wszystkie dane aktywnego regionu do pliku JSON na dysku komputera.</div>
+        <div class="controls" style="margin-top:9px"><button id="backupRegionBtn" class="btn primary">Pobierz kopię regionu</button><button id="restoreRegionBtn" class="btn">Przywróć region</button><input id="restoreRegionFile" type="file" accept=".json,application/json" hidden></div>
+      </div>
+      <div class="backup-card danger-zone admin-only" style="margin-top:12px">
+        <h4>Pełna kopia bazy aplikacji</h4>
+        <div class="io-note">Tylko administrator. Kopia ZIP zawiera plik <b>backup.json</b> z danymi wszystkich regionów oraz, jeśli są dostępne, prywatne załączniki ze Storage. Nie obejmuje haseł ani danych Supabase Auth.</div>
+        <div class="controls" style="margin-top:9px"><button id="backupDatabaseBtn" class="btn primary">Pobierz pełną kopię ZIP</button><button id="restoreDatabaseBtn" class="btn danger">Przywróć pełną kopię</button><input id="restoreDatabaseFile" type="file" accept=".zip,application/zip" hidden></div>
+      </div>
+    </div>
+    <div class="panel"><h3>Podgląd</h3><div id="ioPreview" class="io-preview table"><div class="empty">Wybierz typ danych i kliknij „Podgląd danych”.</div></div></div>
+  </div>
+</section>
+
 <section id="reportsBonus" class="view">
   <div class="head"><div><h2>Raporty / premia</h2><p>Podsumowanie 1:1, wyników, KPI, premii i archiwum miesiąca.</p></div></div>
   <div class="panel">
@@ -176,12 +233,14 @@ input,select,textarea{width:100%;padding:9px 10px;border:1px solid var(--line);b
 </main></div>
 
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<script src="https://cdn.jsdelivr.net/npm/xlsx@0.18.5/dist/xlsx.full.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/jszip@3.10.1/dist/jszip.min.js"></script>
 <script>
 const SUPABASE_URL='https://irfutrratkzbgerodkqu.supabase.co',SUPABASE_PUBLISHABLE_KEY='sb_publishable_oq5YUJnhoN1DdWKpy6yh5A_axoYBQfW';
 const sb=window.supabase.createClient(SUPABASE_URL,SUPABASE_PUBLISHABLE_KEY),$=id=>document.getElementById(id);
 let user=null,profile=null,branches=[],edit={contact:null,log:null,meeting:null,task:null,visit:null,note:null};
 
-const DEFAULT_TAB_ORDER=['dashboard','analysis','comparison','branchCompare','regionMap','branches','contacts','contactLogs','meetings','tasks','visits','sales','kpis','notes','branchCard','history','attachments','reportsBonus'];
+const DEFAULT_TAB_ORDER=['dashboard','analysis','comparison','branchCompare','regionMap','branches','contacts','contactLogs','meetings','tasks','visits','sales','kpis','notes','branchCard','history','attachments','dataIO','reportsBonus'];
 let tabOrderDraft=[];
 
 function currentTabOrder(){
@@ -502,7 +561,7 @@ window.deleteArchive=async id=>{if(confirm('Usunąć archiwum?')){await sb.from(
 
 async function exportRegionBackup(){
   const tables=['branches','contacts','contact_logs','meeting_notes','tasks','visits','sales_results','monthly_kpis','branch_notes','attachments'];
-  const data={application:'Eltrox RKS',version:6,region:{id:rid(),name:$('regionSelect').selectedOptions[0]?.textContent||''},exported_at:new Date().toISOString(),tables:{}};
+  const data={application:'Eltrox RKS',version:7,region:{id:rid(),name:$('regionSelect').selectedOptions[0]?.textContent||''},exported_at:new Date().toISOString(),tables:{}};
   for(const t of tables){let z=await sb.from(t).select('*').eq('region_id',rid());data.tables[t]=z.data||[]}
   const a=document.createElement('a');a.href=URL.createObjectURL(new Blob([JSON.stringify(data,null,2)],{type:'application/json'}));a.download=`RKS-${data.region.name}-kopia-${today()}.json`;a.click();setTimeout(()=>URL.revokeObjectURL(a.href),1000)
 }
@@ -526,6 +585,112 @@ async function globalSearchRun(){
     for(const [t,cols] of tables){let z=await sb.from(t).select('*').eq('region_id',rid()).limit(200);(z.data||[]).forEach(r=>{let txt=Object.values(r).filter(v=>typeof v==='string').join(' ').toLowerCase();if(txt.includes(term))hits.push({t,r})})}
     box.innerHTML=hits.length?hits.slice(0,30).map(h=>`<div class="search-hit"><b>${esc(h.t)} • ${esc(bn(h.r.branch_id)||'')}</b>${esc((h.r.title||h.r.note||h.r.urgent_topics||h.r.topics||((h.r.first_name||'')+' '+(h.r.last_name||''))).slice(0,160))}</div>`).join(''):'<div class="empty">Brak wyników.</div>';box.classList.remove('hidden')
   },220)
+}
+
+
+const IO_MODULES={
+  branches:{label:'Oddziały',table:'branches',cols:['name'],headers:['Nazwa oddziału']},
+  contacts:{label:'Kontakty',table:'contacts',cols:['branch','first_name','last_name','position','phone','gg','email'],headers:['Oddział','Imię','Nazwisko','Stanowisko','Telefon','GG','E-mail']},
+  contact_logs:{label:'Rejestr kontaktów',table:'contact_logs',cols:['branch','contact_date','channel','person','note'],headers:['Oddział','Data kontaktu','Kanał','Osoba','Notatka']},
+  meeting_notes:{label:'1:1',table:'meeting_notes',cols:['branch','meeting_date','attendance','attendance_comment','urgent_topics','results','investments','problems','organization','rks_comment','summary'],headers:['Oddział','Data spotkania','Obecność','Komentarz do obecności','Tematy pilne','Wyniki i procesy','Inwestycje','Problemy','Organizacja pracy','Komentarz RKS','Podsumowanie']},
+  tasks:{label:'Terminarz',table:'tasks',cols:['branch','title','description','owner','deadline','priority','source','status'],headers:['Oddział','Tytuł','Opis','Odpowiedzialny','Termin','Priorytet','Źródło','Status']},
+  visits:{label:'Wizyty',table:'visits',cols:['branch','visit_date','participants','topics','notes','recommendations'],headers:['Oddział','Data wizyty','Uczestnicy','Tematy','Notatki','Zalecenia']},
+  sales_results:{label:'UK / Detal',table:'sales_results',cols:['branch','result_date','uk_plan','uk_execution','uk_estimate','detail_plan','detail_execution'],headers:['Oddział','Data','Plan UK','Wykonanie UK','Estymacja UK','Plan Detal','Wykonanie Detal']},
+  monthly_kpis:{label:'KPI / Controlling',table:'monthly_kpis',cols:['branch','year','month','voip','controlling','controlling_comment'],headers:['Oddział','Rok','Miesiąc','VoIP','Controlling','Komentarz']},
+  branch_notes:{label:'Notatki',table:'branch_notes',cols:['branch','note_date','note'],headers:['Oddział','Data','Notatka']}
+};
+const FULL_BACKUP_TABLES=['regions','region_memberships','branches','contacts','contact_logs','meeting_notes','tasks','visits','sales_results','monthly_kpis','branch_notes','attachments','region_archives'];
+function normHeader(v){return String(v??'').normalize('NFD').replace(/[\u0300-\u036f]/g,'').toLowerCase().replace(/[^a-z0-9]+/g,'')}
+function objPick(o,aliases){let map={};Object.keys(o||{}).forEach(k=>map[normHeader(k)]=o[k]);for(const a of aliases){const k=normHeader(a);if(k in map)return map[k]}return undefined}
+function downloadBlob(blob,name){const a=document.createElement('a');a.href=URL.createObjectURL(blob);a.download=name;document.body.appendChild(a);a.click();a.remove();setTimeout(()=>URL.revokeObjectURL(a.href),1500)}
+function excelSerialToDate(v){if(typeof v==='number'&&v>20000){const d=XLSX.SSF.parse_date_code(v);if(d)return `${d.y}-${String(d.m).padStart(2,'0')}-${String(d.d).padStart(2,'0')}`}return v}
+function asDate(v){v=excelSerialToDate(v);if(!v)return null;if(v instanceof Date)return v.toISOString().slice(0,10);let s=String(v).trim();if(/^\d{4}-\d{1,2}-\d{1,2}$/.test(s)){let [y,m,d]=s.split('-');return `${y}-${m.padStart(2,'0')}-${d.padStart(2,'0')}`}if(/^\d{1,2}[.\/-]\d{1,2}[.\/-]\d{4}$/.test(s)){let [d,m,y]=s.split(/[.\/-]/);return `${y}-${m.padStart(2,'0')}-${d.padStart(2,'0')}`}return s}
+function branchIdByName(v){if(!v)return null;let s=String(v).trim();let byId=branches.find(b=>b.id===s);if(byId)return byId.id;let b=branches.find(b=>b.name.trim().toLowerCase()===s.toLowerCase());return b?.id||null}
+function moduleCanWrite(mod){if(profile?.role==='admin')return true;if(profile?.role==='viewer')return mod==='branch_notes';return true}
+function rowForExport(mod,r){
+  const b=bn(r.branch_id);
+  if(mod==='branches')return {'Nazwa oddziału':r.name};
+  if(mod==='contacts')return {'Oddział':b,'Imię':r.first_name,'Nazwisko':r.last_name,'Stanowisko':r.position,'Telefon':r.phone,'GG':r.gg,'E-mail':r.email};
+  if(mod==='contact_logs')return {'Oddział':b,'Data kontaktu':r.contact_date,'Kanał':r.channel,'Osoba':r.person,'Notatka':r.note};
+  if(mod==='meeting_notes'){let c=r.content||{};return {'Oddział':b,'Data spotkania':r.meeting_date,'Obecność':r.attendance,'Komentarz do obecności':r.attendance_comment,'Tematy pilne':r.urgent_topics,'Wyniki i procesy':c.results,'Inwestycje':c.investments,'Problemy':c.problems,'Organizacja pracy':c.organization,'Komentarz RKS':c.rks_comment,'Podsumowanie':c.summary}}
+  if(mod==='tasks')return {'Oddział':b,'Tytuł':r.title,'Opis':r.description,'Odpowiedzialny':r.owner,'Termin':r.deadline,'Priorytet':r.priority,'Źródło':r.source,'Status':r.status};
+  if(mod==='visits')return {'Oddział':b,'Data wizyty':r.visit_date,'Uczestnicy':r.participants,'Tematy':r.topics,'Notatki':r.notes,'Zalecenia':Array.isArray(r.recommendations)?r.recommendations.join(' | '):r.recommendations};
+  if(mod==='sales_results')return {'Oddział':b,'Data':r.result_date,'Plan UK':r.uk_plan,'Wykonanie UK':r.uk_execution,'Estymacja UK':r.uk_estimate,'Plan Detal':r.detail_plan,'Wykonanie Detal':r.detail_execution};
+  if(mod==='monthly_kpis')return {'Oddział':b,'Rok':r.year,'Miesiąc':r.month,'VoIP':r.voip,'Controlling':r.controlling,'Komentarz':r.controlling_comment};
+  if(mod==='branch_notes')return {'Oddział':b,'Data':r.note_date,'Notatka':r.note};
+  return r;
+}
+async function getModuleRows(mod){
+  const cfg=IO_MODULES[mod];if(!cfg)return[];
+  let qy=sb.from(cfg.table).select('*');
+  if(cfg.table!=='regions'&&cfg.table!=='region_memberships'&&cfg.table!=='user_preferences')qy=qy.eq('region_id',rid());
+  const z=await qy;if(z.error)throw z.error;return z.data||[];
+}
+async function previewIo(){
+  const mod=$('ioModule').value;try{const rows=(await getModuleRows(mod)).map(r=>rowForExport(mod,r));if(!rows.length){$('ioPreview').innerHTML='<div class="empty">Brak danych.</div>';return}
+    const keys=Object.keys(rows[0]);$('ioPreview').innerHTML=`<table><tr>${keys.map(k=>`<th>${esc(k)}</th>`).join('')}</tr>${rows.slice(0,100).map(r=>`<tr>${keys.map(k=>`<td>${esc(r[k]??'')}</td>`).join('')}</tr>`).join('')}</table>${rows.length>100?`<div class="muted">Podgląd pierwszych 100 z ${rows.length} rekordów.</div>`:''}`;
+  }catch(e){msg('ioMsg',e.message,'error')}
+}
+async function exportModuleExcel(){
+  const mod=$('ioModule').value,rows=(await getModuleRows(mod)).map(r=>rowForExport(mod,r));
+  const ws=XLSX.utils.json_to_sheet(rows.length?rows:[Object.fromEntries(IO_MODULES[mod].headers.map(h=>[h,'']))]);const wb=XLSX.utils.book_new();XLSX.utils.book_append_sheet(wb,ws,IO_MODULES[mod].label.slice(0,31));XLSX.writeFile(wb,`RKS-${IO_MODULES[mod].label}-${today()}.xlsx`);
+}
+async function exportModuleJson(){const mod=$('ioModule').value,rows=await getModuleRows(mod);downloadBlob(new Blob([JSON.stringify({module:mod,region_id:rid(),exported_at:new Date().toISOString(),rows},null,2)],{type:'application/json'}),`RKS-${mod}-${today()}.json`)}
+function downloadModuleTemplate(){const mod=$('ioModule').value,c=IO_MODULES[mod],row=Object.fromEntries(c.headers.map(h=>[h,'']));if('Oddział' in row)row['Oddział']=branches[0]?.name||'Przykładowy oddział';const ws=XLSX.utils.json_to_sheet([row]);const wb=XLSX.utils.book_new();XLSX.utils.book_append_sheet(wb,ws,'Wzór');XLSX.writeFile(wb,`Wzor-${c.label}.xlsx`)}
+async function parseImportFile(file){
+  if(file.name.toLowerCase().endsWith('.json')){const j=JSON.parse(await file.text());return Array.isArray(j)?j:(j.rows||j.data||[])}
+  const buf=await file.arrayBuffer(),wb=XLSX.read(buf,{type:'array',cellDates:true}),ws=wb.Sheets[wb.SheetNames[0]];return XLSX.utils.sheet_to_json(ws,{defval:''})
+}
+function rowForImport(mod,o){
+  const branch=()=>branchIdByName(objPick(o,['Oddział','Oddzial','branch','branch_id']));
+  if(mod==='branches')return {region_id:rid(),name:String(objPick(o,['Nazwa oddziału','Nazwa oddzialu','name'])||'').trim()};
+  if(mod==='contacts')return {region_id:rid(),branch_id:branch(),first_name:objPick(o,['Imię','Imie','first_name']),last_name:objPick(o,['Nazwisko','last_name']),position:objPick(o,['Stanowisko','position']),phone:objPick(o,['Telefon','phone']),gg:objPick(o,['GG','gg']),email:objPick(o,['E-mail','Email','email'])};
+  if(mod==='contact_logs')return {region_id:rid(),branch_id:branch(),contact_date:asDate(objPick(o,['Data kontaktu','contact_date','Data'])),channel:String(objPick(o,['Kanał','Kanal','channel'])||'phone').toLowerCase(),person:objPick(o,['Osoba','person']),note:objPick(o,['Notatka','note']),created_by:user.id};
+  if(mod==='meeting_notes')return {region_id:rid(),branch_id:branch(),meeting_date:asDate(objPick(o,['Data spotkania','meeting_date','Data'])),attendance:objPick(o,['Obecność','Obecnosc','attendance'])||'present_manager',attendance_comment:objPick(o,['Komentarz do obecności','Komentarz do obecnosci','attendance_comment']),urgent_topics:objPick(o,['Tematy pilne','urgent_topics']),content:{results:objPick(o,['Wyniki i procesy','results'])||'',investments:objPick(o,['Inwestycje','investments'])||'',problems:objPick(o,['Problemy','problems'])||'',organization:objPick(o,['Organizacja pracy','organization'])||'',rks_comment:objPick(o,['Komentarz RKS','rks_comment'])||'',summary:objPick(o,['Podsumowanie','summary'])||''},created_by:user.id};
+  if(mod==='tasks')return {region_id:rid(),branch_id:branch(),title:objPick(o,['Tytuł','Tytul','title']),description:objPick(o,['Opis','description']),owner:objPick(o,['Odpowiedzialny','owner']),deadline:asDate(objPick(o,['Termin','deadline'])),priority:objPick(o,['Priorytet','priority'])||'normal',source:objPick(o,['Źródło','Zrodlo','source'])||'Import',status:objPick(o,['Status','status'])||'todo',created_by:user.id};
+  if(mod==='visits'){let rec=objPick(o,['Zalecenia','recommendations']);return {region_id:rid(),branch_id:branch(),visit_date:asDate(objPick(o,['Data wizyty','visit_date','Data'])),participants:objPick(o,['Uczestnicy','participants']),topics:objPick(o,['Tematy','topics']),notes:objPick(o,['Notatki','notes']),recommendations:Array.isArray(rec)?rec:String(rec||'').split(/\s*\|\s*|\s*;\s*/).filter(Boolean),created_by:user.id}}
+  if(mod==='sales_results')return {region_id:rid(),branch_id:branch(),result_date:asDate(objPick(o,['Data','result_date'])),uk_plan:Number(objPick(o,['Plan UK','uk_plan'])||0),uk_execution:Number(objPick(o,['Wykonanie UK','uk_execution'])||0),uk_estimate:Number(objPick(o,['Estymacja UK','uk_estimate'])||0),detail_plan:Number(objPick(o,['Plan Detal','detail_plan'])||0),detail_execution:Number(objPick(o,['Wykonanie Detal','detail_execution'])||0)};
+  if(mod==='monthly_kpis')return {region_id:rid(),branch_id:branch(),year:Number(objPick(o,['Rok','year'])),month:Number(objPick(o,['Miesiąc','Miesiac','month'])),voip:Number(objPick(o,['VoIP','voip'])||0),controlling:Number(objPick(o,['Controlling','controlling'])||0),controlling_comment:objPick(o,['Komentarz','controlling_comment'])};
+  if(mod==='branch_notes')return {region_id:rid(),branch_id:branch(),note_date:asDate(objPick(o,['Data','note_date'])),note:objPick(o,['Notatka','note']),created_by:user.id};
+  return o;
+}
+function conflictCols(mod){return mod==='branches'?'region_id,name':mod==='sales_results'?'branch_id,result_date':mod==='monthly_kpis'?'branch_id,year,month':null}
+async function importModule(){
+  const mod=$('ioModule').value,file=$('moduleImportFile').files[0];if(!file)return msg('ioMsg','Wybierz plik.','error');if(!moduleCanWrite(mod))return msg('ioMsg','Twoje konto nie ma prawa importować danych do tej zakładki.','error');
+  try{msg('ioMsg','Importowanie...');const raw=await parseImportFile(file),rows=raw.map(x=>rowForImport(mod,x)).filter(x=>mod==='branches'?x.name:x.branch_id);
+    if(!rows.length)return msg('ioMsg','Nie znaleziono poprawnych rekordów. Sprawdź nazwy oddziałów i kolumny.','error');
+    const mode=$('moduleImportMode').value,conf=conflictCols(mod);let z;
+    if(mode==='upsert'&&conf)z=await sb.from(IO_MODULES[mod].table).upsert(rows,{onConflict:conf});else z=await sb.from(IO_MODULES[mod].table).insert(rows);
+    if(z.error)throw z.error;msg('ioMsg',`Zaimportowano ${rows.length} rekordów.`,'ok');await loadBranches();await previewIo();
+  }catch(e){msg('ioMsg',e.message,'error')}
+}
+async function exportRegionBackupV7(){
+  const tables=['branches','contacts','contact_logs','meeting_notes','tasks','visits','sales_results','monthly_kpis','branch_notes','attachments','region_archives'];let out={kind:'region_backup',version:7,region_id:rid(),region_name:$('regionSelect').selectedOptions[0]?.textContent||'',exported_at:new Date().toISOString(),tables:{}};
+  for(const t of tables){let z=await sb.from(t).select('*').eq('region_id',rid());if(z.error)throw z.error;out.tables[t]=z.data||[]}
+  downloadBlob(new Blob([JSON.stringify(out,null,2)],{type:'application/json'}),`RKS-${out.region_name}-backup-${today()}.json`)
+}
+async function restoreRegionV7(file){
+  if(!file||!confirm('Przywrócić kopię do aktywnego regionu?'))return;try{const d=JSON.parse(await file.text());if(!d.tables)throw new Error('Nieprawidłowy plik kopii.');await importRegionBackup(file)}catch(e){alert(e.message)}
+}
+async function fullDatabaseBackup(){
+  if(profile?.role!=='admin')return alert('Tylko administrator może wykonać pełną kopię bazy.');
+  const zip=new JSZip(),backup={kind:'full_app_backup',version:7,exported_at:new Date().toISOString(),tables:{}};
+  for(const t of FULL_BACKUP_TABLES){let z=await sb.from(t).select('*');if(z.error)throw z.error;backup.tables[t]=z.data||[]}
+  zip.file('backup.json',JSON.stringify(backup,null,2));
+  let files=backup.tables.attachments||[],done=0;
+  for(const a of files){if(!a.storage_path)continue;let z=await sb.storage.from('rks-attachments').download(a.storage_path);if(z.data){zip.file(`attachments/${a.storage_path}`,z.data);done++}}
+  zip.file('README.txt',`Eltrox RKS — pełna kopia aplikacji\nData: ${backup.exported_at}\nZałączniki w ZIP: ${done}/${files.length}\nKopia nie zawiera haseł ani Supabase Auth.`);
+  const blob=await zip.generateAsync({type:'blob',compression:'DEFLATE',compressionOptions:{level:6}});downloadBlob(blob,`RKS-PELNA-KOPIA-${today()}.zip`)
+}
+async function restoreFullDatabase(file){
+  if(profile?.role!=='admin'||!file)return;if(!confirm('UWAGA: przywrócenie pełnej kopii może nadpisać dane w bazie. Kontynuować?'))return;
+  try{
+    const zip=await JSZip.loadAsync(file),txt=await zip.file('backup.json').async('string'),d=JSON.parse(txt),tabs=d.tables||{};
+    const order=['regions','branches','contacts','contact_logs','meeting_notes','tasks','visits','sales_results','monthly_kpis','branch_notes','region_archives','attachments'];
+    for(const t of order){const rows=tabs[t]||[];if(!rows.length)continue;let z=await sb.from(t).upsert(rows,{onConflict:t==='regions'?'id':t==='branches'?'id':t==='sales_results'?'id':t==='monthly_kpis'?'id':'id'});if(z.error)throw new Error(`${t}: ${z.error.message}`)}
+    for(const a of (tabs.attachments||[])){const f=zip.file(`attachments/${a.storage_path}`);if(f){const blob=await f.async('blob');let z=await sb.storage.from('rks-attachments').upload(a.storage_path,blob,{upsert:true});if(z.error)console.warn('Storage',a.storage_path,z.error.message)}}
+    alert('Pełna kopia została przywrócona.');await loadRegions();await loadBranches();
+  }catch(e){alert('Błąd przywracania: '+e.message)}
 }
 
 async function loadDashboard(){if(!rid()||!branches.length)return;let [t,l]=await Promise.all([q('tasks'),q('contact_logs')]);let tasks=t.data||[],logs=l.data||[],td=today(),open=tasks.filter(x=>x.status!=='done'),late=open.filter(x=>x.deadline&&x.deadline<td),due=open.filter(x=>x.deadline===td);$('dashCards').innerHTML=`<div class="card"><h4>Oddziały</h4><div class="kpi">${branches.length}</div></div><div class="card"><h4>Otwarte zadania</h4><div class="kpi">${open.length}</div></div><div class="card"><h4>Zaległe</h4><div class="kpi">${late.length}</div></div><div class="card"><h4>Na dziś</h4><div class="kpi">${due.length}</div></div>`;$('dashTasks').innerHTML=[...late,...due].slice(0,12).map(v=>`<div class="item"><b>${esc(v.title)}</b><div class="meta">${esc(bn(v.branch_id))} • ${fd(v.deadline)} • ${v.priority}</div></div>`).join('')||'<div class="empty">Brak pilnych zadań.</div>';let rows=branches.map(b=>{let a=logs.filter(x=>x.branch_id===b.id).sort((x,y)=>y.contact_date.localeCompare(x.contact_date));return {b,last:a[0]}}).sort((x,y)=>(x.last?.contact_date||'').localeCompare(y.last?.contact_date||''));$('dashContacts').innerHTML=rows.map(x=>`<div class="item"><b>${esc(x.b.name)}</b><div class="meta">${x.last?fd(x.last.contact_date)+' • '+esc(x.last.channel):'Brak zarejestrowanego kontaktu'}</div></div>`).join('')}
@@ -553,6 +718,10 @@ $('uploadAttachmentBtn').onclick=uploadAttachment;$('attachmentFilter').onchange
 $('calcBonusBtn').onclick=calculateBonus;$('createArchiveBtn').onclick=createArchive;
 $('exportBackupBtn').onclick=exportRegionBackup;$('importBackupBtn').onclick=()=>$('importBackupFile').click();$('importBackupFile').onchange=e=>{importRegionBackup(e.target.files[0]);e.target.value=''};
 $('globalSearch').oninput=globalSearchRun;document.addEventListener('click',e=>{if(!e.target.closest('.searchbox'))$('globalSearchResults').classList.add('hidden')});
+
+$('refreshIoPreviewBtn').onclick=previewIo;$('exportModuleExcelBtn').onclick=exportModuleExcel;$('exportModuleJsonBtn').onclick=exportModuleJson;$('downloadTemplateBtn').onclick=downloadModuleTemplate;$('importModuleBtn').onclick=importModule;$('ioModule').onchange=previewIo;
+$('backupRegionBtn').onclick=exportRegionBackupV7;$('restoreRegionBtn').onclick=()=>$('restoreRegionFile').click();$('restoreRegionFile').onchange=e=>{restoreRegionV7(e.target.files[0]);e.target.value=''};
+$('backupDatabaseBtn').onclick=fullDatabaseBackup;$('restoreDatabaseBtn').onclick=()=>$('restoreDatabaseFile').click();$('restoreDatabaseFile').onchange=e=>{restoreFullDatabase(e.target.files[0]);e.target.value=''};
 $('logoutBtn').onclick=async()=>{await sb.auth.signOut();showLogin()};
 $('loadComparisonBtn').onclick=loadComparison;$('regionSelect').onchange=loadBranches;$('addBranchBtn').onclick=addBranch;
 $('saveContact').onclick=saveContact;$('clearContact').onclick=clearContact;$('contactFilter').onchange=loadContacts;$('contactSearch').oninput=loadContacts;
