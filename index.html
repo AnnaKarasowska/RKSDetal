@@ -2,7 +2,7 @@
 <html lang="pl">
 <head>
 <meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
-<title>Eltrox RKS – Supabase v7</title>
+<title>Eltrox RKS – Supabase v7.1</title>
 <style>
 :root{--o:#f36f21;--od:#d85d12;--bg:#eef1f4;--w:#fff;--line:#d9dde3;--t:#242424;--m:#6b7280;--r:#c9372c;--g:#25894b;--b:#2f71c8;--sh:0 8px 24px rgba(0,0,0,.08)}
 *{box-sizing:border-box}html,body{margin:0;min-height:100%;font-family:Arial,Helvetica,sans-serif;background:var(--bg);color:var(--t)}button,input,select,textarea{font:inherit}button{cursor:pointer}.hidden{display:none!important}
@@ -49,7 +49,7 @@ input,select,textarea{width:100%;padding:9px 10px;border:1px solid var(--line);b
 @media(max-width:950px){.g2,.g3,.g4{grid-template-columns:1fr}.header{align-items:flex-start;flex-direction:column}.nav{top:108px}}
 </style></head>
 <body>
-<div id="loginView" class="login-shell"><div class="login-card"><div class="brand"><h1>Eltrox RKS</h1><p>Wersja online v7</p></div><form id="loginForm" class="form"><label>E-mail<input id="loginEmail" type="email" required></label><label>Hasło<input id="loginPassword" type="password" required></label><button class="btn primary">Zaloguj</button><div id="loginMsg" class="msg"></div></form></div></div>
+<div id="loginView" class="login-shell"><div class="login-card"><div class="brand"><h1>Eltrox RKS</h1><p>Wersja online v7.1</p></div><form id="loginForm" class="form"><label>E-mail<input id="loginEmail" type="email" required></label><label>Hasło<input id="loginPassword" type="password" required></label><button class="btn primary">Zaloguj</button><div id="loginMsg" class="msg"></div></form></div></div>
 
 <div id="appView" class="hidden">
 <header class="header"><div><h1>Eltrox RKS – v6</h1><small id="headerUser"></small></div><div class="ha">
@@ -134,13 +134,29 @@ input,select,textarea{width:100%;padding:9px 10px;border:1px solid var(--line);b
   </div>
 </section>
 
-<section id="branches" class="view"><div class="head"><div><h2>Oddziały</h2><p>Zarządzanie oddziałami z poziomu strony.</p></div></div><div class="g2"><div class="panel"><h3>Dodaj oddział</h3><div class="form"><label>Nazwa<input id="newBranchName"></label><button id="addBranchBtn" class="btn primary">+ Dodaj oddział</button></div><div id="branchMsg" class="msg"></div></div><div class="panel"><h3>Oddziały</h3><div id="branchList" class="list"></div></div></div></section>
+<section id="branches" class="view"><div class="head"><div><h2>Oddziały</h2><p>Zarządzanie oddziałami z poziomu strony.</p></div>
+<div class="controls admin-only"><button id="addRegionBtn" class="btn">+ Dodaj region</button><button id="renameRegionBtn" class="btn">Zmień nazwę regionu</button><button id="deleteRegionBtn" class="btn danger">Usuń region</button></div></div><div class="g2"><div class="panel"><h3>Dodaj oddział</h3><div class="form"><label>Nazwa<input id="newBranchName"></label><button id="addBranchBtn" class="btn primary">+ Dodaj oddział</button></div><div id="branchMsg" class="msg"></div></div><div class="panel"><h3>Oddziały</h3><div id="branchList" class="list"></div></div></div></section>
 
 <section id="contacts" class="view"><div class="head"><div><h2>Kontakty</h2><p>Osoby kontaktowe w oddziałach.</p></div></div><div class="g2"><div class="panel"><h3 id="contactTitle">Dodaj kontakt</h3><div class="form"><label>Oddział<select id="contactBranch"></select></label><label>Imię<input id="contactFirst"></label><label>Nazwisko<input id="contactLast"></label><label>Stanowisko<input id="contactPos"></label><label>Telefon<input id="contactPhone"></label><label>GG<input id="contactGG"></label><label>E-mail<input id="contactEmail"></label><div class="controls"><button id="saveContact" class="btn primary">Zapisz</button><button id="clearContact" class="btn">Wyczyść</button></div></div><div id="contactMsg" class="msg"></div></div><div class="panel"><div class="controls"><label>Oddział<select id="contactFilter"></select></label><label>Szukaj<input id="contactSearch"></label></div><div id="contactsTable" class="table" style="margin-top:10px"></div></div></div></section>
 
 <section id="contactLogs" class="view"><div class="head"><div><h2>Rejestr kontaktów</h2><p>Telefon, e-mail i GG – baza „ostatniego kontaktu”.</p></div></div><div class="g2"><div class="panel"><h3 id="logTitle">Dodaj kontakt</h3><div class="form"><label>Oddział<select id="logBranch"></select></label><label>Data<input id="logDate" type="date"></label><label>Kanał<select id="logChannel"><option value="phone">Telefon</option><option value="email">E-mail</option><option value="gg">GG</option></select></label><label>Osoba<input id="logPerson"></label><label>Notatka<textarea id="logNote"></textarea></label><div class="controls"><button id="saveLog" class="btn primary">Zapisz</button><button id="clearLog" class="btn">Wyczyść</button></div></div><div id="logMsg" class="msg"></div></div><div class="panel"><label>Oddział<select id="logFilter"></select></label><div id="logList" class="list" style="margin-top:10px"></div></div></div></section>
 
-<section id="meetings" class="view"><div class="head"><div><h2>Notatki 1:1</h2><p>Obecność i notatki ze spotkań.</p></div></div><div class="g2"><div class="panel"><h3 id="meetingTitle">Nowa notatka</h3><div class="form"><label>Oddział<select id="meetingBranch"></select></label><label>Data<input id="meetingDate" type="date"></label><label>Obecność<select id="meetingAttendance"><option value="present_manager">Obecny – kierownik</option><option value="present_sales">Obecny – handlowiec</option><option value="present_two">Obecne – 2 osoby</option><option value="absent_excused">Nieobecny – usprawiedliwione</option><option value="absent_unexcused">Nieobecny – nieusprawiedliwione</option></select></label><label id="meetingCommentLabel">Komentarz do nieobecności<textarea id="meetingComment"></textarea></label><label>Tematy pilne / notatka<textarea id="meetingTopics"></textarea></label><div class="controls"><button id="saveMeeting" class="btn primary">Zapisz</button><button id="clearMeeting" class="btn">Wyczyść</button></div></div><div id="meetingMsg" class="msg"></div></div><div class="panel"><label>Oddział<select id="meetingFilter"></select></label><div id="meetingList" class="list" style="margin-top:10px"></div></div></div></section>
+<section id="meetings" class="view"><div class="head"><div><h2>Notatki 1:1</h2><p>Obecność i notatki ze spotkań.</p></div></div><div class="g2"><div class="panel"><h3 id="meetingTitle">Nowa notatka</h3><div class="form">
+<label>Oddział<select id="meetingBranch"></select></label>
+<label>Data<input id="meetingDate" type="date"></label>
+<label>Obecność<select id="meetingAttendance"><option value="present_manager">Obecny – kierownik</option><option value="present_sales">Obecny – handlowiec</option><option value="present_two">Obecne – 2 osoby</option><option value="absent_excused">Nieobecny – usprawiedliwione</option><option value="absent_unexcused">Nieobecny – nieusprawiedliwione</option></select></label>
+<label id="meetingCommentLabel">Komentarz do nieobecności<textarea id="meetingComment"></textarea></label>
+<label>1. Tematy pilne – do omówienia<textarea id="meetingTopics"></textarea></label>
+<div class="meeting-grid">
+<label>2. Wyniki i procesy<textarea id="meetingResults"></textarea></label>
+<label>3. Inwestycje – zrealizowane i w trakcie<textarea id="meetingInvestments"></textarea></label>
+<label>4. Problemy i działania naprawcze<textarea id="meetingProblems"></textarea></label>
+<label>5. Organizacja pracy i plan najbliższych 5 dni<textarea id="meetingOrganization"></textarea></label>
+<label>6. Komentarz RKS po spotkaniu<textarea id="meetingRksComment"></textarea></label>
+<label>7. Podsumowanie ustaleń<textarea id="meetingSummary"></textarea></label>
+</div>
+<div class="controls"><button id="saveMeeting" class="btn primary">Zapisz</button><button id="prepareNextMeetingBtn" class="btn">Przygotuj kolejne 1:1</button><button id="printMeetingBtn" class="btn">Drukuj notatkę</button><button id="clearMeeting" class="btn">Wyczyść</button></div>
+</div><div id="meetingMsg" class="msg"></div></div><div class="panel"><label>Oddział<select id="meetingFilter"></select></label><div id="meetingList" class="list" style="margin-top:10px"></div></div></div></section>
 
 <section id="tasks" class="view"><div class="head"><div><h2>Terminarz</h2><p>Zadania, terminy, priorytety i status.</p></div></div><div class="g2"><div class="panel"><h3 id="taskTitleHead">Dodaj zadanie</h3><div class="form"><label>Oddział<select id="taskBranch"></select></label><label>Tytuł<input id="taskTitle"></label><label>Opis<textarea id="taskDesc"></textarea></label><label>Odpowiedzialny<input id="taskOwner"></label><label>Termin<input id="taskDeadline" type="date"></label><label>Priorytet<select id="taskPriority"><option value="high">Pilne</option><option value="normal" selected>Normalne</option><option value="low">Niskie</option></select></label><label>Źródło<input id="taskSource"></label><label>Status<select id="taskStatus"><option value="todo">Do zrobienia</option><option value="progress">W trakcie</option><option value="done">Wykonane</option></select></label><div class="controls"><button id="saveTask" class="btn primary">Zapisz</button><button id="clearTask" class="btn">Wyczyść</button></div></div><div id="taskMsg" class="msg"></div></div><div class="panel"><div class="controls"><label>Oddział<select id="taskFilter"></select></label><label>Status<select id="taskStatusFilter"><option value="all">Wszystkie</option><option value="todo">Do zrobienia</option><option value="progress">W trakcie</option><option value="done">Wykonane</option></select></label></div><div id="taskList" class="list" style="margin-top:10px"></div></div></div></section>
 
@@ -588,6 +604,18 @@ async function globalSearchRun(){
 }
 
 
+
+function checkImportExportDependencies(){
+  const missing=[];
+  if(typeof XLSX==='undefined')missing.push('biblioteka Excel (XLSX)');
+  if(typeof JSZip==='undefined')missing.push('biblioteka ZIP (JSZip)');
+  if(missing.length){
+    msg('ioMsg','Nie załadowano: '+missing.join(', ')+'. Odśwież stronę Ctrl+F5 i sprawdź dostęp do internetu.','error');
+    return false;
+  }
+  return true;
+}
+
 const IO_MODULES={
   branches:{label:'Oddziały',table:'branches',cols:['name'],headers:['Nazwa oddziału']},
   contacts:{label:'Kontakty',table:'contacts',cols:['branch','first_name','last_name','position','phone','gg','email'],headers:['Oddział','Imię','Nazwisko','Stanowisko','Telefon','GG','E-mail']},
@@ -631,13 +659,13 @@ async function previewIo(){
     const keys=Object.keys(rows[0]);$('ioPreview').innerHTML=`<table><tr>${keys.map(k=>`<th>${esc(k)}</th>`).join('')}</tr>${rows.slice(0,100).map(r=>`<tr>${keys.map(k=>`<td>${esc(r[k]??'')}</td>`).join('')}</tr>`).join('')}</table>${rows.length>100?`<div class="muted">Podgląd pierwszych 100 z ${rows.length} rekordów.</div>`:''}`;
   }catch(e){msg('ioMsg',e.message,'error')}
 }
-async function exportModuleExcel(){
+async function exportModuleExcel(){if(!checkImportExportDependencies())return;
   const mod=$('ioModule').value,rows=(await getModuleRows(mod)).map(r=>rowForExport(mod,r));
   const ws=XLSX.utils.json_to_sheet(rows.length?rows:[Object.fromEntries(IO_MODULES[mod].headers.map(h=>[h,'']))]);const wb=XLSX.utils.book_new();XLSX.utils.book_append_sheet(wb,ws,IO_MODULES[mod].label.slice(0,31));XLSX.writeFile(wb,`RKS-${IO_MODULES[mod].label}-${today()}.xlsx`);
 }
 async function exportModuleJson(){const mod=$('ioModule').value,rows=await getModuleRows(mod);downloadBlob(new Blob([JSON.stringify({module:mod,region_id:rid(),exported_at:new Date().toISOString(),rows},null,2)],{type:'application/json'}),`RKS-${mod}-${today()}.json`)}
-function downloadModuleTemplate(){const mod=$('ioModule').value,c=IO_MODULES[mod],row=Object.fromEntries(c.headers.map(h=>[h,'']));if('Oddział' in row)row['Oddział']=branches[0]?.name||'Przykładowy oddział';const ws=XLSX.utils.json_to_sheet([row]);const wb=XLSX.utils.book_new();XLSX.utils.book_append_sheet(wb,ws,'Wzór');XLSX.writeFile(wb,`Wzor-${c.label}.xlsx`)}
-async function parseImportFile(file){
+function downloadModuleTemplate(){if(!checkImportExportDependencies())return;const mod=$('ioModule').value,c=IO_MODULES[mod],row=Object.fromEntries(c.headers.map(h=>[h,'']));if('Oddział' in row)row['Oddział']=branches[0]?.name||'Przykładowy oddział';const ws=XLSX.utils.json_to_sheet([row]);const wb=XLSX.utils.book_new();XLSX.utils.book_append_sheet(wb,ws,'Wzór');XLSX.writeFile(wb,`Wzor-${c.label}.xlsx`)}
+async function parseImportFile(file){if(!checkImportExportDependencies())throw new Error('Brak biblioteki do importu pliku.');
   if(file.name.toLowerCase().endsWith('.json')){const j=JSON.parse(await file.text());return Array.isArray(j)?j:(j.rows||j.data||[])}
   const buf=await file.arrayBuffer(),wb=XLSX.read(buf,{type:'array',cellDates:true}),ws=wb.Sheets[wb.SheetNames[0]];return XLSX.utils.sheet_to_json(ws,{defval:''})
 }
@@ -672,7 +700,7 @@ async function exportRegionBackupV7(){
 async function restoreRegionV7(file){
   if(!file||!confirm('Przywrócić kopię do aktywnego regionu?'))return;try{const d=JSON.parse(await file.text());if(!d.tables)throw new Error('Nieprawidłowy plik kopii.');await importRegionBackup(file)}catch(e){alert(e.message)}
 }
-async function fullDatabaseBackup(){
+async function fullDatabaseBackup(){if(!checkImportExportDependencies())return;
   if(profile?.role!=='admin')return alert('Tylko administrator może wykonać pełną kopię bazy.');
   const zip=new JSZip(),backup={kind:'full_app_backup',version:7,exported_at:new Date().toISOString(),tables:{}};
   for(const t of FULL_BACKUP_TABLES){let z=await sb.from(t).select('*');if(z.error)throw z.error;backup.tables[t]=z.data||[]}
@@ -682,7 +710,7 @@ async function fullDatabaseBackup(){
   zip.file('README.txt',`Eltrox RKS — pełna kopia aplikacji\nData: ${backup.exported_at}\nZałączniki w ZIP: ${done}/${files.length}\nKopia nie zawiera haseł ani Supabase Auth.`);
   const blob=await zip.generateAsync({type:'blob',compression:'DEFLATE',compressionOptions:{level:6}});downloadBlob(blob,`RKS-PELNA-KOPIA-${today()}.zip`)
 }
-async function restoreFullDatabase(file){
+async function restoreFullDatabase(file){if(!checkImportExportDependencies())return;
   if(profile?.role!=='admin'||!file)return;if(!confirm('UWAGA: przywrócenie pełnej kopii może nadpisać dane w bazie. Kontynuować?'))return;
   try{
     const zip=await JSZip.loadAsync(file),txt=await zip.file('backup.json').async('string'),d=JSON.parse(txt),tabs=d.tables||{};
@@ -712,8 +740,8 @@ document.addEventListener('keydown',e=>{if(e.key==='Escape'&&!$('tabOrderBackdro
 
 $('loadAnalysisBtn').onclick=loadAnalysis;$('printRegionReportBtn').onclick=()=>window.print();
 $('loadBranchCompareBtn').onclick=loadBranchCompare;$('refreshMapBtn').onclick=loadRegionMap;
-$('addRegionBtn').onclick=manageAddRegion;$('renameRegionBtn').onclick=manageRenameRegion;$('deleteRegionBtn').onclick=manageDeleteRegion;
-$('prepareNextMeetingBtn').onclick=prepareNextMeeting;$('printMeetingBtn').onclick=printMeeting;
+$('addRegionBtn')&&($('addRegionBtn').onclick=manageAddRegion);$('renameRegionBtn')&&($('renameRegionBtn').onclick=manageRenameRegion);$('deleteRegionBtn')&&($('deleteRegionBtn').onclick=manageDeleteRegion);
+$('prepareNextMeetingBtn')&&($('prepareNextMeetingBtn').onclick=prepareNextMeeting);$('printMeetingBtn')&&($('printMeetingBtn').onclick=printMeeting);
 $('uploadAttachmentBtn').onclick=uploadAttachment;$('attachmentFilter').onchange=loadAttachments;
 $('calcBonusBtn').onclick=calculateBonus;$('createArchiveBtn').onclick=createArchive;
 $('exportBackupBtn').onclick=exportRegionBackup;$('importBackupBtn').onclick=()=>$('importBackupFile').click();$('importBackupFile').onchange=e=>{importRegionBackup(e.target.files[0]);e.target.value=''};
