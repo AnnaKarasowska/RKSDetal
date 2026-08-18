@@ -2,7 +2,7 @@
 <html lang="pl">
 <head>
 <meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
-<title>Eltrox RKS – Supabase Pilot v4</title>
+<title>Eltrox RKS – Supabase Pilot v5</title>
 <style>
 :root{--o:#f36f21;--od:#d85d12;--bg:#eef1f4;--w:#fff;--line:#d9dde3;--t:#242424;--m:#6b7280;--r:#c9372c;--g:#25894b;--b:#2f71c8;--sh:0 8px 24px rgba(0,0,0,.08)}
 *{box-sizing:border-box}html,body{margin:0;min-height:100%;font-family:Arial,Helvetica,sans-serif;background:var(--bg);color:var(--t)}button,input,select,textarea{font:inherit}button{cursor:pointer}.hidden{display:none!important}
@@ -16,6 +16,11 @@ input,select,textarea{width:100%;padding:9px 10px;border:1px solid var(--line);b
 .list{display:grid;gap:8px}.item{border:1px solid var(--line);border-radius:10px;padding:10px;background:#fff}.top{display:flex;justify-content:space-between;gap:10px;align-items:flex-start}.title{font-weight:850}.meta{font-size:10px;color:var(--m);margin-top:3px}.text{font-size:12px;line-height:1.45;white-space:pre-wrap;margin-top:6px}.actions{display:flex;gap:5px;flex-wrap:wrap}.empty{padding:18px;text-align:center;color:var(--m);font-size:12px;border:1px dashed var(--line);border-radius:10px}
 .table{overflow:auto}table{width:100%;border-collapse:collapse;font-size:12px}th,td{padding:8px;border-bottom:1px solid #e7eaee;text-align:left;white-space:nowrap}th{background:#f7f8fa}
 .kpi{font-size:25px;font-weight:900}.card{background:#fff;border:1px solid var(--line);border-radius:12px;padding:12px}.card h4{margin:0 0 5px}.status{padding:3px 7px;border-radius:999px;font-size:10px;font-weight:900;display:inline-block}.todo{background:#fff5d9;color:#8c6800}.progress{background:#eaf3ff;color:#2f63a5}.done{background:#e8f7ed;color:#217a42}.high{color:var(--r);font-weight:900}.normal{color:#8c6800;font-weight:900}.low{color:var(--b);font-weight:900}
+
+.compare-score{font-size:20px;font-weight:900}.rank{width:34px;height:34px;border-radius:50%;display:grid;place-items:center;background:#f3f4f6;font-weight:900}
+.bar{height:8px;background:#eceff3;border-radius:999px;overflow:hidden;min-width:100px}.bar>span{display:block;height:100%;background:var(--o);border-radius:999px}
+.comp-good{color:var(--g);font-weight:900}.comp-bad{color:var(--r);font-weight:900}.comp-neutral{color:var(--m);font-weight:900}
+
 .timeline{border-left:3px solid #e5e7eb;margin-left:8px;padding-left:16px;display:grid;gap:10px}.event{position:relative}.event:before{content:"";position:absolute;width:10px;height:10px;border-radius:50%;background:var(--o);left:-22px;top:4px}
 
 .tab-order-backdrop{position:fixed;inset:0;background:rgba(0,0,0,.38);display:grid;place-items:center;padding:18px;z-index:100}
@@ -28,12 +33,12 @@ input,select,textarea{width:100%;padding:9px 10px;border:1px solid var(--line);b
 @media(max-width:950px){.g2,.g3,.g4{grid-template-columns:1fr}.header{align-items:flex-start;flex-direction:column}.nav{top:108px}}
 </style></head>
 <body>
-<div id="loginView" class="login-shell"><div class="login-card"><div class="brand"><h1>Eltrox RKS</h1><p>Pilot online v4</p></div><form id="loginForm" class="form"><label>E-mail<input id="loginEmail" type="email" required></label><label>Hasło<input id="loginPassword" type="password" required></label><button class="btn primary">Zaloguj</button><div id="loginMsg" class="msg"></div></form></div></div>
+<div id="loginView" class="login-shell"><div class="login-card"><div class="brand"><h1>Eltrox RKS</h1><p>Pilot online v5</p></div><form id="loginForm" class="form"><label>E-mail<input id="loginEmail" type="email" required></label><label>Hasło<input id="loginPassword" type="password" required></label><button class="btn primary">Zaloguj</button><div id="loginMsg" class="msg"></div></form></div></div>
 
 <div id="appView" class="hidden">
-<header class="header"><div><h1>Eltrox RKS – Pilot v4</h1><small id="headerUser"></small></div><div class="ha"><label style="min-width:210px">Region<select id="regionSelect"></select></label><span id="roleBadge" class="badge"></span><button id="tabOrderBtn" class="btn">Kolejność zakładek</button><button id="logoutBtn" class="btn">Wyloguj</button></div></header>
+<header class="header"><div><h1>Eltrox RKS – Pilot v5</h1><small id="headerUser"></small></div><div class="ha"><label style="min-width:210px">Region<select id="regionSelect"></select></label><span id="roleBadge" class="badge"></span><button id="tabOrderBtn" class="btn">Kolejność zakładek</button><button id="logoutBtn" class="btn">Wyloguj</button></div></header>
 <nav class="nav">
-<button class="tab active" data-v="dashboard">Na dziś</button><button class="tab" data-v="branches">Oddziały</button><button class="tab" data-v="contacts">Kontakty</button><button class="tab" data-v="contactLogs">Rejestr kontaktów</button><button class="tab" data-v="meetings">1:1</button><button class="tab" data-v="tasks">Terminarz</button><button class="tab" data-v="visits">Wizyty</button><button class="tab" data-v="sales">UK / Detal</button><button class="tab" data-v="kpis">KPI / Controlling</button><button class="tab" data-v="notes">Notatki</button><button class="tab" data-v="branchCard">Karta oddziału</button><button class="tab" data-v="history">Historia</button>
+<button class="tab active" data-v="dashboard">Na dziś</button><button class="tab" data-v="comparison">Porównanie regionów</button><button class="tab" data-v="branches">Oddziały</button><button class="tab" data-v="contacts">Kontakty</button><button class="tab" data-v="contactLogs">Rejestr kontaktów</button><button class="tab" data-v="meetings">1:1</button><button class="tab" data-v="tasks">Terminarz</button><button class="tab" data-v="visits">Wizyty</button><button class="tab" data-v="sales">UK / Detal</button><button class="tab" data-v="kpis">KPI / Controlling</button><button class="tab" data-v="notes">Notatki</button><button class="tab" data-v="branchCard">Karta oddziału</button><button class="tab" data-v="history">Historia</button>
 </nav>
 
 <div id="tabOrderBackdrop" class="tab-order-backdrop hidden">
@@ -55,6 +60,30 @@ input,select,textarea{width:100%;padding:9px 10px;border:1px solid var(--line);b
 <main class="main">
 
 <section id="dashboard" class="view active"><div class="head"><div><h2>Na dziś</h2><p>Szybki podgląd spraw wymagających uwagi.</p></div><button class="btn" onclick="loadDashboard()">Odśwież</button></div><div id="dashCards" class="g4"></div><div class="g2" style="margin-top:12px"><div class="panel"><h3>Zadania pilne / zaległe</h3><div id="dashTasks" class="list"></div></div><div class="panel"><h3>Ostatni kontakt z oddziałami</h3><div id="dashContacts" class="list"></div></div></div></section>
+
+
+<section id="comparison" class="view">
+  <div class="head">
+    <div><h2>Porównanie regionów</h2><p>Ranking wszystkich regionów. Widok jest dostępny dla każdego zalogowanego użytkownika.</p></div>
+    <div class="controls">
+      <label>Rok<input id="comparisonYear" type="number" min="2020" max="2100" style="width:100px"></label>
+      <label>Miesiąc<select id="comparisonMonth" style="width:150px">
+        <option value="1">Styczeń</option><option value="2">Luty</option><option value="3">Marzec</option><option value="4">Kwiecień</option>
+        <option value="5">Maj</option><option value="6">Czerwiec</option><option value="7">Lipiec</option><option value="8">Sierpień</option>
+        <option value="9">Wrzesień</option><option value="10">Październik</option><option value="11">Listopad</option><option value="12">Grudzień</option>
+      </select></label>
+      <button id="loadComparisonBtn" class="btn primary">Porównaj</button>
+    </div>
+  </div>
+  <div id="comparisonMsg" class="msg"></div>
+  <div id="comparisonCards" class="g4"></div>
+  <div class="panel" style="margin-top:12px">
+    <div id="comparisonTable" class="table"></div>
+  </div>
+  <div class="muted" style="margin-top:9px">
+    Wynik porównawczy: UK 35%, Detal 35%, zmiana r/r UK 15%, zmiana r/r Detal 15%. Jeśli brak danych r/r, pozostałe dostępne elementy są proporcjonalnie przeliczane.
+  </div>
+</section>
 
 <section id="branches" class="view"><div class="head"><div><h2>Oddziały</h2><p>Zarządzanie oddziałami z poziomu strony.</p></div></div><div class="g2"><div class="panel"><h3>Dodaj oddział</h3><div class="form"><label>Nazwa<input id="newBranchName"></label><button id="addBranchBtn" class="btn primary">+ Dodaj oddział</button></div><div id="branchMsg" class="msg"></div></div><div class="panel"><h3>Oddziały</h3><div id="branchList" class="list"></div></div></div></section>
 
@@ -85,7 +114,7 @@ const SUPABASE_URL='https://irfutrratkzbgerodkqu.supabase.co',SUPABASE_PUBLISHAB
 const sb=window.supabase.createClient(SUPABASE_URL,SUPABASE_PUBLISHABLE_KEY),$=id=>document.getElementById(id);
 let user=null,profile=null,branches=[],edit={contact:null,log:null,meeting:null,task:null,visit:null,note:null};
 
-const DEFAULT_TAB_ORDER=['dashboard','branches','contacts','contactLogs','meetings','tasks','visits','sales','kpis','notes','branchCard','history'];
+const DEFAULT_TAB_ORDER=['dashboard','comparison','branches','contacts','contactLogs','meetings','tasks','visits','sales','kpis','notes','branchCard','history'];
 let tabOrderDraft=[];
 
 function currentTabOrder(){
@@ -222,15 +251,65 @@ async function saveNote(){let r={region_id:rid(),branch_id:$('noteBranch').value
 window.editNote=id=>{let v=window._notes.find(x=>x.id===id);edit.note=id;$('noteTitle').textContent='Edytuj notatkę';$('noteBranch').value=v.branch_id;$('noteDate').value=v.note_date;$('noteText').value=v.note};
 window.delNote=async id=>{if(confirm('Usunąć notatkę?')){await sb.from('branch_notes').delete().eq('id',id);loadNotes();loadCard();loadHistory()}};
 
+
+function pct(v){return v===null||v===undefined||Number.isNaN(Number(v))?'—':Math.round(Number(v)*10)/10+'%'}
+function yoyClass(v){if(v===null||v===undefined)return 'comp-neutral';return Number(v)>0?'comp-good':Number(v)<0?'comp-bad':'comp-neutral'}
+async function loadComparison(){
+  const year=Number($('comparisonYear').value),month=Number($('comparisonMonth').value);
+  if(!year||month<1||month>12)return;
+  msg('comparisonMsg','Ładowanie porównania...');
+  const {data,error}=await sb.rpc('get_region_comparison',{p_year:year,p_month:month});
+  if(error){
+    $('comparisonCards').innerHTML='';
+    $('comparisonTable').innerHTML='<div class="empty">Nie udało się pobrać porównania.</div>';
+    return msg('comparisonMsg',error.message,'error');
+  }
+  const rows=(data||[]).sort((a,b)=>Number(b.score||0)-Number(a.score||0));
+  if(!rows.length){
+    $('comparisonCards').innerHTML='';
+    $('comparisonTable').innerHTML='<div class="empty">Brak regionów do porównania.</div>';
+    return msg('comparisonMsg','');
+  }
+  const avg=k=>rows.length?rows.reduce((s,r)=>s+Number(r[k]||0),0)/rows.length:0;
+  $('comparisonCards').innerHTML=`
+    <div class="card"><h4>Regiony</h4><div class="kpi">${rows.length}</div></div>
+    <div class="card"><h4>Śr. UK</h4><div class="kpi">${pct(avg('uk_realization'))}</div></div>
+    <div class="card"><h4>Śr. Detal</h4><div class="kpi">${pct(avg('detail_realization'))}</div></div>
+    <div class="card"><h4>Śr. wynik</h4><div class="kpi">${pct(avg('score'))}</div></div>`;
+  $('comparisonTable').innerHTML=`<table>
+    <thead><tr>
+      <th>#</th><th>Region</th><th>Oddziały</th><th>Wynik</th>
+      <th>UK realizacja</th><th>Detal realizacja</th>
+      <th>UK r/r</th><th>Detal r/r</th><th>VoIP</th><th>Controlling</th>
+    </tr></thead><tbody>
+    ${rows.map((r,i)=>{
+      const score=Math.max(0,Math.min(100,Number(r.score||0)));
+      return `<tr>
+        <td><div class="rank">${i+1}</div></td>
+        <td><b>${esc(r.region_name)}</b></td>
+        <td>${r.branches_count||0}</td>
+        <td><div class="compare-score">${pct(score)}</div><div class="bar"><span style="width:${score}%"></span></div></td>
+        <td>${pct(r.uk_realization)}</td>
+        <td>${pct(r.detail_realization)}</td>
+        <td class="${yoyClass(r.uk_yoy)}">${pct(r.uk_yoy)}</td>
+        <td class="${yoyClass(r.detail_yoy)}">${pct(r.detail_yoy)}</td>
+        <td>${pct(r.voip_avg)}</td>
+        <td>${pct(r.controlling_avg)}</td>
+      </tr>`;
+    }).join('')}
+    </tbody></table>`;
+  msg('comparisonMsg','');
+}
+
 async function loadDashboard(){if(!rid()||!branches.length)return;let [t,l]=await Promise.all([q('tasks'),q('contact_logs')]);let tasks=t.data||[],logs=l.data||[],td=today(),open=tasks.filter(x=>x.status!=='done'),late=open.filter(x=>x.deadline&&x.deadline<td),due=open.filter(x=>x.deadline===td);$('dashCards').innerHTML=`<div class="card"><h4>Oddziały</h4><div class="kpi">${branches.length}</div></div><div class="card"><h4>Otwarte zadania</h4><div class="kpi">${open.length}</div></div><div class="card"><h4>Zaległe</h4><div class="kpi">${late.length}</div></div><div class="card"><h4>Na dziś</h4><div class="kpi">${due.length}</div></div>`;$('dashTasks').innerHTML=[...late,...due].slice(0,12).map(v=>`<div class="item"><b>${esc(v.title)}</b><div class="meta">${esc(bn(v.branch_id))} • ${fd(v.deadline)} • ${v.priority}</div></div>`).join('')||'<div class="empty">Brak pilnych zadań.</div>';let rows=branches.map(b=>{let a=logs.filter(x=>x.branch_id===b.id).sort((x,y)=>y.contact_date.localeCompare(x.contact_date));return {b,last:a[0]}}).sort((x,y)=>(x.last?.contact_date||'').localeCompare(y.last?.contact_date||''));$('dashContacts').innerHTML=rows.map(x=>`<div class="item"><b>${esc(x.b.name)}</b><div class="meta">${x.last?fd(x.last.contact_date)+' • '+esc(x.last.channel):'Brak zarejestrowanego kontaktu'}</div></div>`).join('')}
 
 async function loadCard(){let id=$('cardBranch')?.value;if(!id)return;$('cardContent').innerHTML='<div class="empty">Ładowanie...</div>';let [c,l,m,t,v,s,k,n]=await Promise.all(['contacts','contact_logs','meeting_notes','tasks','visits','sales_results','monthly_kpis','branch_notes'].map(z=>sb.from(z).select('*').eq('region_id',rid()).eq('branch_id',id)));let contacts=c.data||[],logs=(l.data||[]).sort((a,b)=>b.contact_date.localeCompare(a.contact_date)),meet=(m.data||[]).sort((a,b)=>b.meeting_date.localeCompare(a.meeting_date)),tasks=(t.data||[]).filter(x=>x.status!=='done'),vis=(v.data||[]).sort((a,b)=>b.visit_date.localeCompare(a.visit_date)),sales=(s.data||[]).sort((a,b)=>b.result_date.localeCompare(a.result_date)),kpis=(k.data||[]).sort((a,b)=>(b.year*100+b.month)-(a.year*100+a.month)),notes=(n.data||[]).sort((a,b)=>b.note_date.localeCompare(a.note_date));let ss=sales[0],kk=kpis[0];$('cardContent').innerHTML=`<div class="g4"><div class="card"><h4>Ostatni kontakt</h4><div class="kpi" style="font-size:18px">${logs[0]?fd(logs[0].contact_date):'—'}</div><div class="muted">${logs[0]?esc(logs[0].channel):''}</div></div><div class="card"><h4>Otwarte zadania</h4><div class="kpi">${tasks.length}</div></div><div class="card"><h4>UK realizacja</h4><div class="kpi">${ss&&ss.uk_plan?Math.round(num(ss.uk_execution)/num(ss.uk_plan)*100):0}%</div></div><div class="card"><h4>Detal realizacja</h4><div class="kpi">${ss&&ss.detail_plan?Math.round(num(ss.detail_execution)/num(ss.detail_plan)*100):0}%</div></div></div><div class="g2" style="margin-top:12px"><div class="panel"><h3>Kontakty</h3>${contacts.map(x=>`<div class="item"><b>${esc((x.first_name||'')+' '+(x.last_name||''))}</b><div class="meta">${esc(x.position||'')} • ${esc(x.phone||'')} • ${esc(x.email||'')}</div></div>`).join('')||'<div class="empty">Brak</div>'}<h3 style="margin-top:14px">Ostatnie 1:1</h3>${meet[0]?`<div class="item"><b>${fd(meet[0].meeting_date)} • ${att(meet[0].attendance)}</b><div class="text">${esc(meet[0].urgent_topics||'')}</div></div>`:'<div class="empty">Brak</div>'}</div><div class="panel"><h3>KPI</h3>${kk?`<div class="g3"><div class="card"><h4>Okres</h4><b>${kk.month}/${kk.year}</b></div><div class="card"><h4>VoIP</h4><b>${num(kk.voip)}%</b></div><div class="card"><h4>Controlling</h4><b>${num(kk.controlling)}%</b></div></div>`:'<div class="empty">Brak KPI</div>'}<h3 style="margin-top:14px">Ostatnia wizyta</h3>${vis[0]?`<div class="item"><b>${fd(vis[0].visit_date)}</b><div class="text">${esc(vis[0].topics||'')}</div></div>`:'<div class="empty">Brak</div>'}<h3 style="margin-top:14px">Ostatnia notatka</h3>${notes[0]?`<div class="item"><b>${fd(notes[0].note_date)}</b><div class="text">${esc(notes[0].note)}</div></div>`:'<div class="empty">Brak</div>'}</div></div>`}
 
 async function loadHistory(){let id=$('historyBranch')?.value;if(!id)return;let [l,m,v,n]=await Promise.all(['contact_logs','meeting_notes','visits','branch_notes'].map(z=>sb.from(z).select('*').eq('region_id',rid()).eq('branch_id',id)));let ev=[];(l.data||[]).forEach(x=>ev.push({d:x.contact_date,t:'Kontakt '+x.channel,x:(x.person?x.person+' – ':'')+(x.note||'')}));(m.data||[]).forEach(x=>ev.push({d:x.meeting_date,t:'Spotkanie 1:1',x:att(x.attendance)+(x.urgent_topics?' – '+x.urgent_topics:'')}));(v.data||[]).forEach(x=>ev.push({d:x.visit_date,t:'Wizyta',x:(x.topics||'')+(x.notes?' – '+x.notes:'')}));(n.data||[]).forEach(x=>ev.push({d:x.note_date,t:'Notatka',x:x.note}));ev.sort((a,b)=>b.d.localeCompare(a.d));$('historyList').innerHTML=ev.length?ev.map(e=>`<div class="event"><b>${fd(e.d)} • ${esc(e.t)}</b><div class="text">${esc(e.x||'')}</div></div>`).join(''):'<div class="empty">Brak historii.</div>'}
 
-async function showApp(session){user=session.user;$('loginView').classList.add('hidden');$('appView').classList.remove('hidden');await loadProfile();await loadTabOrder();await loadRegions();await loadBranches();clearLog();clearMeeting();clearTask();clearVisit();clearNote();$('salesDate').value=today();let d=new Date();$('kpiYear').value=d.getFullYear();$('kpiMonth').value=d.getMonth()+1}
+async function showApp(session){user=session.user;$('loginView').classList.add('hidden');$('appView').classList.remove('hidden');await loadProfile();await loadTabOrder();await loadRegions();await loadBranches();clearLog();clearMeeting();clearTask();clearVisit();clearNote();$('salesDate').value=today();let d=new Date();$('kpiYear').value=d.getFullYear();$('kpiMonth').value=d.getMonth()+1;$('comparisonYear').value=d.getFullYear();$('comparisonMonth').value=d.getMonth()+1
 function showLogin(){$('appView').classList.add('hidden');$('loginView').classList.remove('hidden')}
-document.querySelectorAll('.tab').forEach(b=>b.onclick=()=>{document.querySelectorAll('.tab').forEach(x=>x.classList.toggle('active',x===b));document.querySelectorAll('.view').forEach(x=>x.classList.toggle('active',x.id===b.dataset.v));if(b.dataset.v==='dashboard')loadDashboard();if(b.dataset.v==='branchCard')loadCard();if(b.dataset.v==='history')loadHistory()});
+document.querySelectorAll('.tab').forEach(b=>b.onclick=()=>{document.querySelectorAll('.tab').forEach(x=>x.classList.toggle('active',x===b));document.querySelectorAll('.view').forEach(x=>x.classList.toggle('active',x.id===b.dataset.v));if(b.dataset.v==='dashboard')loadDashboard();if(b.dataset.v==='comparison')loadComparison();if(b.dataset.v==='branchCard')loadCard();if(b.dataset.v==='history')loadHistory()});
 $('loginForm').onsubmit=async e=>{e.preventDefault();let{data,error}=await sb.auth.signInWithPassword({email:$('loginEmail').value.trim(),password:$('loginPassword').value});if(error)return msg('loginMsg',error.message,'error');showApp(data.session)};
 $('tabOrderBtn').onclick=openTabOrder;
 $('cancelTabOrderBtn').onclick=closeTabOrder;
@@ -239,7 +318,7 @@ $('resetTabOrderBtn').onclick=resetTabOrderDraft;
 $('tabOrderBackdrop').onclick=e=>{if(e.target===$('tabOrderBackdrop'))closeTabOrder()};
 document.addEventListener('keydown',e=>{if(e.key==='Escape'&&!$('tabOrderBackdrop').classList.contains('hidden'))closeTabOrder()});
 $('logoutBtn').onclick=async()=>{await sb.auth.signOut();showLogin()};
-$('regionSelect').onchange=loadBranches;$('addBranchBtn').onclick=addBranch;
+$('loadComparisonBtn').onclick=loadComparison;$('regionSelect').onchange=loadBranches;$('addBranchBtn').onclick=addBranch;
 $('saveContact').onclick=saveContact;$('clearContact').onclick=clearContact;$('contactFilter').onchange=loadContacts;$('contactSearch').oninput=loadContacts;
 $('saveLog').onclick=saveLog;$('clearLog').onclick=clearLog;$('logFilter').onchange=loadLogs;
 $('meetingAttendance').onchange=toggleComment;$('saveMeeting').onclick=saveMeeting;$('clearMeeting').onclick=clearMeeting;$('meetingFilter').onchange=loadMeetings;
