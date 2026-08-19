@@ -2,7 +2,7 @@
 <html lang="pl">
 <head>
 <meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
-<title>Eltrox RKS – Supabase v8.1</title>
+<title>Eltrox RKS – Supabase v8.2</title>
 <style>
 :root{--o:#f36f21;--od:#d85d12;--bg:#eef1f4;--w:#fff;--line:#d9dde3;--t:#242424;--m:#6b7280;--r:#c9372c;--g:#25894b;--b:#2f71c8;--sh:0 8px 24px rgba(0,0,0,.08)}
 *{box-sizing:border-box}html,body{margin:0;min-height:100%;font-family:Arial,Helvetica,sans-serif;background:var(--bg);color:var(--t)}button,input,select,textarea{font:inherit}button{cursor:pointer}.hidden{display:none!important}
@@ -126,7 +126,7 @@ input,select,textarea{width:100%;padding:9px 10px;border:1px solid var(--line);b
 @media(max-width:950px){.g2,.g3,.g4{grid-template-columns:1fr}.header{align-items:flex-start;flex-direction:column}.nav{top:108px}}
 </style></head>
 <body>
-<div id="loginView" class="login-shell"><div class="login-card"><div class="brand"><h1>Eltrox RKS</h1><p>Wersja online v8.1</p></div><form id="loginForm" class="form"><label>E-mail<input id="loginEmail" type="email" required></label><label>Hasło<input id="loginPassword" type="password" required></label><button class="btn primary">Zaloguj</button><div id="loginMsg" class="msg"></div></form></div></div>
+<div id="loginView" class="login-shell"><div class="login-card"><div class="brand"><h1>Eltrox RKS</h1><p>Wersja online v8.2</p></div><form id="loginForm" class="form"><label>E-mail<input id="loginEmail" type="email" required></label><label>Hasło<input id="loginPassword" type="password" required></label><button class="btn primary">Zaloguj</button><div id="loginMsg" class="msg"></div></form></div></div>
 
 <div id="modeView" class="mode-shell hidden">
   <div class="mode-card">
@@ -423,7 +423,7 @@ input,select,textarea{width:100%;padding:9px 10px;border:1px solid var(--line);b
       </div>
       <div class="backup-card" style="margin-top:12px;border-color:#f3b58f;background:#fffaf7">
         <h4>Migracja danych z wersji v45</h4>
-        <div class="io-note">Możesz wskazać bezpośrednio pliki JSON wyeksportowane ze starej wersji v45. Aplikacja rozpoznaje: <b>Eksport aktywnego regionu</b>, <b>Eksport wszystkich regionów</b>, <b>Kopię danych</b>, eksport <b>Centrum raportowania</b> oraz plik <b>Porównywarki</b>.</div>
+        <div class="io-note">Możesz wskazać bezpośrednio pliki JSON wyeksportowane ze starej wersji v45. Aplikacja rozpoznaje dokładne formaty v45: <b>Eltrox-[region]-data.json</b> (Eksport aktywnego regionu), <b>Eltrox-wszystkie-regiony-data.json</b>, <b>Eltrox_backup_data.json</b>, eksport <b>Centrum raportowania</b> oraz <b>Porównywarki</b>. Nazwy plików mogą zawierać inne daty – liczy się struktura JSON.</div>
         <label style="margin-top:9px">Plik / pliki z v45
           <input id="v45ImportFiles" type="file" accept=".json,application/json" multiple>
         </label>
@@ -433,7 +433,7 @@ input,select,textarea{width:100%;padding:9px 10px;border:1px solid var(--line);b
         </div>
         <div id="v45ImportMsg" class="msg"></div>
         <div id="v45ImportPreview" class="io-note"></div>
-        <div class="io-note" style="margin-top:7px"><b>Ważne:</b> import nie usuwa obecnych danych. Rekordy są dodawane lub aktualizowane. Przy eksporcie wielu regionów administrator może zasilić wszystkie regiony jednocześnie.</div>
+        <div class="io-note" style="margin-top:7px"><b>Ważne:</b> import nie usuwa obecnych danych. Rekordy są dodawane lub aktualizowane. Przy eksporcie wielu regionów administrator może zasilić wszystkie regiony jednocześnie.</div><div class="io-note" style="margin-top:7px"><b>Uwaga o wizytach:</b> standardowe eksporty JSON v45 nie zapisywały osobnej bazy raportów z wizyt. Jeżeli plik zawiera pole <code>visitReports</code>, v8.2 je zaimportuje; jeśli go nie ma, z samego eksportu v45 nie da się odtworzyć tych raportów.</div>
       </div>
       <div class="backup-card" style="margin-top:12px">
         <h4>Kopia aktywnego regionu</h4>
@@ -1076,7 +1076,7 @@ function checkImportExportDependencies(){
 function v45Norm(s){return String(s??'').trim().toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g,'')}
 function recognizeV45(d){
   if(d?.application==='Eltrox Panel Backup'&&Array.isArray(d?.regionDatabase?.regions))
-    return {kind:'database',label:'Kopia danych v45',regions:d.regionDatabase.regions};
+    return {kind:'database',label:'Kopia danych v45',regions:d.regionDatabase.regions,activeRegionId:d.activeRegionId||null};
   if(d?.application==='Eltrox Region Database'&&Array.isArray(d?.regions))
     return {kind:'database',label:'Eksport wszystkich regionów v45',regions:d.regions};
   if(d?.application==='Eltrox Centrum zarządzania regionem'&&d?.center)
@@ -1084,8 +1084,9 @@ function recognizeV45(d){
       center:d.center||{},comparator:d.comparator||null,contacts:Array.isArray(d.contacts)?d.contacts:[],
       meetingTopics:d.meetingTopics||{},savedMeetingNotes:Array.isArray(d.savedMeetingNotes)?d.savedMeetingNotes:[],
       tasks:Array.isArray(d.tasks)?d.tasks:[],attachments:Array.isArray(d.attachments)?d.attachments:[],
-      contactLog:Array.isArray(d.contactLog)?d.contactLog:[],branchNotes:d.branchNotes||{}
-    }};
+      contactLog:Array.isArray(d.contactLog)?d.contactLog:[],branchNotes:d.branchNotes||{},
+      visitReports:Array.isArray(d.visitReports)?d.visitReports:[]
+    },branchScope:Array.isArray(d.branchScope)?d.branchScope:[]};
   if(d?.sales||d?.reports||String(d?.application||'').includes('Eltrox Centrum'))
     return {kind:'region',label:'Centrum raportowania v45',name:'',snapshot:{center:{
       reports:d.reports||[],sales:d.sales||{},controlling:d.controlling||{},decisions:d.decisions||[],
@@ -1099,9 +1100,11 @@ function recognizeV45(d){
     return {kind:'reports',label:'Raporty 1:1',reports:d.reports};
   return null;
 }
-function v45BranchNames(snap){
+function v45BranchNames(snap,explicitScope=[]){
   const names=new Map(),add=n=>{if(n&&String(n).trim())names.set(v45Norm(n),String(n).trim())};
   const c=snap?.center||{},comp=snap?.comparator;
+  (explicitScope||[]).forEach(add);
+  (snap?.branchScope||[]).forEach(add);
   (c.sales?.branches||[]).forEach(add);
   (c.reports||[]).forEach(r=>(r.branches||[]).forEach(b=>add(b?.name)));
   (comp?.branches||[]).forEach(b=>add(b?.name));
@@ -1110,6 +1113,7 @@ function v45BranchNames(snap){
   (snap?.tasks||[]).forEach(x=>add(x.branch));
   (snap?.attachments||[]).forEach(x=>add(x.branch));
   (snap?.contactLog||[]).forEach(x=>add(x.branch));
+  (snap?.visitReports||[]).forEach(x=>add(x.branch));
   Object.keys(snap?.branchNotes||{}).forEach(key=>{
     const suffix=key.split('::').at(-1);
     // nazwy właściwe odzyskamy przez dopasowanie do pozostałych źródeł
@@ -1198,7 +1202,7 @@ function v45DataUrlToBlob(dataUrl){
   return new Blob([bytes],{type:mime});
 }
 async function importV45Snapshot(regionId,snap,opts={}){
-  const names=v45BranchNames(snap),branchMap=await ensureV45Branches(regionId,names),stats={branches:names.length,sales:0,kpi:0,contacts:0,meetings:0,tasks:0,logs:0,notes:0,attachments:0,archives:0};
+  const names=v45BranchNames(snap,opts.branchScope||[]),branchMap=await ensureV45Branches(regionId,names),stats={branches:names.length,sales:0,kpi:0,contacts:0,meetings:0,tasks:0,logs:0,notes:0,visits:0,attachments:0,archives:0};
   const byName=n=>branchMap.get(v45Norm(n))?.id||null;
 
   const salesRows=buildV45SalesRows(snap,branchMap).map(x=>({...x,region_id:regionId}));
@@ -1212,6 +1216,23 @@ async function importV45Snapshot(regionId,snap,opts={}){
 
   const meetings=(snap.savedMeetingNotes||[]).map(x=>({region_id:regionId,branch_id:byName(x.branch),meeting_date:x.meetingDate||x.date||today(),attendance:x.attendance||'present_manager',attendance_comment:x.attendanceComment||null,urgent_topics:x.urgentTopics||'',content:{},created_by:user.id})).filter(x=>x.branch_id);
   if(meetings.length){let z=await sb.from('meeting_notes').insert(meetings);if(z.error)throw z.error;stats.meetings=meetings.length}
+
+
+  const visitRows=(snap.visitReports||[]).map(x=>({
+    region_id:regionId,
+    branch_id:byName(x.branch),
+    visit_date:x.date||x.visitDate||today(),
+    participants:x.participants||'',
+    topics:x.topics||'',
+    notes:x.notes||'',
+    recommendations:Array.isArray(x.recommendations)?x.recommendations:[],
+    created_by:user.id
+  })).filter(x=>x.branch_id);
+  if(visitRows.length){
+    let z=await sb.from('visits').insert(visitRows);
+    if(z.error)throw z.error;
+    stats.visits=visitRows.length;
+  }
 
   const tasks=[...(snap.tasks||[])];
   // Stare decyzje z Centrum zachowujemy jako zadania.
@@ -1280,11 +1301,14 @@ async function importV45Files(){
         for(const oldRegion of rec.regions){
           const region=await getOrCreateRegionForV45(oldRegion.name||'Region v45');
           const snap=oldRegion.data||oldRegion.sourceData||{};
-          const st=await importV45Snapshot(region.id,snap);summary.push(`${region.name}: ${st.branches} oddz., ${st.sales} wyników, ${st.tasks} zadań`);imported++;
+          if(!snap.branchScope&&Array.isArray(oldRegion.branchScope))snap.branchScope=oldRegion.branchScope;
+          const st=await importV45Snapshot(region.id,snap,{branchScope:oldRegion.branchScope||[]});
+          summary.push(`${region.name}: ${st.branches} oddz., ${st.sales} wyników, ${st.kpi} KPI, ${st.meetings} notatek 1:1, ${st.tasks} zadań${st.visits?`, ${st.visits} wizyt`:''}`);
+          imported++;
         }
       }else if(rec.kind==='region'){
         const target=rid();if(!target)throw new Error('Brak aktywnego regionu.');
-        const st=await importV45Snapshot(target,rec.snapshot);summary.push(`${rec.label}: ${st.branches} oddz., ${st.sales} wyników, ${st.kpi} KPI, ${st.tasks} zadań`);imported++;
+        const st=await importV45Snapshot(target,rec.snapshot,{branchScope:rec.branchScope||[]});summary.push(`${rec.label}: ${st.branches} oddz., ${st.sales} wyników, ${st.kpi} KPI, ${st.meetings} notatek 1:1, ${st.tasks} zadań${st.visits?`, ${st.visits} wizyt`:''}`);imported++;
       }else if(rec.kind==='comparator'){
         const snap={center:{},comparator:rec.state,contacts:[],savedMeetingNotes:[],tasks:[],attachments:[],contactLog:[],branchNotes:{}};
         const st=await importV45Snapshot(rid(),snap);summary.push(`Porównywarka: ${st.sales} rekordów sprzedaży`);imported++;
