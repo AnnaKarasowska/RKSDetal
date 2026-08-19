@@ -2,7 +2,7 @@
 <html lang="pl">
 <head>
 <meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
-<title>Eltrox RKS – Supabase v8</title>
+<title>Eltrox RKS – Supabase v8.1</title>
 <style>
 :root{--o:#f36f21;--od:#d85d12;--bg:#eef1f4;--w:#fff;--line:#d9dde3;--t:#242424;--m:#6b7280;--r:#c9372c;--g:#25894b;--b:#2f71c8;--sh:0 8px 24px rgba(0,0,0,.08)}
 *{box-sizing:border-box}html,body{margin:0;min-height:100%;font-family:Arial,Helvetica,sans-serif;background:var(--bg);color:var(--t)}button,input,select,textarea{font:inherit}button{cursor:pointer}.hidden{display:none!important}
@@ -88,6 +88,36 @@ input,select,textarea{width:100%;padding:9px 10px;border:1px solid var(--line);b
 .mode-badge.admin{background:#fff0e5;color:var(--od)}.mode-badge.user{background:#eaf3ff;color:#2f63a5}
 @media(max-width:720px){.mode-options{grid-template-columns:1fr}}
 
+
+.visit-grid{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+.visit-full{grid-column:1/-1}
+.visit-card{background:#fff;border:1px solid var(--line);border-radius:14px;padding:14px;box-shadow:var(--shadow)}
+.visit-card h3{margin:0 0 10px}.visit-card textarea{min-height:120px;resize:vertical;border:1px solid var(--line);border-radius:9px;padding:10px;font:inherit}
+.visit-card input,.visit-card select,.visit-card textarea{width:100%}
+.visit-actions-table textarea{min-height:50px}.visit-history{display:grid;gap:8px}.visit-item{border:1px solid var(--line);border-radius:10px;padding:10px;background:#fff}
+.visit-item h4{margin:0 0 5px}.visit-item .meta{font-size:11px;color:var(--m);margin-bottom:6px}
+.visit-signature-form{display:none}
+.visit-signature-form.ready{display:block}
+.visit-form-header{display:flex;justify-content:space-between;align-items:flex-start;gap:12px;margin-bottom:12px}
+.visit-form-header h3{margin:0 0 4px}.visit-form-header p{margin:0;color:var(--m);font-size:12px}
+.visit-form-summary{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:8px;margin-bottom:14px}
+.visit-form-summary>div{border:1px solid var(--line);border-radius:9px;padding:9px;background:#fafafa}
+.visit-form-summary span{display:block;font-size:10px;color:var(--m);font-weight:750}
+.visit-form-summary strong{display:block;margin-top:4px;font-size:13px}
+.visit-form-block{margin-top:14px}.visit-form-block h4{margin:0 0 7px}
+.visit-form-text{border:1px solid var(--line);border-radius:9px;padding:10px;min-height:54px;white-space:pre-wrap;line-height:1.45}
+.signature-grid{display:grid;grid-template-columns:1fr 1fr;gap:70px;margin-top:48px}
+.signature-box{text-align:center}.signature-line{border-top:1px solid #333;margin-bottom:8px}.signature-box strong{display:block}.signature-box span{font-size:10px;color:#666}
+@media(max-width:850px){.visit-grid{grid-template-columns:1fr}.visit-full{grid-column:auto}.visit-form-summary{grid-template-columns:1fr 1fr}.signature-grid{gap:28px}}
+@media(max-width:560px){.visit-form-summary{grid-template-columns:1fr}.signature-grid{grid-template-columns:1fr;gap:40px}}
+@media print{
+  #visits .visit-history-panel,#visits .visit-toolbar,#visits .add-recommendation{display:none!important}
+  #visits .visit-grid>section:not(.visit-signature-form){display:none!important}
+  #visitSignatureForm{display:block!important;border:0!important;box-shadow:none!important;padding:0!important}
+  #visits .head{display:none!important}
+  #visitSignatureForm table{font-size:10px!important}
+}
+
 @media(max-width:950px){.io-grid{grid-template-columns:1fr}.io-actions{grid-template-columns:1fr}}
 
 @media(max-width:950px){.meeting-grid,.bonus-grid{grid-template-columns:1fr}.rec-row{grid-template-columns:1fr}.searchbox{min-width:180px}}
@@ -96,7 +126,7 @@ input,select,textarea{width:100%;padding:9px 10px;border:1px solid var(--line);b
 @media(max-width:950px){.g2,.g3,.g4{grid-template-columns:1fr}.header{align-items:flex-start;flex-direction:column}.nav{top:108px}}
 </style></head>
 <body>
-<div id="loginView" class="login-shell"><div class="login-card"><div class="brand"><h1>Eltrox RKS</h1><p>Wersja online v8</p></div><form id="loginForm" class="form"><label>E-mail<input id="loginEmail" type="email" required></label><label>Hasło<input id="loginPassword" type="password" required></label><button class="btn primary">Zaloguj</button><div id="loginMsg" class="msg"></div></form></div></div>
+<div id="loginView" class="login-shell"><div class="login-card"><div class="brand"><h1>Eltrox RKS</h1><p>Wersja online v8.1</p></div><form id="loginForm" class="form"><label>E-mail<input id="loginEmail" type="email" required></label><label>Hasło<input id="loginPassword" type="password" required></label><button class="btn primary">Zaloguj</button><div id="loginMsg" class="msg"></div></form></div></div>
 
 <div id="modeView" class="mode-shell hidden">
   <div class="mode-card">
@@ -277,7 +307,63 @@ input,select,textarea{width:100%;padding:9px 10px;border:1px solid var(--line);b
 
 <section id="tasks" class="view"><div class="head"><div><h2>Terminarz</h2><p>Zadania, terminy, priorytety i status.</p></div></div><div class="g2"><div class="panel"><h3 id="taskTitleHead">Dodaj zadanie</h3><div class="form"><label>Oddział<select id="taskBranch"></select></label><label>Tytuł<input id="taskTitle"></label><label>Opis<textarea id="taskDesc"></textarea></label><label>Odpowiedzialny<input id="taskOwner"></label><label>Termin<input id="taskDeadline" type="date"></label><label>Priorytet<select id="taskPriority"><option value="high">Pilne</option><option value="normal" selected>Normalne</option><option value="low">Niskie</option></select></label><label>Źródło<input id="taskSource"></label><label>Status<select id="taskStatus"><option value="todo">Do zrobienia</option><option value="progress">W trakcie</option><option value="done">Wykonane</option></select></label><div class="controls"><button id="saveTask" class="btn primary">Zapisz</button><button id="clearTask" class="btn">Wyczyść</button></div></div><div id="taskMsg" class="msg"></div></div><div class="panel"><div class="controls"><label>Oddział<select id="taskFilter"></select></label><label>Status<select id="taskStatusFilter"><option value="all">Wszystkie</option><option value="todo">Do zrobienia</option><option value="progress">W trakcie</option><option value="done">Wykonane</option></select></label></div><div id="taskList" class="list" style="margin-top:10px"></div></div></div></section>
 
-<section id="visits" class="view"><div class="head"><div><h2>Raporty z wizyt</h2><p>Wizyty oddziałowe zapisane w Supabase.</p></div></div><div class="g2"><div class="panel"><h3 id="visitTitle">Nowa wizyta</h3><div class="form"><label>Oddział<select id="visitBranch"></select></label><label>Data<input id="visitDate" type="date"></label><label>Uczestnicy<input id="visitParticipants"></label><label>Tematy<textarea id="visitTopics"></textarea></label><label>Zalecenia – jedno w wierszu<textarea id="visitRecommendations"></textarea></label><label>Notatki<textarea id="visitNotes"></textarea></label><div class="controls"><button id="saveVisit" class="btn primary">Zapisz raport</button><button id="clearVisit" class="btn">Wyczyść</button></div></div><div id="visitMsg" class="msg"></div></div><div class="panel"><label>Oddział<select id="visitFilter"></select></label><div id="visitList" class="list" style="margin-top:10px"></div></div></div></section>
+<section id="visits" class="view"><div class="inner">
+  <div class="head">
+    <div><h2>Raport z wizyty na oddziale <span id="visitActiveRegionName" class="badge"></span></h2>
+    <p>Notatka z wizyty, ustalenia i zalecenia z terminami realizacji.</p></div>
+    <div class="visit-toolbar controls">
+      <label>Oddział<select id="visitBranch"></select></label>
+      <label>Data wizyty<input id="visitDate" type="date"></label>
+      <button class="btn primary" id="saveVisit">Zapisz raport</button>
+      <button class="btn" id="printVisitReport">Drukuj raport</button>
+      <button class="btn" id="generateVisitForm">Generuj formularz do podpisu</button>
+      <button class="btn" id="clearVisit">Nowy raport</button>
+    </div>
+  </div>
+  <div class="visit-grid">
+    <section class="visit-card"><h3>Uczestnicy</h3><textarea id="visitParticipants" placeholder="Wpisz uczestników wizyty"></textarea></section>
+    <section class="visit-card"><h3>Omówione tematy</h3><textarea id="visitTopics" placeholder="Wpisz omówione tematy"></textarea></section>
+
+    <section class="visit-card visit-full">
+      <h3>Zalecenia i terminy</h3>
+      <div class="table"><table class="visit-actions-table">
+        <thead><tr><th>Zalecenie</th><th>Osoba odpowiedzialna</th><th>Termin</th><th></th></tr></thead>
+        <tbody id="visitRecommendations"></tbody>
+      </table></div>
+      <button class="btn add-recommendation" id="addVisitRecommendation">+ Dodaj zalecenie</button>
+    </section>
+
+    <section class="visit-card visit-full"><h3>Dodatkowe uwagi / podsumowanie</h3><textarea id="visitNotes" placeholder="Dodatkowe obserwacje i ustalenia"></textarea></section>
+
+    <section class="visit-card visit-full visit-signature-form" id="visitSignatureForm">
+      <div class="visit-form-header">
+        <div><h3>Formularz potwierdzenia wizyty</h3><p>Dokument do podpisu kierownika oddziału i RKS.</p></div>
+      </div>
+      <div class="visit-form-summary">
+        <div><span>Region</span><strong id="visitFormRegion">—</strong></div>
+        <div><span>Oddział</span><strong id="visitFormBranch">—</strong></div>
+        <div><span>Data wizyty</span><strong id="visitFormDate">—</strong></div>
+        <div><span>Uczestnicy</span><strong id="visitFormParticipants">—</strong></div>
+      </div>
+      <div class="visit-form-block"><h4>Omówione tematy</h4><div id="visitFormTopics" class="visit-form-text">—</div></div>
+      <div class="visit-form-block">
+        <h4>Zalecenia</h4>
+        <div class="table"><table><thead><tr><th>Zalecenie</th><th>Osoba odpowiedzialna</th><th>Termin</th></tr></thead><tbody id="visitFormRecommendations"></tbody></table></div>
+      </div>
+      <div class="visit-form-block"><h4>Uwagi / podsumowanie</h4><div id="visitFormNotes" class="visit-form-text">—</div></div>
+      <div class="signature-grid">
+        <div class="signature-box"><div class="signature-line"></div><strong>Kierownik oddziału</strong><span>podpis</span></div>
+        <div class="signature-box"><div class="signature-line"></div><strong>RKS</strong><span>podpis</span></div>
+      </div>
+    </section>
+
+    <section class="visit-card visit-full visit-history-panel">
+      <h3>Historia raportów z wizyt</h3>
+      <div id="visitList" class="visit-history"></div>
+    </section>
+  </div>
+  <div id="visitMsg" class="msg"></div>
+</div></section>
 
 <section id="sales" class="view"><div class="head"><div><h2>UK / Detal</h2><p>Dzienne dane skumulowane miesiąca.</p></div></div><div class="g2"><div class="panel"><h3>Dodaj / aktualizuj wynik</h3><div class="form"><label>Oddział<select id="salesBranch"></select></label><label>Data<input id="salesDate" type="date"></label><div class="g3"><label>UK plan<input id="ukPlan" type="number" step="0.01"></label><label>UK wykonanie<input id="ukExec" type="number" step="0.01"></label><label>UK estymacja<input id="ukEst" type="number" step="0.01"></label></div><div class="g3"><label>Detal plan<input id="detPlan" type="number" step="0.01"></label><label>Detal wykonanie<input id="detExec" type="number" step="0.01"></label><div></div></div><button id="saveSales" class="btn primary">Zapisz wynik</button></div><div id="salesMsg" class="msg"></div></div><div class="panel"><label>Oddział<select id="salesFilter"></select></label><div id="salesSummary" class="g3" style="margin-top:10px"></div><div id="salesTable" class="table" style="margin-top:10px"></div></div></div></section>
 
@@ -468,7 +554,7 @@ const msg=(id,t,cl='')=>{$(id).textContent=t||'';$(id).className='msg '+cl};
 const today=()=>new Date().toISOString().slice(0,10),rid=()=>$('regionSelect').value,bn=id=>branches.find(b=>b.id===id)?.name||'—';
 const fd=v=>v?new Intl.DateTimeFormat('pl-PL').format(new Date(v+'T12:00:00')):'—',num=v=>Number(v||0),money=v=>num(v).toLocaleString('pl-PL',{maximumFractionDigits:2})+' zł';
 const allOpts=(all=true)=> (all?'<option value="all">Wszystkie oddziały</option>':'')+branches.map(b=>`<option value="${b.id}">${esc(b.name)}</option>`).join('');
-function fill(){['contactBranch','logBranch','meetingBranch','taskBranch','visitBranch','salesBranch','kpiBranch','noteBranch','cardBranch','historyBranch','attachmentBranch'].forEach(id=>{if($(id))$(id).innerHTML=allOpts(false)});['contactFilter','logFilter','meetingFilter','taskFilter','visitFilter','salesFilter','kpiFilter','noteFilter','attachmentFilter'].forEach(id=>{if($(id))$(id).innerHTML=allOpts(true)})}
+function fill(){['contactBranch','logBranch','meetingBranch','taskBranch','visitBranch','salesBranch','kpiBranch','noteBranch','cardBranch','historyBranch','attachmentBranch'].forEach(id=>{if($(id))$(id).innerHTML=allOpts(false)});['contactFilter','logFilter','meetingFilter','taskFilter','salesFilter','kpiFilter','noteFilter','attachmentFilter'].forEach(id=>{if($(id))$(id).innerHTML=allOpts(true)})}
 async function q(table,select='*'){return sb.from(table).select(select).eq('region_id',rid())}
 function att(v){return v==='present_manager'?'Obecny – kierownik':v==='present_sales'?'Obecny – handlowiec':v==='present_two'?'Obecne – 2 osoby':v==='absent_excused'?'Nieobecny – usprawiedliwione':'Nieobecny – nieusprawiedliwione'}
 function sl(v){return v==='todo'?'Do zrobienia':v==='progress'?'W trakcie':'Wykonane'}
@@ -616,11 +702,125 @@ window.editTask=id=>{let v=window._tasks.find(x=>x.id===id);edit.task=id;$('task
 window.doneTask=async id=>{await sb.from('tasks').update({status:'done'}).eq('id',id);loadTasks();loadDashboard();loadCard()};
 window.delTask=async id=>{if(confirm('Usunąć zadanie?')){await sb.from('tasks').delete().eq('id',id);loadTasks();loadDashboard();loadCard()}};
 
-async function loadVisits(){let x=await q('visits');if(x.error)return;window._visits=x.data||[];let f=$('visitFilter').value,a=window._visits.filter(v=>f==='all'||v.branch_id===f).sort((a,b)=>b.visit_date.localeCompare(a.visit_date));$('visitList').innerHTML=a.length?a.map(v=>`<div class="item"><div class="top"><div><b>${esc(bn(v.branch_id))} • ${fd(v.visit_date)}</b><div class="meta">${esc(v.participants||'')}</div></div><div class="actions"><button class="btn small" onclick="editVisit('${v.id}')">Edytuj</button><button class="btn small" onclick="createTasksFromVisit('${v.id}')">Zalecenia → zadania</button><button class="btn small danger" onclick="delVisit('${v.id}')">Usuń</button></div></div><div class="text"><b>Tematy:</b> ${esc(v.topics||'')}\n<b>Zalecenia:</b> ${esc((v.recommendations||[]).join(' • '))}\n<b>Notatki:</b> ${esc(v.notes||'')}</div></div>`).join(''):'<div class="empty">Brak raportów z wizyt.</div>'}
-function clearVisit(){edit.visit=null;$('visitTitle').textContent='Nowa wizyta';$('visitDate').value=today();$('visitParticipants').value='';$('visitTopics').value='';$('visitRecommendations').value='';$('visitNotes').value=''}
-async function saveVisit(){let r={region_id:rid(),branch_id:$('visitBranch').value,visit_date:$('visitDate').value,participants:$('visitParticipants').value.trim(),topics:$('visitTopics').value.trim(),recommendations:$('visitRecommendations').value.split('\n').map(x=>x.trim()).filter(Boolean),notes:$('visitNotes').value.trim(),created_by:user.id};let z=edit.visit?await sb.from('visits').update(r).eq('id',edit.visit):await sb.from('visits').insert(r);if(z.error)return msg('visitMsg',z.error.message,'error');clearVisit();loadVisits();loadCard();loadHistory()}
-window.editVisit=id=>{let v=window._visits.find(x=>x.id===id);edit.visit=id;$('visitTitle').textContent='Edytuj wizytę';$('visitBranch').value=v.branch_id;$('visitDate').value=v.visit_date;$('visitParticipants').value=v.participants||'';$('visitTopics').value=v.topics||'';$('visitRecommendations').value=(v.recommendations||[]).join('\n');$('visitNotes').value=v.notes||''};
-window.delVisit=async id=>{if(confirm('Usunąć raport?')){await sb.from('visits').delete().eq('id',id);loadVisits();loadCard();loadHistory()}};
+
+function addVisitRecommendationRow(data={}){
+  const tr=document.createElement('tr');
+  tr.innerHTML=`<td><textarea class="visit-rec-text">${esc(data.text||'')}</textarea></td>
+    <td><input class="visit-rec-owner" value="${esc(data.owner||'')}"></td>
+    <td><input class="visit-rec-deadline" type="date" value="${esc(data.deadline||'')}"></td>
+    <td><button type="button" class="btn small danger">Usuń</button></td>`;
+  tr.querySelector('button').onclick=()=>tr.remove();
+  $('visitRecommendations').appendChild(tr);
+}
+function currentVisitRecommendations(){
+  return [...document.querySelectorAll('#visitRecommendations tr')].map(tr=>({
+    text:tr.querySelector('.visit-rec-text')?.value.trim()||'',
+    owner:tr.querySelector('.visit-rec-owner')?.value.trim()||'',
+    deadline:tr.querySelector('.visit-rec-deadline')?.value||''
+  })).filter(x=>x.text||x.owner||x.deadline);
+}
+function formatVisitDatePL(v){
+  if(!v)return '—';
+  try{return new Intl.DateTimeFormat('pl-PL').format(new Date(v+'T12:00:00'))}catch{return v}
+}
+function clearVisit(){
+  edit.visit=null;
+  $('visitDate').value=today();
+  $('visitParticipants').value='';
+  $('visitTopics').value='';
+  $('visitNotes').value='';
+  $('visitRecommendations').innerHTML='';
+  addVisitRecommendationRow();
+  $('saveVisit').textContent='Zapisz raport';
+  if($('visitSignatureForm'))$('visitSignatureForm').classList.remove('ready');
+}
+async function loadVisits(){
+  $('visitActiveRegionName').textContent=$('regionSelect').selectedOptions[0]?.textContent||'';
+  const x=await q('visits');if(x.error)return;
+  window._visits=x.data||[];
+  const a=window._visits.slice().sort((a,b)=>(b.visit_date||'').localeCompare(a.visit_date||''));
+  $('visitList').innerHTML=a.length?a.map(v=>`<div class="visit-item">
+    <h4>${esc(bn(v.branch_id))} • ${esc(v.visit_date||'—')}</h4>
+    <div class="meta">Uczestnicy: ${esc(v.participants||'—')} • zaleceń: ${(Array.isArray(v.recommendations)?v.recommendations:[]).length}</div>
+    <div>${esc((v.topics||'').slice(0,220)||'Brak opisu.')}</div>
+    <div style="margin-top:8px"><button class="btn small" onclick="editVisit('${v.id}')">Otwórz</button>
+    <button class="btn small danger" onclick="delVisit('${v.id}')">Usuń</button></div>
+  </div>`).join(''):'<div class="muted">Brak zapisanych raportów dla tego regionu.</div>';
+}
+async function syncVisitRecommendationsToTasksOnline(visit){
+  const recs=Array.isArray(visit.recommendations)?visit.recommendations:[];
+  for(let idx=0;idx<recs.length;idx++){
+    const r=recs[idx]||{};
+    if(!r.text&&!r.owner&&!r.deadline)continue;
+    const sourceRef=`visit:${visit.id}:${idx}`;
+    const {data:existing}=await sb.from('tasks').select('id,status').eq('region_id',visit.region_id).eq('branch_id',visit.branch_id).eq('source',sourceRef).maybeSingle();
+    const row={region_id:visit.region_id,branch_id:visit.branch_id,title:r.text||'Zalecenie po wizycie',description:`Automatycznie z raportu wizyty ${formatVisitDatePL(visit.visit_date)}`,owner:r.owner||'',deadline:r.deadline||null,priority:'normal',status:existing?.status||'todo',source:sourceRef,created_by:user.id};
+    if(existing?.id)await sb.from('tasks').update(row).eq('id',existing.id);else await sb.from('tasks').insert(row);
+  }
+}
+async function saveVisit(){
+  const r={region_id:rid(),branch_id:$('visitBranch').value,visit_date:$('visitDate').value,
+    participants:$('visitParticipants').value.trim(),topics:$('visitTopics').value.trim(),
+    recommendations:currentVisitRecommendations(),notes:$('visitNotes').value.trim(),created_by:user.id};
+  if(!r.branch_id||!r.visit_date)return msg('visitMsg','Wybierz oddział i datę wizyty.','error');
+  let z;
+  if(edit.visit)z=await sb.from('visits').update(r).eq('id',edit.visit).select().single();
+  else z=await sb.from('visits').insert(r).select().single();
+  if(z.error)return msg('visitMsg',z.error.message,'error');
+  await syncVisitRecommendationsToTasksOnline(z.data);
+  edit.visit=z.data.id;
+  $('saveVisit').textContent='Zapisz zmiany';
+  if($('visitSignatureForm'))$('visitSignatureForm').classList.remove('ready');
+  await loadVisits();await loadTasks();await loadCard();await loadHistory();
+  msg('visitMsg','Raport został zapisany.','ok');
+}
+window.editVisit=id=>{
+  const v=(window._visits||[]).find(x=>x.id===id);if(!v)return;
+  edit.visit=id;
+  $('visitBranch').value=v.branch_id||'';
+  $('visitDate').value=v.visit_date||'';
+  $('visitParticipants').value=v.participants||'';
+  $('visitTopics').value=v.topics||'';
+  $('visitNotes').value=v.notes||'';
+  $('visitRecommendations').innerHTML='';
+  const recs=Array.isArray(v.recommendations)?v.recommendations:[];
+  recs.forEach(r=>addVisitRecommendationRow(typeof r==='string'?{text:r}:r));
+  if(!recs.length)addVisitRecommendationRow();
+  $('saveVisit').textContent='Zapisz zmiany';
+  if($('visitSignatureForm'))$('visitSignatureForm').classList.remove('ready');
+  window.scrollTo({top:0,behavior:'smooth'});
+};
+window.delVisit=async id=>{
+  if(!confirm('Usunąć raport?'))return;
+  const visit=(window._visits||[]).find(x=>x.id===id);
+  await sb.from('visits').delete().eq('id',id);
+  if(visit){
+    const recs=Array.isArray(visit.recommendations)?visit.recommendations:[];
+    for(let i=0;i<recs.length;i++)await sb.from('tasks').delete().eq('region_id',visit.region_id).eq('branch_id',visit.branch_id).eq('source',`visit:${id}:${i}`);
+  }
+  await loadVisits();await loadTasks();await loadCard();await loadHistory();
+};
+function generateVisitSignatureForm(){
+  const branch=bn($('visitBranch').value)||'—';
+  const date=$('visitDate').value||'';
+  const participants=$('visitParticipants').value.trim()||'—';
+  const topics=$('visitTopics').value.trim()||'—';
+  const notes=$('visitNotes').value.trim()||'—';
+  const recs=currentVisitRecommendations();
+  $('visitFormRegion').textContent=$('regionSelect').selectedOptions[0]?.textContent||'—';
+  $('visitFormBranch').textContent=branch;
+  $('visitFormDate').textContent=formatVisitDatePL(date);
+  $('visitFormParticipants').textContent=participants;
+  $('visitFormTopics').textContent=topics;
+  $('visitFormNotes').textContent=notes;
+  $('visitFormRecommendations').innerHTML=recs.length?recs.map(r=>`<tr><td>${esc(r.text||'—')}</td><td>${esc(r.owner||'—')}</td><td>${esc(formatVisitDatePL(r.deadline))}</td></tr>`).join(''):'<tr><td colspan="3">Brak zaleceń.</td></tr>';
+  $('visitSignatureForm').classList.add('ready');
+  $('visitSignatureForm').scrollIntoView({behavior:'smooth',block:'start'});
+}
+function printVisitSignatureForm(){
+  generateVisitSignatureForm();
+  setTimeout(()=>window.print(),120);
+}
 
 async function loadSales(){let x=await q('sales_results');if(x.error)return;window._sales=x.data||[];let f=$('salesFilter').value,a=window._sales.filter(v=>f==='all'||v.branch_id===f).sort((a,b)=>b.result_date.localeCompare(a.result_date));let last=a[0];$('salesSummary').innerHTML=last?`<div class="card"><h4>UK realizacja</h4><div class="kpi">${last.uk_plan?Math.round(num(last.uk_execution)/num(last.uk_plan)*100):0}%</div></div><div class="card"><h4>Detal realizacja</h4><div class="kpi">${last.detail_plan?Math.round(num(last.detail_execution)/num(last.detail_plan)*100):0}%</div></div><div class="card"><h4>UK estymacja</h4><div class="kpi">${money(last.uk_estimate)}</div></div>`:'';$('salesTable').innerHTML=a.length?`<table><tr><th>Data</th><th>Oddział</th><th>UK plan</th><th>UK wykonanie</th><th>UK est.</th><th>Detal plan</th><th>Detal wykonanie</th></tr>${a.map(v=>`<tr><td>${fd(v.result_date)}</td><td>${esc(bn(v.branch_id))}</td><td>${money(v.uk_plan)}</td><td>${money(v.uk_execution)}</td><td>${money(v.uk_estimate)}</td><td>${money(v.detail_plan)}</td><td>${money(v.detail_execution)}</td></tr>`).join('')}</table>`:'<div class="empty">Brak wyników.</div>'}
 async function saveSales(){let r={region_id:rid(),branch_id:$('salesBranch').value,result_date:$('salesDate').value,uk_plan:num($('ukPlan').value),uk_execution:num($('ukExec').value),uk_estimate:num($('ukEst').value),detail_plan:num($('detPlan').value),detail_execution:num($('detExec').value)};let{error}=await sb.from('sales_results').upsert(r,{onConflict:'branch_id,result_date'});if(error)return msg('salesMsg',error.message,'error');msg('salesMsg','Zapisano.','ok');loadSales();loadCard()}
@@ -784,14 +984,7 @@ async function prepareNextMeeting(){
 }
 async function printMeeting(){await renderMeetingNoteV45();setTimeout(()=>window.print(),80)}
 
-async function createTasksFromVisit(id){
-  const v=(window._visits||[]).find(x=>x.id===id);if(!v)return;
-  const recs=Array.isArray(v.recommendations)?v.recommendations:[];
-  if(!recs.length)return alert('Brak zaleceń.');
-  if(!confirm(`Utworzyć ${recs.length} zadania z zaleceń?`))return;
-  for(const r of recs){await sb.from('tasks').insert({region_id:v.region_id,branch_id:v.branch_id,title:String(r).slice(0,120),description:String(r),priority:'normal',source:'Raport z wizyty',status:'todo',created_by:user.id})}
-  loadTasks();alert('Zadania utworzone.');
-}
+async function createTasksFromVisit(id){const v=(window._visits||[]).find(x=>x.id===id);if(!v)return;await syncVisitRecommendationsToTasksOnline(v);await loadTasks();alert('Zalecenia zostały zsynchronizowane z terminarzem.')}
 
 async function loadAttachments(){
   let x=await q('attachments');if(x.error)return;
@@ -1345,7 +1538,7 @@ $('meetingAttendance').onchange=toggleComment;$('refreshMeetingPreviewBtn').oncl
 ['meetingTopics','meetingComment'].forEach(id=>$(id).addEventListener('input',renderMeetingNoteV45));
 $('saveMeeting').onclick=saveMeeting;$('clearMeeting').onclick=clearMeeting;$('meetingFilter').onchange=loadMeetings;
 $('saveTask').onclick=saveTask;$('clearTask').onclick=clearTask;$('taskFilter').onchange=loadTasks;$('taskStatusFilter').onchange=loadTasks;
-$('saveVisit').onclick=saveVisit;$('clearVisit').onclick=clearVisit;$('visitFilter').onchange=loadVisits;
+$('saveVisit').onclick=saveVisit;$('clearVisit').onclick=clearVisit;$('addVisitRecommendation').onclick=()=>addVisitRecommendationRow();$('generateVisitForm').onclick=generateVisitSignatureForm;$('printVisitReport').onclick=printVisitSignatureForm;
 $('saveSales').onclick=saveSales;$('salesFilter').onchange=loadSales;$('saveKpi').onclick=saveKpi;$('kpiFilter').onchange=loadKpis;
 $('saveNote').onclick=saveNote;$('clearNote').onclick=clearNote;$('noteFilter').onchange=loadNotes;$('cardBranch').onchange=loadCard;$('historyBranch').onchange=loadHistory;
 (async()=>{let{data}=await sb.auth.getSession();if(data.session)showModeChooser(data.session,false);else showLogin()})();
