@@ -2,7 +2,7 @@
 <html lang="pl">
 <head>
 <meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
-<title>Eltrox RKS – Supabase v8.4</title>
+<title>Eltrox RKS – Supabase v8.5</title>
 <style>
 :root{--o:#f36f21;--od:#d85d12;--bg:#eef1f4;--w:#fff;--line:#d9dde3;--t:#242424;--m:#6b7280;--r:#c9372c;--g:#25894b;--b:#2f71c8;--sh:0 8px 24px rgba(0,0,0,.08)}
 *{box-sizing:border-box}html,body{margin:0;min-height:100%;font-family:Arial,Helvetica,sans-serif;background:var(--bg);color:var(--t)}button,input,select,textarea{font:inherit}button{cursor:pointer}.hidden{display:none!important}
@@ -129,6 +129,29 @@ input,select,textarea{width:100%;padding:9px 10px;border:1px solid var(--line);b
 .bonus-table-v45 input{width:92px;padding:6px;text-align:right}.bonus-note-v45{font-size:12px;color:var(--m);line-height:1.45;margin-top:8px}
 @media(max-width:1100px){.bonus-rates-v45,.bonus-summary-v45{grid-template-columns:repeat(2,1fr)}}@media(max-width:700px){.bonus-rates-v45,.bonus-summary-v45{grid-template-columns:1fr}}
 
+
+/* Analiza regionu – układ v45 */
+.analysis-v45 .source-grid{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+.analysis-v45 .source{padding:12px;border:1px solid var(--line);border-radius:11px;background:#fafafa}
+.analysis-v45 .source strong{display:block;margin-bottom:5px}.analysis-v45 .source small{color:var(--m)}
+.analysis-v45 .metrics{display:grid;grid-template-columns:repeat(6,minmax(0,1fr));gap:10px;margin-bottom:12px}
+.analysis-v45 .metric{background:#fff;border:1px solid var(--line);border-radius:13px;padding:13px;box-shadow:var(--shadow)}
+.analysis-v45 .metric span{display:block;color:var(--m);font-size:11px;font-weight:750}.analysis-v45 .metric strong{display:block;font-size:20px;margin-top:6px}
+.analysis-v45 .grid2{display:grid;grid-template-columns:1.15fr .85fr;gap:12px;margin-top:12px}
+.analysis-v45 .table-wrap{overflow:auto}.analysis-v45 table{width:100%;border-collapse:collapse;font-size:12px}
+.analysis-v45 th,.analysis-v45 td{border-bottom:1px solid #e7eaee;padding:8px;text-align:right;white-space:nowrap}
+.analysis-v45 th:first-child,.analysis-v45 td:first-child{text-align:left}.analysis-v45 th{background:#f7f8fa;position:sticky;top:0}
+.analysis-v45 .insights{display:grid;gap:8px}.analysis-v45 .insight{border:1px solid var(--line);border-left:5px solid #3767a6;border-radius:10px;padding:10px;background:#fff}
+.analysis-v45 .insight.good{border-left-color:#168451}.analysis-v45 .insight.warn{border-left-color:#d39118}.analysis-v45 .insight.bad{border-left-color:#c93d37}
+.analysis-v45 .insight h4{margin:0 0 4px;font-size:13px}.analysis-v45 .insight p{margin:0;font-size:12px;line-height:1.45;color:#505968}
+.analysis-v45 .score-details{margin-top:5px}.analysis-v45 .score-details summary{cursor:pointer;font-size:10px;font-weight:800;color:var(--od);list-style:none}
+.analysis-v45 .score-details summary::-webkit-details-marker{display:none}.analysis-v45 .score-details summary:after{content:" ▾";font-size:9px}.analysis-v45 .score-details[open] summary:after{content:" ▴"}
+.analysis-v45 .score-breakdown{margin-top:7px;min-width:205px;background:#fff;border:1px solid var(--line);border-radius:8px;padding:7px 8px;text-align:left;box-shadow:0 4px 12px rgba(0,0,0,.05)}
+.analysis-v45 .score-line{display:flex;justify-content:space-between;gap:10px;padding:2px 0;font-size:10px;color:#555}.analysis-v45 .score-line strong{font-size:10px}
+.analysis-v45 .score-line.total{border-top:1px solid #ddd;margin-top:4px;padding-top:5px;font-weight:850;color:#222}.analysis-v45 .score-note{font-size:9px;color:var(--m);line-height:1.3;margin-top:5px}
+@media(max-width:1100px){.analysis-v45 .metrics{grid-template-columns:repeat(3,1fr)}.analysis-v45 .grid2{grid-template-columns:1fr}}
+@media(max-width:720px){.analysis-v45 .metrics{grid-template-columns:repeat(2,1fr)}.analysis-v45 .source-grid{grid-template-columns:1fr}}
+
 @media(max-width:950px){.io-grid{grid-template-columns:1fr}.io-actions{grid-template-columns:1fr}}
 
 @media(max-width:950px){.meeting-grid,.bonus-grid{grid-template-columns:1fr}.rec-row{grid-template-columns:1fr}.searchbox{min-width:180px}}
@@ -137,7 +160,7 @@ input,select,textarea{width:100%;padding:9px 10px;border:1px solid var(--line);b
 @media(max-width:950px){.g2,.g3,.g4{grid-template-columns:1fr}.header{align-items:flex-start;flex-direction:column}.nav{top:108px}}
 </style></head>
 <body>
-<div id="loginView" class="login-shell"><div class="login-card"><div class="brand"><h1>Eltrox RKS</h1><p>Wersja online v8.4</p></div><form id="loginForm" class="form"><label>E-mail<input id="loginEmail" type="email" required></label><label>Hasło<input id="loginPassword" type="password" required></label><button class="btn primary">Zaloguj</button><div id="loginMsg" class="msg"></div></form></div></div>
+<div id="loginView" class="login-shell"><div class="login-card"><div class="brand"><h1>Eltrox RKS</h1><p>Wersja online v8.5</p></div><form id="loginForm" class="form"><label>E-mail<input id="loginEmail" type="email" required></label><label>Hasło<input id="loginPassword" type="password" required></label><button class="btn primary">Zaloguj</button><div id="loginMsg" class="msg"></div></form></div></div>
 
 <div id="modeView" class="mode-shell hidden">
   <div class="mode-card">
@@ -189,16 +212,36 @@ input,select,textarea{width:100%;padding:9px 10px;border:1px solid var(--line);b
 <section id="dashboard" class="view active"><div class="head"><div><h2>Na dziś</h2><p>Szybki podgląd spraw wymagających uwagi.</p></div><button class="btn" onclick="loadDashboard()">Odśwież</button></div><div id="dashCards" class="g4"></div><div class="g2" style="margin-top:12px"><div class="panel"><h3>Zadania pilne / zaległe</h3><div id="dashTasks" class="list"></div></div><div class="panel"><h3>Ostatni kontakt z oddziałami</h3><div id="dashContacts" class="list"></div></div></div></section>
 
 
-<section id="analysis" class="view">
-  <div class="head"><div><h2>Analiza regionu</h2><p>Ranking 360°, najważniejsze wskaźniki i sygnały wymagające uwagi.</p></div>
-    <div class="controls"><label>Rok<input id="analysisYear" type="number" min="2020" max="2100" style="width:100px"></label><label>Miesiąc<select id="analysisMonth" style="width:145px"></select></label><button id="loadAnalysisBtn" class="btn primary">Przelicz</button><button id="printRegionReportBtn" class="btn">Drukuj raport regionu</button></div>
-  </div>
-  <div id="analysisCards" class="g4"></div>
-  <div class="g2" style="margin-top:12px">
-    <div class="panel"><h3>Ranking 360° oddziałów</h3><div id="analysisRanking" class="table"></div></div>
-    <div class="panel"><h3>Najważniejsze wnioski</h3><div id="analysisInsights" class="list"></div></div>
-  </div>
-</section>
+<section id="analysis" class="view analysis-v45"><div class="inner">
+    <div class="head">
+      <div><h2>Analiza regionu</h2><p>Najważniejsze wyniki i sygnały wymagające uwagi.</p></div>
+      <div class="controls">
+        <label>Rok<input id="analysisYear" type="number" min="2020" max="2100"></label>
+        <label>Od miesiąca<select id="analysisFromM"></select></label>
+        <label>Do miesiąca<select id="analysisToM"></select></label>
+      </div>
+    </div>
+
+    <div class="source-grid" style="margin-bottom:12px">
+      <div class="source"><strong>Centrum raportowania</strong><span id="analysisCenterStatus" class="badge">brak danych</span><br><small>Raporty 1:1, UK / Detal, controlling, decyzje i premia.</small></div>
+      <div class="source"><strong>Porównywarka oddziałów</strong><span id="analysisCompareStatus" class="badge">brak danych</span><br><small>Historia miesięczna, r/r, trendy i dane organizacyjne.</small></div>
+    </div>
+
+    <div class="metrics">
+      <div class="metric"><span>Oddziały z danymi</span><strong id="analysisMBranches">0</strong></div>
+      <div class="metric"><span>Średnia realizacja UK</span><strong id="analysisMUk">—</strong></div>
+      <div class="metric"><span>Średnia realizacja Detal</span><strong id="analysisMDet">—</strong></div>
+      <div class="metric"><span>Średni controlling</span><strong id="analysisMCtrl">—</strong></div>
+      <div class="metric"><span>Otwarte działania</span><strong id="analysisMTasks">0</strong></div>
+      <div class="metric"><span>Decyzje oczekujące</span><strong id="analysisMDec">0</strong></div>
+    </div>
+
+    <div class="grid2">
+      <section class="panel"><h3>Ranking 360° oddziałów</h3><div style="font-size:11px;color:var(--m);margin:-4px 0 8px">Kliknij „rozbicie punktów” przy wyniku oddziału, aby zobaczyć dokładnie, skąd wzięła się ocena. Działania i decyzje są wyłącznie informacyjne.</div><div id="analysisRankTable" class="table-wrap"></div></section>
+      <section class="panel"><h3>Najważniejsze wnioski</h3><div id="analysisInsights" class="insights"></div></section>
+    </div>
+    <section class="panel" style="margin-top:12px"><h3>Źródła danych per oddział</h3><div id="analysisSourceTable" class="table-wrap"></div></section>
+  </div></section>
 
 <section id="branchCompare" class="view">
   <div class="head"><div><h2>Porównanie oddziałów</h2><p>Porównanie kondycji oddziałów w aktywnym regionie.</p></div>
@@ -987,19 +1030,163 @@ async function branchMetricsFor(year,month){
   const sm=latest(sr.data),pm=latest(pr.data),km=new Map((kr.data||[]).map(x=>[x.branch_id,x]));
   return branches.map(b=>({branch:b,...calc360(sm.get(b.id),km.get(b.id),pm.get(b.id)),sales:sm.get(b.id),kpi:km.get(b.id)}));
 }
-async function loadAnalysis(){
-  const y=+$('analysisYear').value,m=+$('analysisMonth').value;
-  const rows=(await branchMetricsFor(y,m)).sort((a,b)=>(b.score??-1)-(a.score??-1));
-  const avg=k=>{let a=rows.map(x=>x[k]).filter(Number.isFinite);return a.length?a.reduce((s,v)=>s+v,0)/a.length:null};
-  $('analysisCards').innerHTML=`<div class="card"><h4>Śr. wynik 360°</h4><div class="kpi">${pct(avg('score'))}</div></div><div class="card"><h4>Śr. UK</h4><div class="kpi">${pct(avg('uk'))}</div></div><div class="card"><h4>Śr. Detal</h4><div class="kpi">${pct(avg('de'))}</div></div><div class="card"><h4>Oddziały &lt;60%</h4><div class="kpi">${rows.filter(x=>Number.isFinite(x.score)&&x.score<60).length}</div></div>`;
-  $('analysisRanking').innerHTML=rows.length?`<table><tr><th>#</th><th>Oddział</th><th>360°</th><th>UK</th><th>Detal</th><th>VoIP</th><th>Controlling</th><th>UK r/r</th><th>Detal r/r</th></tr>${rows.map((x,i)=>`<tr><td>${i+1}</td><td><b>${esc(x.branch.name)}</b></td><td><b>${pct(x.score)}</b></td><td>${pct(x.uk)}</td><td>${pct(x.de)}</td><td>${pct(x.voip)}</td><td>${pct(x.ctrl)}</td><td class="${yoyClass(x.ukYoy)}">${pct(x.ukYoy)}</td><td class="${yoyClass(x.deYoy)}">${pct(x.deYoy)}</td></tr>`).join('')}</table>`:'<div class="empty">Brak danych.</div>';
-  let ins=[];
-  rows.filter(x=>Number.isFinite(x.score)&&x.score<60).forEach(x=>ins.push(`${x.branch.name}: wynik 360° ${Math.round(x.score)}% – pilne działania.`));
-  rows.filter(x=>Number.isFinite(x.uk)&&x.uk<80).forEach(x=>ins.push(`${x.branch.name}: UK ${Math.round(x.uk)}% planu.`));
-  rows.filter(x=>Number.isFinite(x.de)&&x.de<80).forEach(x=>ins.push(`${x.branch.name}: Detal ${Math.round(x.de)}% planu.`));
-  rows.filter(x=>Number.isFinite(x.voip)&&x.voip<80).forEach(x=>ins.push(`${x.branch.name}: VoIP ${Math.round(x.voip)}%.`));
-  $('analysisInsights').innerHTML=ins.length?ins.slice(0,14).map(x=>`<div class="item">${esc(x)}</div>`).join(''):'<div class="empty">Brak istotnych sygnałów dla wybranego okresu.</div>';
+
+function analysisPctRatio(v){
+  return Number.isFinite(v)?new Intl.NumberFormat('pl-PL',{style:'percent',minimumFractionDigits:1,maximumFractionDigits:1}).format(v):'—';
 }
+function analysisClass(v){return !Number.isFinite(v)?'muted':v>=1?'good':v>=.9?'warn':'bad'}
+function analysisMonthName(key){
+  if(!key)return '';
+  const [y,m]=key.split('-').map(Number);
+  return `${MONTH_NAMES[m-1]||''} ${y}`;
+}
+function analysisScoreBreakdown(d){
+  const parts=[];
+  const add=(key,label,w,v)=>{if(Number.isFinite(v))parts.push({key,label,w,v})};
+  add('uk','UK',.30,Number.isFinite(d.ukPct)?clamp(d.ukPct*100):NaN);
+  add('detail','Detal',.30,Number.isFinite(d.detailPct)?clamp(d.detailPct*100):NaN);
+  add('ctrl','Controlling',.15,Number.isFinite(d.ctrl)?clamp(d.ctrl):NaN);
+  add('voip','KPI VoIP',.15,Number.isFinite(d.voip)?clamp(d.voip):NaN);
+  add('ukyoy','UK r/r',.05,Number.isFinite(d.ukYoy)?clamp(50+d.ukYoy*250):NaN);
+  add('detyoy','Detal r/r',.05,Number.isFinite(d.detailYoy)?clamp(50+d.detailYoy*250):NaN);
+  if(!parts.length)return {score:NaN,parts:[],weightSum:0};
+  const weightSum=parts.reduce((s,x)=>s+x.w,0);
+  parts.forEach(x=>{x.points=(x.w*x.v)/weightSum;x.maxPoints=x.w*100/weightSum});
+  return {score:parts.reduce((s,x)=>s+x.points,0),parts,weightSum};
+}
+function analysisScoreDetailsHtml(x){
+  const b=analysisScoreBreakdown(x);
+  if(!Number.isFinite(b.score))return '';
+  const lines=b.parts.map(p=>{
+    const nominal=(p.w*100).toFixed(0),shown=b.weightSum<.999?p.maxPoints.toFixed(1):nominal;
+    return `<div class="score-line"><span>${p.label} <span style="color:var(--m)">(${(p.w*100).toFixed(0)}%)</span></span><strong>${p.points.toFixed(1)} / ${shown} pkt</strong></div>`;
+  }).join('');
+  const missing=b.weightSum<.999?`<div class="score-note">Brakuje części danych, dlatego dostępne składniki są proporcjonalnie przeliczone do 100 pkt.</div>`:'';
+  return `<details class="score-details"><summary>rozbicie punktów</summary><div class="score-breakdown">${lines}<div class="score-line total"><span>Wynik</span><strong>${b.score.toFixed(1)} / 100</strong></div>${missing}<div class="score-note">Otwarte działania i oczekujące decyzje są wyświetlane informacyjnie i nie wpływają na wynik punktowy.</div></div></details>`;
+}
+async function analysisLatestMetric(tableField,branchId){
+  const {data,error}=await sb.from('monthly_kpis').select(`year,month,${tableField}`).eq('region_id',rid()).eq('branch_id',branchId).not(tableField,'is',null).order('year',{ascending:false}).order('month',{ascending:false}).limit(1);
+  if(error)throw error;
+  const r=(data||[])[0];
+  return r?{value:Number(r[tableField]),key:`${r.year}-${String(r.month).padStart(2,'0')}`}:{value:NaN,key:null};
+}
+async function analysisRangeRows(year,fromM,toM){
+  const from=`${year}-${String(fromM).padStart(2,'0')}-01`;
+  const to=new Date(year,toM,1).toISOString().slice(0,10);
+  const pfrom=`${year-1}-${String(fromM).padStart(2,'0')}-01`;
+  const pto=new Date(year-1,toM,1).toISOString().slice(0,10);
+
+  const [curRes,prevRes,kpiRes,taskRes]=await Promise.all([
+    sb.from('sales_results').select('*').eq('region_id',rid()).gte('result_date',from).lt('result_date',to).order('result_date',{ascending:true}),
+    sb.from('sales_results').select('*').eq('region_id',rid()).gte('result_date',pfrom).lt('result_date',pto).order('result_date',{ascending:true}),
+    sb.from('monthly_kpis').select('*').eq('region_id',rid()).gte('year',year-1).lte('year',year),
+    sb.from('tasks').select('branch_id,status,source').eq('region_id',rid())
+  ]);
+  for(const r of [curRes,prevRes,kpiRes,taskRes])if(r.error)throw r.error;
+
+  function monthlyLatest(rows){
+    const m=new Map();
+    (rows||[]).forEach(r=>{
+      const key=`${r.branch_id}|${String(r.result_date).slice(0,7)}`;
+      const prev=m.get(key);
+      if(!prev || String(r.result_date)>String(prev.result_date))m.set(key,r);
+    });
+    return m;
+  }
+  const curMap=monthlyLatest(curRes.data), prevMap=monthlyLatest(prevRes.data);
+  const kpis=kpiRes.data||[], tasks=taskRes.data||[];
+
+  const out=[];
+  for(const b of branches){
+    let ukP=0,ukA=0,deP=0,deA=0,prevUk=0,prevDe=0;
+    let hasCur=false,hasPrev=false;
+    for(let m=fromM;m<=toM;m++){
+      const key=`${b.id}|${year}-${String(m).padStart(2,'0')}`;
+      const pk=`${b.id}|${year-1}-${String(m).padStart(2,'0')}`;
+      const c=curMap.get(key),p=prevMap.get(pk);
+      if(c){hasCur=true;ukP+=num(c.uk_plan);ukA+=num(c.uk_execution);deP+=num(c.detail_plan);deA+=num(c.detail_execution)}
+      if(p){hasPrev=true;prevUk+=num(p.uk_execution);prevDe+=num(p.detail_execution)}
+    }
+
+    const bk=kpis.filter(x=>x.branch_id===b.id);
+    const latest=(field)=>{
+      const a=bk.filter(x=>x[field]!==null&&x[field]!==undefined&&x[field]!=='').sort((a,b)=>(b.year-a.year)||(b.month-a.month));
+      const r=a[0];return r?{value:Number(r[field]),key:`${r.year}-${String(r.month).padStart(2,'0')}`}:{value:NaN,key:null};
+    };
+    const ctrl=latest('controlling'),voip=latest('voip');
+    const open=tasks.filter(t=>t.branch_id===b.id&&t.status!=='done');
+    const decisions=open.filter(t=>String(t.source||'').toLowerCase().includes('decyzja')).length;
+    const regularTasks=open.length-decisions;
+
+    const d={
+      branch:b,
+      ukPct:ukP?ukA/ukP:NaN,
+      detailPct:deP?deA/deP:NaN,
+      ukYoy:prevUk?(ukA-prevUk)/prevUk:NaN,
+      detailYoy:prevDe?(deA-prevDe)/prevDe:NaN,
+      ctrl:ctrl.value,ctrlKey:ctrl.key,voip:voip.value,voipKey:voip.key,
+      tasks:regularTasks,dec:decisions,
+      hasCenter:hasCur||Number.isFinite(ctrl.value)||Number.isFinite(voip.value)||open.length>0,
+      hasCompare:hasPrev
+    };
+    d.score=analysisScoreBreakdown(d).score;
+    if(d.hasCenter||d.hasCompare)out.push(d);
+  }
+  return out;
+}
+async function loadAnalysis(){
+  const year=Number($('analysisYear').value),from=Number($('analysisFromM').value),to=Number($('analysisToM').value);
+  if(!year||!from||!to)return;
+  if(from>to){$('analysisToM').value=from;return loadAnalysis()}
+  const rows=await analysisRangeRows(year,from,to);
+  const dataRows=rows.filter(x=>Number.isFinite(x.ukPct)||Number.isFinite(x.detailPct));
+  const avg=k=>{const v=dataRows.map(x=>x[k]).filter(Number.isFinite);return v.length?v.reduce((a,b)=>a+b,0)/v.length:NaN};
+  const ctrls=rows.map(x=>x.ctrl).filter(Number.isFinite);
+
+  $('analysisMBranches').textContent=dataRows.length;
+  $('analysisMUk').textContent=analysisPctRatio(avg('ukPct'));
+  $('analysisMDet').textContent=analysisPctRatio(avg('detailPct'));
+  $('analysisMCtrl').textContent=ctrls.length?(ctrls.reduce((a,b)=>a+b,0)/ctrls.length).toFixed(1)+'%':'—';
+  $('analysisMTasks').textContent=rows.reduce((s,x)=>s+x.tasks,0);
+  $('analysisMDec').textContent=rows.reduce((s,x)=>s+x.dec,0);
+  $('analysisCenterStatus').textContent=rows.some(x=>x.hasCenter)?'dane wczytane':'brak danych';
+  $('analysisCompareStatus').textContent=rows.some(x=>x.hasCompare)?'dane wczytane':'brak danych';
+
+  const sorted=[...rows].sort((a,b)=>(b.score??-1)-(a.score??-1));
+  $('analysisRankTable').innerHTML=`<table><thead><tr><th>Oddział</th><th>Score 360</th><th>UK</th><th>Detal</th><th>UK r/r</th><th>Detal r/r</th><th>KPI VoIP – najnowszy</th><th>Controlling – najnowszy</th><th>Działania</th><th>Decyzje</th></tr></thead><tbody>${sorted.map(x=>`<tr>
+    <td><strong>${esc(x.branch.name)}</strong></td>
+    <td class="${!Number.isFinite(x.score)?'muted':x.score>=85?'good':x.score>=70?'warn':'bad'}">${Number.isFinite(x.score)?`<strong>${x.score.toFixed(0)}/100</strong>${analysisScoreDetailsHtml(x)}`:'—'}</td>
+    <td class="${analysisClass(x.ukPct)}">${analysisPctRatio(x.ukPct)}</td>
+    <td class="${analysisClass(x.detailPct)}">${analysisPctRatio(x.detailPct)}</td>
+    <td class="${!Number.isFinite(x.ukYoy)?'muted':x.ukYoy>=0?'good':'bad'}">${analysisPctRatio(x.ukYoy)}</td>
+    <td class="${!Number.isFinite(x.detailYoy)?'muted':x.detailYoy>=0?'good':'bad'}">${analysisPctRatio(x.detailYoy)}</td>
+    <td class="${!Number.isFinite(x.voip)?'muted':x.voip>=100?'good':x.voip>=90?'warn':'bad'}">${Number.isFinite(x.voip)?x.voip.toFixed(1)+'%':'—'}${x.voipKey?`<div style="font-size:10px;color:var(--m)">${analysisMonthName(x.voipKey)}</div>`:''}</td>
+    <td>${Number.isFinite(x.ctrl)?x.ctrl.toFixed(1)+'%':'—'}${x.ctrlKey?`<div style="font-size:10px;color:var(--m)">${analysisMonthName(x.ctrlKey)}</div>`:''}</td>
+    <td class="${x.tasks?'bad':'good'}">${x.tasks}</td><td class="${x.dec?'warn':'good'}">${x.dec}</td>
+  </tr>`).join('')}</tbody></table>`;
+
+  const insights=[],scored=sorted.filter(x=>Number.isFinite(x.score));
+  if(scored[0])insights.push({type:'good',title:'Najmocniejszy oddział',text:`${scored[0].branch.name} ma najwyższy wynik 360°: ${scored[0].score.toFixed(0)}/100.`});
+  const weak=[...scored].reverse().filter(x=>x.score<70);
+  if(weak.length)insights.push({type:'bad',title:'Oddziały wymagające działania',text:weak.map(x=>`${x.branch.name} (${x.score.toFixed(0)}/100)`).join(', ')+'. Warto zacząć od realizacji planu, controllingu i zaległych działań.'});
+  const falling=rows.filter(x=>(Number.isFinite(x.ukYoy)&&x.ukYoy<-.1)||(Number.isFinite(x.detailYoy)&&x.detailYoy<-.1));
+  if(falling.length)insights.push({type:'warn',title:'Spadki rok do roku',text:falling.map(x=>x.branch.name).join(', ')+'. Porównywarka wskazuje spadek przekraczający 10% w co najmniej jednym obszarze.'});
+  const taskHeavy=rows.filter(x=>x.tasks>=3);
+  if(taskHeavy.length)insights.push({type:'warn',title:'Kumulacja ustaleń po 1:1',text:taskHeavy.map(x=>`${x.branch.name} (${x.tasks})`).join(', ')+'. Duża liczba otwartych działań może oznaczać problemy z domykaniem ustaleń.'});
+  const lowCtrl=rows.filter(x=>Number.isFinite(x.ctrl)&&x.ctrl<90);
+  if(lowCtrl.length)insights.push({type:'bad',title:'Controlling poniżej 90%',text:lowCtrl.map(x=>`${x.branch.name} (${x.ctrl.toFixed(1)}%)`).join(', ')+'. W analizie 360° używany jest najnowszy dostępny wynik controllingu.'});
+  const lowVoip=rows.filter(x=>Number.isFinite(x.voip)&&x.voip<90);
+  if(lowVoip.length)insights.push({type:'warn',title:'KPI VoIP poniżej 90%',text:lowVoip.map(x=>`${x.branch.name} (${x.voip.toFixed(1)}%)`).join(', ')+'. W analizie 360° używany jest najnowszy dostępny wynik KPI VoIP.'});
+  const balanced=rows.filter(x=>Number.isFinite(x.ukPct)&&Number.isFinite(x.detailPct)).sort((a,b)=>Math.abs(a.ukPct-a.detailPct)-Math.abs(b.ukPct-b.detailPct))[0];
+  if(balanced)insights.push({type:'good',title:'Najbardziej zrównoważony oddział',text:`${balanced.branch.name}: UK ${analysisPctRatio(balanced.ukPct)}, Detal ${analysisPctRatio(balanced.detailPct)}.`});
+  if(!insights.length)insights.push({type:'good',title:'Brak krytycznych sygnałów',text:'Dla wybranego okresu nie wykryto wyraźnych odchyleń wymagających natychmiastowej reakcji.'});
+  $('analysisInsights').innerHTML=insights.map(i=>`<div class="insight ${i.type}"><h4>${esc(i.title)}</h4><p>${esc(i.text)}</p></div>`).join('');
+
+  $('analysisSourceTable').innerHTML=`<table><thead><tr><th>Oddział</th><th>Centrum</th><th>Porównywarka</th><th>Informacja</th></tr></thead><tbody>${rows.map(x=>`<tr>
+    <td>${esc(x.branch.name)}</td><td class="${x.hasCenter?'good':'muted'}">${x.hasCenter?'✓':'—'}</td><td class="${x.hasCompare?'good':'muted'}">${x.hasCompare?'✓':'—'}</td>
+    <td>${x.hasCenter&&x.hasCompare?'Dane połączone':x.hasCenter?'Brak historii r/r':'Brak dopasowanych danych z Centrum'}</td></tr>`).join('')}</tbody></table>`;
+}
+
 async function loadBranchCompare(){
   const y=+$('bcYear').value,m=+$('bcMonth').value,rows=(await branchMetricsFor(y,m)).sort((a,b)=>(b.score??-1)-(a.score??-1));
   $('branchCompareTable').innerHTML=rows.length?`<table><tr><th>#</th><th>Oddział</th><th>Wynik</th><th>UK</th><th>Detal</th><th>VoIP</th><th>Controlling</th><th>UK r/r</th><th>Detal r/r</th></tr>${rows.map((x,i)=>`<tr><td>${i+1}</td><td><b>${esc(x.branch.name)}</b></td><td>${pct(x.score)}</td><td>${pct(x.uk)}</td><td>${pct(x.de)}</td><td>${pct(x.voip)}</td><td>${pct(x.ctrl)}</td><td>${pct(x.ukYoy)}</td><td>${pct(x.deYoy)}</td></tr>`).join('')}</table>`:'<div class="empty">Brak danych.</div>';
@@ -1780,7 +1967,7 @@ async function showApp(session,modeResolved=false){
   refreshAdminRegionName();await loadBranches();
   clearLog();clearMeeting();clearTask();clearVisit();clearNote();$('salesDate').value=today();
   let d=new Date();$('kpiYear').value=d.getFullYear();$('kpiMonth').value=d.getMonth()+1;$('comparisonYear').value=d.getFullYear();$('comparisonMonth').value=d.getMonth()+1;
-  ['analysisMonth','bcMonth'].forEach(fillMonthSelect);$('analysisYear').value=d.getFullYear();$('analysisMonth').value=d.getMonth()+1;$('bcYear').value=d.getFullYear();$('bcMonth').value=d.getMonth()+1;
+  ['analysisFromM','analysisToM','bcMonth'].forEach(fillMonthSelect);$('analysisYear').value=d.getFullYear();$('analysisFromM').value=1;$('analysisToM').value=d.getMonth()+1;$('bcYear').value=d.getFullYear();$('bcMonth').value=d.getMonth()+1;
   $('bonusYear').value=d.getFullYear();$('bonusQuarter').value=Math.floor(d.getMonth()/3)+1;$('bonusMonthYear').value=d.getFullYear();fillMonthSelect('bonusMonthSelect');$('bonusMonthSelect').value=d.getMonth()+1;$('archiveMonth').value=d.toISOString().slice(0,7);
 }
 function showLogin(){$('appView').classList.add('hidden');$('modeView').classList.add('hidden');$('loginView').classList.remove('hidden');workMode=null;workModeRegion=null}
@@ -1793,8 +1980,8 @@ $('resetTabOrderBtn').onclick=resetTabOrderDraft;
 $('tabOrderBackdrop').onclick=e=>{if(e.target===$('tabOrderBackdrop'))closeTabOrder()};
 document.addEventListener('keydown',e=>{if(e.key==='Escape'&&!$('tabOrderBackdrop').classList.contains('hidden'))closeTabOrder()});
 
-$('loadAnalysisBtn').onclick=loadAnalysis;$('printRegionReportBtn').onclick=()=>window.print();
-$('loadBranchCompareBtn').onclick=loadBranchCompare;$('refreshMapBtn').onclick=loadRegionMap;
+
+$('analysisYear').onchange=loadAnalysis;$('analysisFromM').onchange=loadAnalysis;$('analysisToM').onchange=loadAnalysis;$('loadBranchCompareBtn').onclick=loadBranchCompare;$('refreshMapBtn').onclick=loadRegionMap;
 $('addRegionBtn')&&($('addRegionBtn').onclick=manageAddRegion);$('renameRegionBtn')&&($('renameRegionBtn').onclick=manageRenameRegion);$('deleteRegionBtn')&&($('deleteRegionBtn').onclick=manageDeleteRegion);
 $('prepareNextMeetingBtn')&&($('prepareNextMeetingBtn').onclick=prepareNextMeeting);$('printMeetingBtn')&&($('printMeetingBtn').onclick=printMeeting);
 $('uploadAttachmentBtn').onclick=uploadAttachment;$('attachmentFilter').onchange=loadAttachments;
