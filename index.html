@@ -2,7 +2,7 @@
 <html lang="pl">
 <head>
 <meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
-<title>Eltrox RKS – Supabase v8.5</title>
+<title>Eltrox RKS – Supabase v8.6</title>
 <style>
 :root{--o:#f36f21;--od:#d85d12;--bg:#eef1f4;--w:#fff;--line:#d9dde3;--t:#242424;--m:#6b7280;--r:#c9372c;--g:#25894b;--b:#2f71c8;--sh:0 8px 24px rgba(0,0,0,.08)}
 *{box-sizing:border-box}html,body{margin:0;min-height:100%;font-family:Arial,Helvetica,sans-serif;background:var(--bg);color:var(--t)}button,input,select,textarea{font:inherit}button{cursor:pointer}.hidden{display:none!important}
@@ -152,6 +152,21 @@ input,select,textarea{width:100%;padding:9px 10px;border:1px solid var(--line);b
 @media(max-width:1100px){.analysis-v45 .metrics{grid-template-columns:repeat(3,1fr)}.analysis-v45 .grid2{grid-template-columns:1fr}}
 @media(max-width:720px){.analysis-v45 .metrics{grid-template-columns:repeat(2,1fr)}.analysis-v45 .source-grid{grid-template-columns:1fr}}
 
+
+/* Wyniki UK / Detal – układ v45 */
+.sales-entry-grid{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:10px;margin-bottom:12px}
+.sales-entry-card{background:#fff;border:1px solid var(--line);border-radius:12px;padding:12px;box-shadow:var(--shadow)}
+.sales-entry-card span{display:block;color:var(--m);font-size:11px;font-weight:750}.sales-entry-card strong{display:block;font-size:18px;margin-top:4px}
+.sales-entry-panel{background:#fff;border:1px solid var(--line);border-radius:14px;box-shadow:var(--shadow);overflow:hidden}
+.sales-entry-table{width:100%;border-collapse:separate;border-spacing:0;font-size:12px}
+.sales-entry-table th,.sales-entry-table td{border-bottom:1px solid #e8ebef;padding:8px;text-align:right;white-space:nowrap}
+.sales-entry-table thead th{position:sticky;top:0;z-index:3}.sales-entry-table th.branch,.sales-entry-table td.branch{position:sticky;left:0;z-index:2;text-align:left;background:#fff;min-width:150px}
+.sales-entry-table thead th.branch{z-index:4;background:#f7f8fa}.group-uk{background:#fff3ea!important;color:#a84c10;text-align:center!important}.group-detail{background:#eef5ff!important;color:#285ea8;text-align:center!important}
+.sub-uk{background:#fff9f5!important}.sub-detail{background:#f7fbff!important}.sales-entry-input{width:135px;text-align:right;padding:7px 8px;border:1px solid #cfd5dc;border-radius:7px;background:#fff}
+.sales-entry-input.plan{background:#fffaf7}.sales-entry-input.detail{background:#f8fbff}.sales-entry-input.estimate{background:#fff7dc}.sales-entry-pct{font-weight:850}
+.sales-save-status{font-size:11px;font-weight:800;color:#168451;min-width:56px}.sales-help{padding:11px 13px;font-size:11px;line-height:1.5;color:var(--m);background:#fafafa;border-top:1px solid var(--line)}
+@media(max-width:950px){.sales-entry-grid{grid-template-columns:repeat(2,1fr)}}@media(max-width:650px){.sales-entry-grid{grid-template-columns:1fr}}
+
 @media(max-width:950px){.io-grid{grid-template-columns:1fr}.io-actions{grid-template-columns:1fr}}
 
 @media(max-width:950px){.meeting-grid,.bonus-grid{grid-template-columns:1fr}.rec-row{grid-template-columns:1fr}.searchbox{min-width:180px}}
@@ -160,7 +175,7 @@ input,select,textarea{width:100%;padding:9px 10px;border:1px solid var(--line);b
 @media(max-width:950px){.g2,.g3,.g4{grid-template-columns:1fr}.header{align-items:flex-start;flex-direction:column}.nav{top:108px}}
 </style></head>
 <body>
-<div id="loginView" class="login-shell"><div class="login-card"><div class="brand"><h1>Eltrox RKS</h1><p>Wersja online v8.5</p></div><form id="loginForm" class="form"><label>E-mail<input id="loginEmail" type="email" required></label><label>Hasło<input id="loginPassword" type="password" required></label><button class="btn primary">Zaloguj</button><div id="loginMsg" class="msg"></div></form></div></div>
+<div id="loginView" class="login-shell"><div class="login-card"><div class="brand"><h1>Eltrox RKS</h1><p>Wersja online v8.6</p></div><form id="loginForm" class="form"><label>E-mail<input id="loginEmail" type="email" required></label><label>Hasło<input id="loginPassword" type="password" required></label><button class="btn primary">Zaloguj</button><div id="loginMsg" class="msg"></div></form></div></div>
 
 <div id="modeView" class="mode-shell hidden">
   <div class="mode-card">
@@ -419,7 +434,22 @@ input,select,textarea{width:100%;padding:9px 10px;border:1px solid var(--line);b
   <div id="visitMsg" class="msg"></div>
 </div></section>
 
-<section id="sales" class="view"><div class="head"><div><h2>UK / Detal</h2><p>Dzienne dane skumulowane miesiąca.</p></div></div><div class="g2"><div class="panel"><h3>Dodaj / aktualizuj wynik</h3><div class="form"><label>Oddział<select id="salesBranch"></select></label><label>Data<input id="salesDate" type="date"></label><div class="g3"><label>UK plan<input id="ukPlan" type="number" step="0.01"></label><label>UK wykonanie<input id="ukExec" type="number" step="0.01"></label><label>UK estymacja<input id="ukEst" type="number" step="0.01"></label></div><div class="g3"><label>Detal plan<input id="detPlan" type="number" step="0.01"></label><label>Detal wykonanie<input id="detExec" type="number" step="0.01"></label><div></div></div><button id="saveSales" class="btn primary">Zapisz wynik</button></div><div id="salesMsg" class="msg"></div></div><div class="panel"><label>Oddział<select id="salesFilter"></select></label><div id="salesSummary" class="g3" style="margin-top:10px"></div><div id="salesTable" class="table" style="margin-top:10px"></div></div></div></section>
+<section id="sales" class="view"><div class="inner">
+<div class="head"><div><h2>Wprowadzanie wyników UK / Detal</h2><p>Jedna tabela dla wszystkich oddziałów. Plan jest miesięczny, wykonanie narastające na wybrany dzień.</p></div>
+<div class="controls"><label>Data wyników<input id="salesEntryDate" type="date"></label><button class="btn primary" id="saveSalesEntry">Zapisz wyniki</button><span id="salesEntryStatus" class="sales-save-status"></span></div></div>
+<div class="sales-entry-grid">
+<div class="sales-entry-card"><span>UK – realizacja regionu</span><strong id="salesUkRegion">—</strong></div>
+<div class="sales-entry-card"><span>Detal – realizacja regionu</span><strong id="salesDetailRegion">—</strong></div>
+<div class="sales-entry-card"><span>UK – wykonanie</span><strong id="salesUkExec">0 zł</strong></div>
+<div class="sales-entry-card"><span>Detal – wykonanie</span><strong id="salesDetailExec">0 zł</strong></div>
+</div>
+<section class="sales-entry-panel"><div class="table"><table class="sales-entry-table">
+<thead><tr><th class="branch" rowspan="2">Oddział</th><th class="group-uk" id="ukGroupHead" colspan="4">UK</th><th class="group-detail" colspan="3">DETAL</th></tr>
+<tr><th class="sub-uk">Plan miesiąca (PLN)</th><th class="sub-uk">Wykonanie (PLN)</th><th class="sub-uk">% planu</th><th class="sub-uk" id="estimateHead">Estymacja (PLN)</th><th class="sub-detail">Plan miesiąca (PLN)</th><th class="sub-detail">Wykonanie (PLN)</th><th class="sub-detail">% planu</th></tr></thead>
+<tbody id="salesEntryBody"></tbody></table></div>
+<div class="sales-help"><b>Jak wpisywać:</b> wybierz dzień i wpisz wykonanie narastająco. Plan obowiązuje przez cały miesiąc. <b>Estymacja UK jest dostępna tylko w poniedziałki.</b> W pozostałe dni pole jest ukryte. Pola zapisują się automatycznie po zmianie.</div></section>
+<div id="salesMsg" class="msg"></div>
+</div></section>
 
 <section id="kpis" class="view"><div class="head"><div><h2>KPI VoIP / Controlling</h2><p>Miesięczne KPI oddziałów.</p></div></div><div class="g2"><div class="panel"><h3>Dodaj / aktualizuj KPI</h3><div class="form"><label>Oddział<select id="kpiBranch"></select></label><div class="g3"><label>Rok<input id="kpiYear" type="number"></label><label>Miesiąc<input id="kpiMonth" type="number" min="1" max="12"></label><div></div></div><label>VoIP (%)<input id="kpiVoip" type="number" step="0.01"></label><label>Controlling (%)<input id="kpiControlling" type="number" step="0.01"></label><label>Komentarz<textarea id="kpiComment"></textarea></label><button id="saveKpi" class="btn primary">Zapisz KPI</button></div><div id="kpiMsg" class="msg"></div></div><div class="panel"><label>Oddział<select id="kpiFilter"></select></label><div id="kpiTable" class="table" style="margin-top:10px"></div></div></div></section>
 
@@ -940,8 +970,108 @@ function printVisitSignatureForm(){
   setTimeout(()=>window.print(),120);
 }
 
-async function loadSales(){let x=await q('sales_results');if(x.error)return;window._sales=x.data||[];let f=$('salesFilter').value,a=window._sales.filter(v=>f==='all'||v.branch_id===f).sort((a,b)=>b.result_date.localeCompare(a.result_date));let last=a[0];$('salesSummary').innerHTML=last?`<div class="card"><h4>UK realizacja</h4><div class="kpi">${last.uk_plan?Math.round(num(last.uk_execution)/num(last.uk_plan)*100):0}%</div></div><div class="card"><h4>Detal realizacja</h4><div class="kpi">${last.detail_plan?Math.round(num(last.detail_execution)/num(last.detail_plan)*100):0}%</div></div><div class="card"><h4>UK estymacja</h4><div class="kpi">${money(last.uk_estimate)}</div></div>`:'';$('salesTable').innerHTML=a.length?`<table><tr><th>Data</th><th>Oddział</th><th>UK plan</th><th>UK wykonanie</th><th>UK est.</th><th>Detal plan</th><th>Detal wykonanie</th></tr>${a.map(v=>`<tr><td>${fd(v.result_date)}</td><td>${esc(bn(v.branch_id))}</td><td>${money(v.uk_plan)}</td><td>${money(v.uk_execution)}</td><td>${money(v.uk_estimate)}</td><td>${money(v.detail_plan)}</td><td>${money(v.detail_execution)}</td></tr>`).join('')}</table>`:'<div class="empty">Brak wyników.</div>'}
-async function saveSales(){let r={region_id:rid(),branch_id:$('salesBranch').value,result_date:$('salesDate').value,uk_plan:num($('ukPlan').value),uk_execution:num($('ukExec').value),uk_estimate:num($('ukEst').value),detail_plan:num($('detPlan').value),detail_execution:num($('detExec').value)};let{error}=await sb.from('sales_results').upsert(r,{onConflict:'branch_id,result_date'});if(error)return msg('salesMsg',error.message,'error');msg('salesMsg','Zapisano.','ok');loadSales();loadCard()}
+
+function parseSalesEntryNumber(v){
+  const s=String(v??'').trim().replace(/\s/g,'').replace('zł','').replace(',','.');
+  if(!s)return NaN;const n=Number(s);return Number.isFinite(n)?n:NaN;
+}
+function formatSalesPLN(v){
+  const n=parseSalesEntryNumber(v);if(!Number.isFinite(n))return '';
+  return new Intl.NumberFormat('pl-PL',{minimumFractionDigits:0,maximumFractionDigits:2}).format(n)+' zł';
+}
+function salesRatio(a,p){a=parseSalesEntryNumber(a);p=parseSalesEntryNumber(p);return Number.isFinite(a)&&Number.isFinite(p)&&p>0?a/p:NaN}
+function salesRatioText(v){return Number.isFinite(v)?new Intl.NumberFormat('pl-PL',{style:'percent',minimumFractionDigits:1,maximumFractionDigits:1}).format(v):'—'}
+function salesRatioClass(v){return !Number.isFinite(v)?'muted':v>=1?'good':v>=.9?'warn':'bad'}
+async function salesMonthRows(month){
+  const [y,m]=month.split('-').map(Number),from=`${month}-01`,to=new Date(y,m,1).toISOString().slice(0,10);
+  const {data,error}=await sb.from('sales_results').select('*').eq('region_id',rid()).gte('result_date',from).lt('result_date',to).order('result_date',{ascending:false});
+  if(error)throw error;return data||[];
+}
+function salesPlanFromMonth(rows,branchId,field){
+  const r=rows.find(x=>x.branch_id===branchId&&x[field]!==null&&x[field]!==undefined&&x[field]!=='');
+  return r?r[field]:'';
+}
+async function renderSalesEntry(){
+  if(!$('salesEntryBody'))return;
+  const date=$('salesEntryDate').value;if(!date)return;
+  const month=date.slice(0,7),isMonday=new Date(date+'T12:00:00').getDay()===1;
+  const rows=await salesMonthRows(month);
+  const exact=new Map(rows.filter(x=>x.result_date===date).map(x=>[x.branch_id,x]));
+  let up=0,ue=0,dp=0,de=0;
+
+  $('salesEntryBody').innerHTML=branches.map(b=>{
+    const day=exact.get(b.id)||{};
+    const uplan=salesPlanFromMonth(rows,b.id,'uk_plan'),dplan=salesPlanFromMonth(rows,b.id,'detail_plan');
+    const uexec=day.uk_execution??'',dexec=day.detail_execution??'',est=day.uk_estimate??'';
+    const ur=salesRatio(uexec,uplan),dr=salesRatio(dexec,dplan);
+    const n1=parseSalesEntryNumber(uplan),n2=parseSalesEntryNumber(uexec),n3=parseSalesEntryNumber(dplan),n4=parseSalesEntryNumber(dexec);
+    if(Number.isFinite(n1))up+=n1;if(Number.isFinite(n2))ue+=n2;if(Number.isFinite(n3))dp+=n3;if(Number.isFinite(n4))de+=n4;
+    return `<tr><td class="branch"><strong>${esc(b.name)}</strong></td>
+      <td><input class="sales-entry-input plan se-up" data-id="${b.id}" data-raw="${esc(uplan)}" value="${esc(formatSalesPLN(uplan))}"></td>
+      <td><input class="sales-entry-input se-ue" data-id="${b.id}" data-raw="${esc(uexec)}" value="${esc(formatSalesPLN(uexec))}"></td>
+      <td class="sales-entry-pct ${salesRatioClass(ur)}">${salesRatioText(ur)}</td>
+      <td class="estimate-cell"><input class="sales-entry-input estimate se-est" data-id="${b.id}" data-raw="${esc(est)}" value="${esc(formatSalesPLN(est))}"></td>
+      <td><input class="sales-entry-input plan detail se-dp" data-id="${b.id}" data-raw="${esc(dplan)}" value="${esc(formatSalesPLN(dplan))}"></td>
+      <td><input class="sales-entry-input detail se-de" data-id="${b.id}" data-raw="${esc(dexec)}" value="${esc(formatSalesPLN(dexec))}"></td>
+      <td class="sales-entry-pct ${salesRatioClass(dr)}">${salesRatioText(dr)}</td></tr>`;
+  }).join('');
+
+  $('estimateHead').style.display=isMonday?'':'none';
+  $('ukGroupHead').colSpan=isMonday?4:3;
+  document.querySelectorAll('.estimate-cell').forEach(td=>td.style.display=isMonday?'':'none');
+
+  $('salesUkRegion').textContent=salesRatioText(up?ue/up:NaN);
+  $('salesDetailRegion').textContent=salesRatioText(dp?de/dp:NaN);
+  $('salesUkExec').textContent=money(ue);
+  $('salesDetailExec').textContent=money(de);
+
+  document.querySelectorAll('#salesEntryBody input').forEach(x=>{
+    x.onfocus=()=>{x.value=x.dataset.raw??'';setTimeout(()=>x.select(),0)};
+    x.onchange=async()=>{
+      const n=parseSalesEntryNumber(x.value);x.dataset.raw=Number.isFinite(n)?String(n):'';
+      await saveSalesEntry(false);
+    };
+    x.onblur=()=>{const n=parseSalesEntryNumber(x.value);if(Number.isFinite(n))x.dataset.raw=String(n);x.value=formatSalesPLN(x.dataset.raw)};
+  });
+}
+async function saveSalesEntry(showAlert=true){
+  const date=$('salesEntryDate').value;if(!date)return;
+  const month=date.slice(0,7),[y,m]=month.split('-').map(Number);
+  const from=`${month}-01`,to=new Date(y,m,1).toISOString().slice(0,10);
+  const isMonday=new Date(date+'T12:00:00').getDay()===1;
+  const oldRows=await salesMonthRows(month);
+  const oldExact=new Map(oldRows.filter(x=>x.result_date===date).map(x=>[x.branch_id,x]));
+  const get=(cls,id)=>[...document.querySelectorAll(cls)].find(x=>x.dataset.id===id);
+  const val=el=>{if(!el)return null;const raw=String(el.dataset.raw??'').trim();if(raw==='')return null;const n=parseSalesEntryNumber(raw);return Number.isFinite(n)?n:null};
+
+  for(const b of branches){
+    const up=val(get('.se-up',b.id)),ue=val(get('.se-ue',b.id)),dp=val(get('.se-dp',b.id)),de=val(get('.se-de',b.id));
+    const existing=oldExact.get(b.id)||{};
+    const est=isMonday?val(get('.se-est',b.id)):(existing.uk_estimate??null);
+
+    // Plan miesięczny: zmiana planu aktualizuje wszystkie istniejące wpisy z tego miesiąca.
+    const monthBranchRows=oldRows.filter(r=>r.branch_id===b.id);
+    if(monthBranchRows.length){
+      const ids=monthBranchRows.map(r=>r.id);
+      const {error}=await sb.from('sales_results').update({uk_plan:up,detail_plan:dp}).in('id',ids);
+      if(error)return msg('salesMsg',error.message,'error');
+    }
+
+    const row={region_id:rid(),branch_id:b.id,result_date:date,uk_plan:up,uk_execution:ue,uk_estimate:est,detail_plan:dp,detail_execution:de};
+    const allBlank=[up,ue,est,dp,de].every(v=>v===null);
+    if(allBlank&&existing.id){
+      const {error}=await sb.from('sales_results').delete().eq('id',existing.id);if(error)return msg('salesMsg',error.message,'error');
+    }else if(!allBlank){
+      const {error}=await sb.from('sales_results').upsert(row,{onConflict:'branch_id,result_date'});if(error)return msg('salesMsg',error.message,'error');
+    }
+  }
+  $('salesEntryStatus').textContent='Zapisano';
+  setTimeout(()=>{if($('salesEntryStatus'))$('salesEntryStatus').textContent=''},1800);
+  if(showAlert)alert('Wyniki UK / Detal zostały zapisane.');
+  await renderSalesEntry();await loadCard();
+}
+async function loadSales(){return renderSalesEntry()}
+async function saveSales(){return saveSalesEntry(true)}
 
 async function loadKpis(){let x=await q('monthly_kpis');if(x.error)return;window._kpis=x.data||[];let f=$('kpiFilter').value,a=window._kpis.filter(v=>f==='all'||v.branch_id===f).sort((a,b)=>(b.year*100+b.month)-(a.year*100+a.month));$('kpiTable').innerHTML=a.length?`<table><tr><th>Okres</th><th>Oddział</th><th>VoIP</th><th>Controlling</th><th>Komentarz</th></tr>${a.map(v=>`<tr><td>${v.month}/${v.year}</td><td>${esc(bn(v.branch_id))}</td><td>${num(v.voip)}%</td><td>${num(v.controlling)}%</td><td>${esc(v.controlling_comment||'')}</td></tr>`).join('')}</table>`:'<div class="empty">Brak KPI.</div>'}
 async function saveKpi(){let r={region_id:rid(),branch_id:$('kpiBranch').value,year:+$('kpiYear').value,month:+$('kpiMonth').value,voip:num($('kpiVoip').value),controlling:num($('kpiControlling').value),controlling_comment:$('kpiComment').value.trim()};let{error}=await sb.from('monthly_kpis').upsert(r,{onConflict:'branch_id,year,month'});if(error)return msg('kpiMsg',error.message,'error');msg('kpiMsg','Zapisano.','ok');loadKpis();loadCard()}
@@ -1965,7 +2095,7 @@ async function showApp(session,modeResolved=false){
     $('regionSelect').value=workModeRegion;$('regionSelect').disabled=true;
   }else{$('regionSelect').disabled=false}
   refreshAdminRegionName();await loadBranches();
-  clearLog();clearMeeting();clearTask();clearVisit();clearNote();$('salesDate').value=today();
+  clearLog();clearMeeting();clearTask();clearVisit();clearNote();$('salesEntryDate').value=today();
   let d=new Date();$('kpiYear').value=d.getFullYear();$('kpiMonth').value=d.getMonth()+1;$('comparisonYear').value=d.getFullYear();$('comparisonMonth').value=d.getMonth()+1;
   ['analysisFromM','analysisToM','bcMonth'].forEach(fillMonthSelect);$('analysisYear').value=d.getFullYear();$('analysisFromM').value=1;$('analysisToM').value=d.getMonth()+1;$('bcYear').value=d.getFullYear();$('bcMonth').value=d.getMonth()+1;
   $('bonusYear').value=d.getFullYear();$('bonusQuarter').value=Math.floor(d.getMonth()/3)+1;$('bonusMonthYear').value=d.getFullYear();fillMonthSelect('bonusMonthSelect');$('bonusMonthSelect').value=d.getMonth()+1;$('archiveMonth').value=d.toISOString().slice(0,7);
@@ -2012,7 +2142,7 @@ $('meetingAttendance').onchange=toggleComment;$('refreshMeetingPreviewBtn').oncl
 $('saveMeeting').onclick=saveMeeting;$('clearMeeting').onclick=clearMeeting;$('meetingFilter').onchange=loadMeetings;
 $('saveTask').onclick=saveTask;$('clearTask').onclick=clearTask;$('taskFilter').onchange=loadTasks;$('taskStatusFilter').onchange=loadTasks;
 $('saveVisit').onclick=saveVisit;$('clearVisit').onclick=clearVisit;$('addVisitRecommendation').onclick=()=>addVisitRecommendationRow();$('generateVisitForm').onclick=generateVisitSignatureForm;$('printVisitReport').onclick=printVisitSignatureForm;
-$('saveSales').onclick=saveSales;$('salesFilter').onchange=loadSales;$('saveKpi').onclick=saveKpi;$('kpiFilter').onchange=loadKpis;
+$('salesEntryDate').onchange=renderSalesEntry;$('saveSalesEntry').onclick=()=>saveSalesEntry(true);$('saveKpi').onclick=saveKpi;$('kpiFilter').onchange=loadKpis;
 $('saveNote').onclick=saveNote;$('clearNote').onclick=clearNote;$('noteFilter').onchange=loadNotes;$('cardBranch').onchange=loadCard;$('historyBranch').onchange=loadHistory;
 (async()=>{let{data}=await sb.auth.getSession();if(data.session)showModeChooser(data.session,false);else showLogin()})();
 </script></body></html>
