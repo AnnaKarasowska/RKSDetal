@@ -2,7 +2,7 @@
 <html lang="pl">
 <head>
 <meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
-<title>Eltrox RKS – Supabase v8.3</title>
+<title>Eltrox RKS – Supabase v8.4</title>
 <style>
 :root{--o:#f36f21;--od:#d85d12;--bg:#eef1f4;--w:#fff;--line:#d9dde3;--t:#242424;--m:#6b7280;--r:#c9372c;--g:#25894b;--b:#2f71c8;--sh:0 8px 24px rgba(0,0,0,.08)}
 *{box-sizing:border-box}html,body{margin:0;min-height:100%;font-family:Arial,Helvetica,sans-serif;background:var(--bg);color:var(--t)}button,input,select,textarea{font:inherit}button{cursor:pointer}.hidden{display:none!important}
@@ -137,7 +137,7 @@ input,select,textarea{width:100%;padding:9px 10px;border:1px solid var(--line);b
 @media(max-width:950px){.g2,.g3,.g4{grid-template-columns:1fr}.header{align-items:flex-start;flex-direction:column}.nav{top:108px}}
 </style></head>
 <body>
-<div id="loginView" class="login-shell"><div class="login-card"><div class="brand"><h1>Eltrox RKS</h1><p>Wersja online v8.3</p></div><form id="loginForm" class="form"><label>E-mail<input id="loginEmail" type="email" required></label><label>Hasło<input id="loginPassword" type="password" required></label><button class="btn primary">Zaloguj</button><div id="loginMsg" class="msg"></div></form></div></div>
+<div id="loginView" class="login-shell"><div class="login-card"><div class="brand"><h1>Eltrox RKS</h1><p>Wersja online v8.4</p></div><form id="loginForm" class="form"><label>E-mail<input id="loginEmail" type="email" required></label><label>Hasło<input id="loginPassword" type="password" required></label><button class="btn primary">Zaloguj</button><div id="loginMsg" class="msg"></div></form></div></div>
 
 <div id="modeView" class="mode-shell hidden">
   <div class="mode-card">
@@ -463,45 +463,73 @@ input,select,textarea{width:100%;padding:9px 10px;border:1px solid var(--line);b
 
 <section id="reportsBonus" class="view">
   <div class="head">
-    <div><h2>Kalkulator premii kwartalnej</h2><p>Premia miesięczna za oddziały + jednorazowe składniki regionalne po zamknięciu kwartału.</p></div>
-    <div class="controls">
-      <label>Rok<input id="bonusYear" type="number" min="2020" max="2100" step="1" style="width:100px"></label>
-      <label>Kwartał<select id="bonusQuarter"><option value="1">I kwartał</option><option value="2">II kwartał</option><option value="3">III kwartał</option><option value="4">IV kwartał</option></select></label>
-      <button id="calcBonusBtn" class="btn primary">Przelicz premię</button>
-    </div>
+    <div><h2>Premia</h2><p>Premia miesięczna i kwartalna są liczone oddzielnie.</p></div>
   </div>
 
   <div class="bonus-rates-v45">
     <div class="bonus-rate-v45"><h4>Detal – per oddział / miesiąc</h4><p>≥100%: <strong>100 zł</strong></p><p>90–99,9%: <strong>50 zł</strong></p></div>
     <div class="bonus-rate-v45"><h4>UK – per oddział / miesiąc</h4><p>≥100%: <strong>150 zł</strong></p><p>90–99,9%: <strong>75 zł</strong></p></div>
-    <div class="bonus-rate-v45"><h4>Jakość KPI – per oddział / miesiąc</h4><p>≥100%: <strong>100 zł</strong></p><p>90–99,9%: <strong>50 zł</strong></p></div>
+    <div class="bonus-rate-v45"><h4>KPI – per oddział / miesiąc</h4><p>≥100%: <strong>100 zł</strong></p><p>90–99,9%: <strong>50 zł</strong></p></div>
     <div class="bonus-rate-v45"><h4>Premia regionalna – kwartalna</h4><p>Detal regionu ≥100%: <strong>1000 zł</strong></p><p>UK regionu ≥100%: <strong>1000 zł</strong></p><p>KPI regionu ≥100%: <strong>1000 zł</strong></p></div>
   </div>
 
-  <div class="bonus-summary-v45">
-    <div class="bonus-box-v45"><span>Suma premii miesięcznych</span><strong id="bonusMonthlyTotal">0 zł</strong></div>
-    <div class="bonus-box-v45"><span>Premia regionalna kwartalna</span><strong id="bonusQuarterlyTotal">0 zł</strong></div>
-    <div class="bonus-box-v45"><span>Średnia KPI kwartału</span><strong id="bonusKpiAvg">—</strong></div>
-    <div class="bonus-box-v45 total"><span>Razem za kwartał</span><strong id="bonusGrandTotal">0 zł</strong></div>
-  </div>
-
   <div class="panel">
-    <h3>Rozliczenie miesięczne oddziałów</h3>
+    <div class="head" style="margin-bottom:12px">
+      <div><h3 style="margin:0">Premia miesięczna</h3><p>Liczy wyłącznie jeden wybrany miesiąc.</p></div>
+      <div class="controls">
+        <label>Rok<input id="bonusMonthYear" type="number" min="2020" max="2100" step="1" style="width:100px"></label>
+        <label>Miesiąc<select id="bonusMonthSelect" style="width:150px"></select></label>
+        <button id="calcMonthlyBonusBtn" class="btn primary">Przelicz miesiąc</button>
+      </div>
+    </div>
+
+    <div class="bonus-summary-v45">
+      <div class="bonus-box-v45"><span>Premia Detal</span><strong id="monthlyDetalTotal">0 zł</strong></div>
+      <div class="bonus-box-v45"><span>Premia UK</span><strong id="monthlyUkTotal">0 zł</strong></div>
+      <div class="bonus-box-v45"><span>Premia KPI</span><strong id="monthlyKpiTotal">0 zł</strong></div>
+      <div class="bonus-box-v45 total"><span>Premia miesięczna razem</span><strong id="monthlyGrandTotal">0 zł</strong></div>
+    </div>
+
     <div class="table"><table class="bonus-table-v45">
       <thead><tr>
-        <th>Miesiąc</th><th>Oddział</th>
+        <th>Oddział</th>
         <th>Detal plan</th><th>Detal wykonanie</th><th>Detal %</th><th>Premia Detal</th>
         <th>UK plan</th><th>UK wykonanie</th><th>UK %</th><th>Premia UK</th>
         <th>KPI %</th><th>Premia KPI</th><th>Razem</th>
       </tr></thead>
-      <tbody id="bonusRows"></tbody>
+      <tbody id="monthlyBonusRows"></tbody>
     </table></div>
-    <div class="bonus-note-v45">Dane Detal i UK są pobierane z modułu „UK / Detal”. KPI jest pobierane z wyniku miesięcznego controllingu mailowego. Gdy KPI nie zostało wpisane, można uzupełnić je ręcznie w tabeli; wartość zapisuje się dla danego miesiąca i oddziału.</div>
+    <div class="bonus-note-v45">Ta sekcja pokazuje premię tylko za jeden wybrany miesiąc. Nie sumuje trzech miesięcy.</div>
   </div>
 
-  <div class="panel" style="margin-top:12px">
-    <h3>Podsumowanie kwartału – region</h3>
-    <div id="bonusQuarterSummary" class="table"></div>
+  <div class="panel" style="margin-top:14px">
+    <div class="head" style="margin-bottom:12px">
+      <div><h3 style="margin:0">Premia kwartalna</h3><p>Liczy trzy miesiące kwartału i osobno premię regionalną kwartalną.</p></div>
+      <div class="controls">
+        <label>Rok<input id="bonusYear" type="number" min="2020" max="2100" step="1" style="width:100px"></label>
+        <label>Kwartał<select id="bonusQuarter"><option value="1">I kwartał</option><option value="2">II kwartał</option><option value="3">III kwartał</option><option value="4">IV kwartał</option></select></label>
+        <button id="calcBonusBtn" class="btn primary">Przelicz kwartał</button>
+      </div>
+    </div>
+
+    <div class="bonus-summary-v45">
+      <div class="bonus-box-v45"><span>Suma premii miesięcznych w kwartale</span><strong id="bonusMonthlyTotal">0 zł</strong></div>
+      <div class="bonus-box-v45"><span>Premia regionalna kwartalna</span><strong id="bonusQuarterlyTotal">0 zł</strong></div>
+      <div class="bonus-box-v45"><span>Średnia KPI kwartału</span><strong id="bonusKpiAvg">—</strong></div>
+      <div class="bonus-box-v45 total"><span>Razem za kwartał</span><strong id="bonusGrandTotal">0 zł</strong></div>
+    </div>
+
+    <div class="table"><table class="bonus-table-v45">
+      <thead><tr>
+        <th>Miesiąc</th><th>Oddział</th>
+        <th>Detal %</th><th>Premia Detal</th>
+        <th>UK %</th><th>Premia UK</th>
+        <th>KPI %</th><th>Premia KPI</th><th>Razem</th>
+      </tr></thead>
+      <tbody id="bonusRows"></tbody>
+    </table></div>
+
+    <div style="margin-top:12px"><h3>Podsumowanie kwartału – region</h3><div id="bonusQuarterSummary" class="table"></div></div>
   </div>
 
   <div class="g2" style="margin-top:12px">
@@ -1101,6 +1129,71 @@ async function controllingForBonus(year,month){
   if(error)throw error;
   return new Map((data||[]).map(x=>[x.branch_id,x]));
 }
+
+async function calculateMonthlyBonus(){
+  const year=Number($('bonusMonthYear').value)||new Date().getFullYear();
+  const monthNo=Number($('bonusMonthSelect').value)||1;
+  const month=`${year}-${String(monthNo).padStart(2,'0')}`;
+  const sales=await latestSalesForBonus(month);
+  const controls=await controllingForBonus(year,monthNo);
+  const overrides=await bonusOverrideMap([month]);
+
+  let totalDetal=0,totalUk=0,totalKpi=0;
+  const rows=[];
+
+  for(const branch of branches){
+    const s=sales.get(branch.id)||{};
+    const detailPlan=Number(s.detail_plan)||0;
+    const detailExec=Number(s.detail_execution)||0;
+    const ukPlan=Number(s.uk_plan)||0;
+    const ukExec=Number(s.uk_execution)||0;
+    const detailPct=detailPlan?detailExec/detailPlan*100:NaN;
+    const ukPct=ukPlan?ukExec/ukPlan*100:NaN;
+
+    const c=controls.get(branch.id);
+    let kpi=NaN,kpiLocked=false;
+    if(c && c.controlling!==null && c.controlling!==undefined && c.controlling!==''){
+      kpi=Number(c.controlling);
+      kpiLocked=Number.isFinite(kpi);
+    }else{
+      const ov=overrides.get(`${month}|${branch.id}`);
+      if(Number.isFinite(ov))kpi=ov;
+    }
+
+    const premDetal=bonusLadder(detailPct,BONUS_RATES.detal100,BONUS_RATES.detal90);
+    const premUk=bonusLadder(ukPct,BONUS_RATES.uk100,BONUS_RATES.uk90);
+    const premKpi=bonusLadder(kpi,BONUS_RATES.kpi100,BONUS_RATES.kpi90);
+    const total=premDetal+premUk+premKpi;
+
+    totalDetal+=premDetal;
+    totalUk+=premUk;
+    totalKpi+=premKpi;
+
+    rows.push(`<tr>
+      <td>${esc(branch.name)}</td>
+      <td>${money(detailPlan)}</td><td>${money(detailExec)}</td><td>${Number.isFinite(detailPct)?pct(detailPct):'—'}</td><td>${money(premDetal)}</td>
+      <td>${money(ukPlan)}</td><td>${money(ukExec)}</td><td>${Number.isFinite(ukPct)?pct(ukPct):'—'}</td><td>${money(premUk)}</td>
+      <td><input class="monthly-kpi-input" data-month="${month}" data-branch-id="${branch.id}" type="number" min="0" max="150" step="0.1" value="${Number.isFinite(kpi)?kpi:''}" ${kpiLocked?'readonly title="Pobrano z controllingu mailowego"':''}></td>
+      <td>${money(premKpi)}</td><td><strong>${money(total)}</strong></td>
+    </tr>`);
+  }
+
+  $('monthlyDetalTotal').textContent=money(totalDetal);
+  $('monthlyUkTotal').textContent=money(totalUk);
+  $('monthlyKpiTotal').textContent=money(totalKpi);
+  $('monthlyGrandTotal').textContent=money(totalDetal+totalUk+totalKpi);
+  $('monthlyBonusRows').innerHTML=rows.join('')||'<tr><td colspan="12">Brak oddziałów.</td></tr>';
+
+  document.querySelectorAll('.monthly-kpi-input:not([readonly])').forEach(input=>{
+    input.onchange=async()=>{
+      try{
+        await saveBonusKpiOverride(input.dataset.month,input.dataset.branchId,input.value);
+        await calculateMonthlyBonus();
+      }catch(e){alert(e.message)}
+    };
+  });
+}
+
 async function calculateBonus(){
   const year=Number($('bonusYear').value)||new Date().getFullYear();
   const quarter=Number($('bonusQuarter').value)||1;
@@ -1150,8 +1243,8 @@ async function calculateBonus(){
 
       rows.push(`<tr>
         <td>${esc(bonusMonthLabel(month))}</td><td>${esc(branch.name)}</td>
-        <td>${money(detailPlan)}</td><td>${money(detailExec)}</td><td class="${yoyClass(Number.isFinite(detailPct)?detailPct-100:null)}">${Number.isFinite(detailPct)?pct(detailPct):'—'}</td><td>${money(premDetal)}</td>
-        <td>${money(ukPlan)}</td><td>${money(ukExec)}</td><td class="${yoyClass(Number.isFinite(ukPct)?ukPct-100:null)}">${Number.isFinite(ukPct)?pct(ukPct):'—'}</td><td>${money(premUk)}</td>
+        <td>${Number.isFinite(detailPct)?pct(detailPct):'—'}</td><td>${money(premDetal)}</td>
+        <td>${Number.isFinite(ukPct)?pct(ukPct):'—'}</td><td>${money(premUk)}</td>
         <td><input class="bonus-kpi-input" data-month="${month}" data-branch-id="${branch.id}" type="number" min="0" max="150" step="0.1" value="${Number.isFinite(kpi)?kpi:''}" ${kpiLocked?'readonly title="Pobrano z controllingu mailowego"':''}></td>
         <td>${money(premKpi)}</td><td><strong>${money(total)}</strong></td>
       </tr>`);
@@ -1168,7 +1261,7 @@ async function calculateBonus(){
   const quarterlyTotal=regDetal+regUk+regKpi;
   const grand=monthlyTotal+quarterlyTotal;
 
-  $('bonusRows').innerHTML=rows.join('')||'<tr><td colspan="13" class="empty">Brak oddziałów.</td></tr>';
+  $('bonusRows').innerHTML=rows.join('')||'<tr><td colspan="9" class="empty">Brak oddziałów.</td></tr>';
   $('bonusMonthlyTotal').textContent=money(monthlyTotal);
   $('bonusQuarterlyTotal').textContent=money(quarterlyTotal);
   $('bonusKpiAvg').textContent=Number.isFinite(kpiAvg)?pct(kpiAvg):'—';
@@ -1688,7 +1781,7 @@ async function showApp(session,modeResolved=false){
   clearLog();clearMeeting();clearTask();clearVisit();clearNote();$('salesDate').value=today();
   let d=new Date();$('kpiYear').value=d.getFullYear();$('kpiMonth').value=d.getMonth()+1;$('comparisonYear').value=d.getFullYear();$('comparisonMonth').value=d.getMonth()+1;
   ['analysisMonth','bcMonth'].forEach(fillMonthSelect);$('analysisYear').value=d.getFullYear();$('analysisMonth').value=d.getMonth()+1;$('bcYear').value=d.getFullYear();$('bcMonth').value=d.getMonth()+1;
-  $('bonusYear').value=d.getFullYear();$('bonusQuarter').value=Math.floor(d.getMonth()/3)+1;$('archiveMonth').value=d.toISOString().slice(0,7);
+  $('bonusYear').value=d.getFullYear();$('bonusQuarter').value=Math.floor(d.getMonth()/3)+1;$('bonusMonthYear').value=d.getFullYear();fillMonthSelect('bonusMonthSelect');$('bonusMonthSelect').value=d.getMonth()+1;$('archiveMonth').value=d.toISOString().slice(0,7);
 }
 function showLogin(){$('appView').classList.add('hidden');$('modeView').classList.add('hidden');$('loginView').classList.remove('hidden');workMode=null;workModeRegion=null}
 document.querySelectorAll('.tab').forEach(b=>b.onclick=()=>{document.querySelectorAll('.tab').forEach(x=>x.classList.toggle('active',x===b));document.querySelectorAll('.view').forEach(x=>x.classList.toggle('active',x.id===b.dataset.v));if(b.dataset.v==='dashboard')loadDashboard();if(b.dataset.v==='analysis')loadAnalysis();if(b.dataset.v==='comparison')loadComparison();if(b.dataset.v==='branchCompare')loadBranchCompare();if(b.dataset.v==='regionMap')loadRegionMap();if(b.dataset.v==='branchCard')loadCard();if(b.dataset.v==='history')loadHistory()});
@@ -1705,7 +1798,7 @@ $('loadBranchCompareBtn').onclick=loadBranchCompare;$('refreshMapBtn').onclick=l
 $('addRegionBtn')&&($('addRegionBtn').onclick=manageAddRegion);$('renameRegionBtn')&&($('renameRegionBtn').onclick=manageRenameRegion);$('deleteRegionBtn')&&($('deleteRegionBtn').onclick=manageDeleteRegion);
 $('prepareNextMeetingBtn')&&($('prepareNextMeetingBtn').onclick=prepareNextMeeting);$('printMeetingBtn')&&($('printMeetingBtn').onclick=printMeeting);
 $('uploadAttachmentBtn').onclick=uploadAttachment;$('attachmentFilter').onchange=loadAttachments;
-$('calcBonusBtn').onclick=calculateBonus;$('createArchiveBtn').onclick=createArchive;
+$('calcMonthlyBonusBtn').onclick=calculateMonthlyBonus;$('calcBonusBtn').onclick=calculateBonus;$('createArchiveBtn').onclick=createArchive;
 $('exportBackupBtn').onclick=exportRegionBackup;$('importBackupBtn').onclick=()=>$('importBackupFile').click();$('importBackupFile').onchange=e=>{importRegionBackup(e.target.files[0]);e.target.value=''};
 $('globalSearch').oninput=globalSearchRun;document.addEventListener('click',e=>{if(!e.target.closest('.searchbox'))$('globalSearchResults').classList.add('hidden')});
 
