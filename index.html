@@ -2,7 +2,7 @@
 <html lang="pl">
 <head>
 <meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
-<title>Eltrox RKS – Supabase v8.6.1</title>
+<title>Eltrox RKS – Supabase v8.7</title>
 <style>
 :root{--o:#f36f21;--od:#d85d12;--bg:#eef1f4;--w:#fff;--line:#d9dde3;--t:#242424;--m:#6b7280;--r:#c9372c;--g:#25894b;--b:#2f71c8;--sh:0 8px 24px rgba(0,0,0,.08)}
 *{box-sizing:border-box}html,body{margin:0;min-height:100%;font-family:Arial,Helvetica,sans-serif;background:var(--bg);color:var(--t)}button,input,select,textarea{font:inherit}button{cursor:pointer}.hidden{display:none!important}
@@ -165,6 +165,36 @@ input,select,textarea{width:100%;padding:9px 10px;border:1px solid var(--line);b
 .sub-uk{background:#fff9f5!important}.sub-detail{background:#f7fbff!important}.sales-entry-input{width:135px;text-align:right;padding:7px 8px;border:1px solid #cfd5dc;border-radius:7px;background:#fff}
 .sales-entry-input.plan{background:#fffaf7}.sales-entry-input.detail{background:#f8fbff}.sales-entry-input.estimate{background:#fff7dc}.sales-entry-pct{font-weight:850}
 .sales-save-status{font-size:11px;font-weight:800;color:#168451;min-width:56px}.sales-help{padding:11px 13px;font-size:11px;line-height:1.5;color:var(--m);background:#fafafa;border-top:1px solid var(--line)}
+
+/* Porównanie oddziałów – układ v45 */
+.bc-shell{display:grid;grid-template-columns:1fr;gap:12px}
+.bc-tabs{display:flex;gap:6px;flex-wrap:wrap;margin-bottom:12px}.bc-tabs .btn.active{background:var(--o);color:#fff;border-color:var(--o)}
+.bc-subview{display:none}.bc-subview.active{display:block}
+.bc-toolbar{display:grid;grid-template-columns:repeat(9,minmax(110px,1fr));gap:8px;align-items:end;margin-bottom:10px}
+.bc-toolbar .field{display:grid;gap:4px}.bc-toolbar label{font-size:10px;font-weight:800;color:var(--m)}
+.bc-toolbar input,.bc-toolbar select{width:100%}
+.bc-active-filters{display:flex;gap:6px;flex-wrap:wrap;margin-bottom:10px}
+.bc-chip{padding:5px 8px;border-radius:999px;background:#eef2f7;font-size:10px;font-weight:800}
+.bc-metric-grid{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:10px;margin-bottom:16px}
+.bc-metric{background:#fff;border:1px solid var(--line);border-radius:13px;padding:13px;box-shadow:var(--shadow)}
+.bc-metric span{display:block;font-size:10px;color:var(--m);font-weight:800}.bc-metric strong{display:block;font-size:21px;margin-top:5px}.bc-metric small{display:block;margin-top:4px;color:var(--m)}
+.bc-health-grid{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:10px;margin:10px 0 16px}
+.bc-health-card{background:#fff;border:1px solid var(--line);border-left:5px solid #999;border-radius:12px;padding:12px;box-shadow:var(--shadow)}
+.bc-health-card.good{border-left-color:#168451}.bc-health-card.warn{border-left-color:#d39118}.bc-health-card.bad{border-left-color:#c93d37}
+.bc-health-head{display:flex;justify-content:space-between;gap:8px}.bc-health-name{font-weight:900}.bc-health-meta{font-size:10px;color:var(--m);margin-top:3px}
+.bc-status{font-size:9px;padding:4px 7px;border-radius:999px;font-weight:900;height:max-content}.bc-status.good{background:#e8f7ef;color:#11703f}.bc-status.warn{background:#fff5db;color:#986d00}.bc-status.bad{background:#fdebea;color:#a82823}
+.bc-score-line{display:flex;justify-content:space-between;align-items:end;margin-top:10px}.bc-score{font-size:28px;font-weight:900}.bc-trend{font-size:11px;font-weight:800}
+.bc-health-stats{display:grid;grid-template-columns:repeat(3,1fr);gap:6px;margin-top:10px}.bc-health-stat{background:#f7f8fa;border-radius:8px;padding:7px;text-align:center}.bc-health-stat b{display:block}.bc-health-stat span{display:block;font-size:9px;color:var(--m);margin-top:2px}
+.bc-grid2{display:grid;grid-template-columns:1fr 1fr;gap:12px}.bc-chart{min-height:220px}.bc-bars{display:grid;gap:8px}.bc-bar-row{display:grid;grid-template-columns:140px 1fr 62px;gap:8px;align-items:center;font-size:11px}.bc-bar{height:14px;background:#edf0f4;border-radius:999px;overflow:hidden}.bc-bar>i{display:block;height:100%;background:currentColor;border-radius:999px}.bc-bar-row.good{color:#168451}.bc-bar-row.warn{color:#d39118}.bc-bar-row.bad{color:#c93d37}
+.bc-heat-good{background:#dff4e8}.bc-heat-warn{background:#fff1c7}.bc-heat-bad{background:#f9d9d7}.bc-heat-empty{background:#f4f5f7;color:#aaa}
+.bc-section-title{display:flex;justify-content:space-between;gap:10px;align-items:flex-end;margin:0 0 9px}.bc-section-title h3{margin:0}.bc-section-title p{margin:3px 0 0;color:var(--m);font-size:11px}
+.bc-insight-list,.bc-alert-list,.bc-sw-grid{display:grid;gap:9px}.bc-sw-grid{grid-template-columns:repeat(2,1fr)}
+.bc-insight,.bc-alert,.bc-sw{border:1px solid var(--line);border-left:5px solid #3767a6;border-radius:10px;padding:10px;background:#fff}.bc-alert.bad{border-left-color:#c93d37}.bc-alert.warn{border-left-color:#d39118}.bc-insight.good{border-left-color:#168451}
+.bc-insight h4,.bc-alert h4,.bc-sw h4{margin:0 0 5px}.bc-insight p,.bc-alert p,.bc-sw p{margin:0;font-size:11px;line-height:1.45;color:#505968}
+.bc-data-table input{width:110px;text-align:right}
+@media(max-width:1250px){.bc-toolbar{grid-template-columns:repeat(4,1fr)}.bc-health-grid{grid-template-columns:repeat(2,1fr)}}
+@media(max-width:850px){.bc-toolbar{grid-template-columns:repeat(2,1fr)}.bc-health-grid,.bc-grid2,.bc-sw-grid{grid-template-columns:1fr}.bc-metric-grid{grid-template-columns:repeat(2,1fr)}}
+
 @media(max-width:950px){.sales-entry-grid{grid-template-columns:repeat(2,1fr)}}@media(max-width:650px){.sales-entry-grid{grid-template-columns:1fr}}
 
 @media(max-width:950px){.io-grid{grid-template-columns:1fr}.io-actions{grid-template-columns:1fr}}
@@ -175,7 +205,7 @@ input,select,textarea{width:100%;padding:9px 10px;border:1px solid var(--line);b
 @media(max-width:950px){.g2,.g3,.g4{grid-template-columns:1fr}.header{align-items:flex-start;flex-direction:column}.nav{top:108px}}
 </style></head>
 <body>
-<div id="loginView" class="login-shell"><div class="login-card"><div class="brand"><h1>Eltrox RKS</h1><p>Wersja online v8.6.1</p></div><form id="loginForm" class="form"><label>E-mail<input id="loginEmail" type="email" required></label><label>Hasło<input id="loginPassword" type="password" required></label><button class="btn primary">Zaloguj</button><div id="loginMsg" class="msg"></div></form></div></div>
+<div id="loginView" class="login-shell"><div class="login-card"><div class="brand"><h1>Eltrox RKS</h1><p>Wersja online v8.7</p></div><form id="loginForm" class="form"><label>E-mail<input id="loginEmail" type="email" required></label><label>Hasło<input id="loginPassword" type="password" required></label><button class="btn primary">Zaloguj</button><div id="loginMsg" class="msg"></div></form></div></div>
 
 <div id="modeView" class="mode-shell hidden">
   <div class="mode-card">
@@ -258,12 +288,74 @@ input,select,textarea{width:100%;padding:9px 10px;border:1px solid var(--line);b
     <section class="panel" style="margin-top:12px"><h3>Źródła danych per oddział</h3><div id="analysisSourceTable" class="table-wrap"></div></section>
   </div></section>
 
-<section id="branchCompare" class="view">
-  <div class="head"><div><h2>Porównanie oddziałów</h2><p>Porównanie kondycji oddziałów w aktywnym regionie.</p></div>
-    <div class="controls"><label>Rok<input id="bcYear" type="number" style="width:100px"></label><label>Miesiąc<select id="bcMonth" style="width:145px"></select></label><button id="loadBranchCompareBtn" class="btn primary">Porównaj</button></div>
+<section id="branchCompare" class="view"><div class="inner bc-shell">
+  <div class="head"><div><h2>Porównanie oddziałów</h2><p>Ranking, kondycja, trendy i porównanie miesięczne oddziałów.</p></div></div>
+
+  <div class="bc-tabs">
+    <button class="btn active" data-bctab="dashboard">Porównanie oddziałów</button>
+    <button class="btn" data-bctab="data">Dane miesięczne</button>
+    <button class="btn" data-bctab="insights">Wnioski</button>
   </div>
-  <div id="branchCompareTable" class="panel table"></div>
-</section>
+
+  <section id="bcDashboard" class="bc-subview active">
+    <div class="panel bc-toolbar">
+      <div class="field"><label>Rok bieżący</label><input type="number" id="bcYear" min="2000" max="2100"></div>
+      <div class="field"><label>Rok porównawczy</label><input type="number" id="bcPrevYear" min="2000" max="2100"></div>
+      <div class="field"><label>Od miesiąca</label><select id="bcFrom"></select></div>
+      <div class="field"><label>Do miesiąca</label><select id="bcTo"></select></div>
+      <div class="field"><label>Szukaj oddziału</label><input id="bcSearch" type="text" placeholder="np. Gdynia"></div>
+      <div class="field"><label>Status</label><select id="bcStatus"><option value="">Wszystkie</option><option value="good">Dobra kondycja</option><option value="warn">Wymaga uwagi</option><option value="bad">Wymaga działania</option></select></div>
+      <div class="field"><label>Grupowanie</label><select id="bcGroup"><option value="">Bez grupowania</option><option value="status">Status</option></select></div>
+      <div class="field"><label>Sortowanie</label><select id="bcSort"><option value="score">Wynik punktowy</option><option value="ukPct">UK – wykonanie planu</option><option value="detailPct">Detal – wykonanie planu</option><option value="ukYoy">UK – wzrost r/r</option><option value="detailYoy">Detal – wzrost r/r</option><option value="combined">Wynik łączny</option></select></div>
+      <button id="bcClearFilters" class="btn">Wyczyść filtry</button>
+    </div>
+    <div id="bcActiveFilters" class="bc-active-filters"></div>
+    <div id="bcMetricGrid" class="bc-metric-grid"></div>
+
+    <div class="bc-section-title"><div><h3>Kondycja oddziałów</h3><p>Status, wynik punktowy, trend i odchylenie od średniej regionu.</p></div></div>
+    <div id="bcHealthGrid" class="bc-health-grid"></div>
+
+    <div class="panel" style="margin-bottom:12px">
+      <div class="bc-section-title"><div><h3>Ranking i porównanie</h3><p>Wyniki liczone są dla wybranego zakresu miesięcy.</p></div></div>
+      <div id="bcComparisonTable" class="table"></div>
+      <div style="font-size:10px;color:var(--m);margin-top:8px">● ≥100% planu &nbsp;&nbsp; ● 90–99,9% planu &nbsp;&nbsp; ● poniżej 90% planu</div>
+    </div>
+
+    <div class="bc-grid2">
+      <div class="panel bc-chart"><h3>Wykonanie planu UK</h3><div id="bcUkChart" class="bc-bars"></div></div>
+      <div class="panel bc-chart"><h3>Wykonanie planu Detal</h3><div id="bcDetailChart" class="bc-bars"></div></div>
+    </div>
+
+    <div class="panel" style="margin-top:12px">
+      <div class="bc-section-title"><div><h3>Mapa wyników miesięcznych</h3><p>Kolor pokazuje poziom realizacji planu w danym miesiącu.</p></div><label>Wskaźnik mapy<select id="bcHeatMetric"><option value="combined">Wynik łączny</option><option value="ukPct">UK</option><option value="detailPct">Detal</option></select></label></div>
+      <div id="bcHeatmap" class="table"></div>
+    </div>
+
+    <div class="panel" style="margin-top:12px">
+      <div class="bc-section-title"><div><h3>Porównanie okresów</h3><p>Porównaj wybrany okres z innym zakresem miesięcy bieżącego lub poprzedniego roku.</p></div></div>
+      <div class="controls" style="margin-bottom:9px">
+        <label>Źródło okresu porównawczego<select id="bcCompareSource"><option value="current">Bieżący rok</option><option value="previous">Rok porównawczy</option></select></label>
+        <label>Od miesiąca<select id="bcCompareFrom"></select></label>
+        <label>Do miesiąca<select id="bcCompareTo"></select></label>
+      </div>
+      <div id="bcPeriodSummary" class="muted" style="margin-bottom:7px"></div>
+      <div id="bcPeriodTable" class="table"></div>
+    </div>
+  </section>
+
+  <section id="bcData" class="bc-subview">
+    <div class="panel">
+      <div class="bc-section-title"><div><h3>Dane miesięczne</h3><p>Podgląd danych bazowych. Edycję wykonuj w zakładce „UK / Detal”.</p></div><label>Oddział<select id="bcDataBranch"></select></label></div>
+      <div id="bcDataTable" class="table"></div>
+    </div>
+  </section>
+
+  <section id="bcInsights" class="bc-subview">
+    <div class="panel" style="margin-bottom:12px"><div class="bc-section-title"><div><h3>Alerty</h3><p>Sytuacje wymagające uwagi lub szybkiej reakcji.</p></div></div><div id="bcAlertList" class="bc-alert-list"></div></div>
+    <div class="panel" style="margin-bottom:12px"><div class="bc-section-title"><div><h3>Mocne i słabe strony</h3><p>Automatyczna diagnoza każdego oddziału na podstawie wyników.</p></div></div><div id="bcStrengthWeakness" class="bc-sw-grid"></div></div>
+    <div class="panel"><div class="bc-section-title"><div><h3>Automatyczne wnioski</h3><p>Najważniejsze obserwacje dla wybranego okresu.</p></div></div><div id="bcInsightList" class="bc-insight-list"></div></div>
+  </section>
+</div></section>
 
 <section id="regionMap" class="view">
   <div class="head"><div><h2>Mapa regionu</h2><p>Mapa kondycji oddziałów oparta na wyniku 360°.</p></div><button id="refreshMapBtn" class="btn">Odśwież</button></div>
@@ -1337,10 +1429,135 @@ async function loadAnalysis(){
     <td>${x.hasCenter&&x.hasCompare?'Dane połączone':x.hasCenter?'Brak historii r/r':'Brak dopasowanych danych z Centrum'}</td></tr>`).join('')}</tbody></table>`;
 }
 
-async function loadBranchCompare(){
-  const y=+$('bcYear').value,m=+$('bcMonth').value,rows=(await branchMetricsFor(y,m)).sort((a,b)=>(b.score??-1)-(a.score??-1));
-  $('branchCompareTable').innerHTML=rows.length?`<table><tr><th>#</th><th>Oddział</th><th>Wynik</th><th>UK</th><th>Detal</th><th>VoIP</th><th>Controlling</th><th>UK r/r</th><th>Detal r/r</th></tr>${rows.map((x,i)=>`<tr><td>${i+1}</td><td><b>${esc(x.branch.name)}</b></td><td>${pct(x.score)}</td><td>${pct(x.uk)}</td><td>${pct(x.de)}</td><td>${pct(x.voip)}</td><td>${pct(x.ctrl)}</td><td>${pct(x.ukYoy)}</td><td>${pct(x.deYoy)}</td></tr>`).join('')}</table>`:'<div class="empty">Brak danych.</div>';
+
+const BCMONTHS=['styczeń','luty','marzec','kwiecień','maj','czerwiec','lipiec','sierpień','wrzesień','październik','listopad','grudzień'];
+let bcCache=[];
+function bcNum(v){const n=Number(v);return Number.isFinite(n)?n:0}
+function bcPct(a,p){return p>0?a/p:null}
+function bcYoy(cur,prev){return prev>0?(cur-prev)/prev:null}
+function bcCombined(a){const v=[a.ukPct,a.detailPct].filter(x=>x!==null);return v.length?v.reduce((s,x)=>s+x,0)/v.length:null}
+function bcScore(a){
+  let pts=0,w=0;
+  const add=(v,weight)=>{if(v!==null&&Number.isFinite(v)){pts+=Math.max(0,Math.min(1.2,v))*100*weight;w+=weight}};
+  add(a.ukPct,.35);add(a.detailPct,.35);
+  if(a.ukYoy!==null){pts+=Math.max(0,Math.min(100,50+a.ukYoy*250))*.15;w+=.15}
+  if(a.detailYoy!==null){pts+=Math.max(0,Math.min(100,50+a.detailYoy*250))*.15;w+=.15}
+  return w?pts/w:null;
 }
+function bcStatusOf(score){if(score===null)return {key:'warn',label:'Brak danych'};if(score>=80)return {key:'good',label:'Dobra kondycja'};if(score>=60)return {key:'warn',label:'Wymaga uwagi'};return {key:'bad',label:'Wymaga działania'}}
+function bcFmtPct(v){return v===null?'—':new Intl.NumberFormat('pl-PL',{style:'percent',minimumFractionDigits:1,maximumFractionDigits:1}).format(v)}
+function bcCls(v){return v===null?'muted':v>=1?'good':v>=.9?'warn':'bad'}
+function bcYoyCls(v){return v===null?'muted':v>=0?'good':'bad'}
+async function bcLoadYearRows(year){
+  const from=`${year}-01-01`,to=`${year+1}-01-01`;
+  const {data,error}=await sb.from('sales_results').select('*').eq('region_id',rid()).gte('result_date',from).lt('result_date',to).order('result_date',{ascending:true});
+  if(error)throw error;
+  const map=new Map();
+  (data||[]).forEach(r=>{
+    const month=Number(String(r.result_date).slice(5,7))-1,key=`${r.branch_id}|${month}`,old=map.get(key);
+    if(!old||String(r.result_date)>String(old.result_date))map.set(key,r);
+  });
+  return map;
+}
+function bcAggregate(branch,curMap,prevMap,from,to){
+  let ukP=0,ukA=0,deP=0,deA=0,puk=0,pde=0,monthsWithAny=0;
+  const months=[];
+  for(let i=0;i<12;i++){
+    const c=curMap.get(`${branch.id}|${i}`)||{},p=prevMap.get(`${branch.id}|${i}`)||{};
+    const row={ukPlan:bcNum(c.uk_plan),ukActual:bcNum(c.uk_execution),ukPrev:bcNum(p.uk_execution),detailPlan:bcNum(c.detail_plan),detailActual:bcNum(c.detail_execution),detailPrev:bcNum(p.detail_execution)};
+    months.push(row);
+    if(i>=from&&i<=to){
+      if(row.ukPlan||row.ukActual||row.detailPlan||row.detailActual||row.ukPrev||row.detailPrev)monthsWithAny++;
+      ukP+=row.ukPlan;ukA+=row.ukActual;deP+=row.detailPlan;deA+=row.detailActual;puk+=row.ukPrev;pde+=row.detailPrev;
+    }
+  }
+  const a={branch,months,ukPct:ukP?ukA/ukP:null,detailPct:deP?deA/deP:null,ukYoy:puk?bcYoy(ukA,puk):null,detailYoy:pde?bcYoy(deA,pde):null,monthsWithAny};
+  a.combined=bcCombined(a);a.score=bcScore(a);a.status=bcStatusOf(a.score);
+  const vals=months.slice(from,to+1).map(r=>{const u=bcPct(r.ukActual,r.ukPlan),d=bcPct(r.detailActual,r.detailPlan),v=[u,d].filter(x=>x!==null);return v.length?v.reduce((s,x)=>s+x,0)/v.length:null}).filter(x=>x!==null);
+  a.trend={dir:'flat',arrow:'→',label:'Trend stabilny'};
+  if(vals.length>=2){const diff=vals.at(-1)-vals.at(-2);if(diff>.03)a.trend={dir:'up',arrow:'↑',label:'Trend rosnący'};else if(diff<-.03)a.trend={dir:'down',arrow:'↓',label:'Trend spadkowy'}}
+  return a;
+}
+function bcFiltered(items){
+  const q=v45Norm($('bcSearch').value),st=$('bcStatus').value;
+  let a=items.filter(x=>(!q||v45Norm(x.branch.name).includes(q))&&(!st||x.status.key===st));
+  const sort=$('bcSort').value;
+  a.sort((x,y)=>{
+    const xv=sort==='score'?x.score:x[sort],yv=sort==='score'?y.score:y[sort];
+    return (yv??-999)-(xv??-999);
+  });
+  return a;
+}
+function bcRenderMetrics(items,all){
+  const withData=items.filter(x=>x.monthsWithAny),scores=withData.map(x=>x.score).filter(x=>x!==null);
+  const avg=scores.length?scores.reduce((s,x)=>s+x,0)/scores.length:null;
+  const top=[...withData].filter(x=>x.score!==null).sort((a,b)=>b.score-a.score)[0];
+  const good=withData.filter(x=>x.status.key==='good').length,risk=withData.filter(x=>x.status.key==='bad').length;
+  $('bcMetricGrid').innerHTML=`<div class="bc-metric"><span>Oddziały w widoku</span><strong>${items.length}</strong><small>${withData.length} z uzupełnionymi danymi</small></div>
+  <div class="bc-metric"><span>Średnia kondycja</span><strong>${avg===null?'—':avg.toFixed(0)+'/100'}</strong><small>${good} w dobrej kondycji</small></div>
+  <div class="bc-metric"><span>Najmocniejszy oddział</span><strong>${top?top.score.toFixed(0)+'/100':'—'}</strong><small>${top?esc(top.branch.name):'brak danych'}</small></div>
+  <div class="bc-metric"><span>Wymaga działania</span><strong>${risk}</strong><small>${risk===1?'1 oddział':risk+' oddziałów'}</small></div>`;
+  const chips=[];if($('bcSearch').value)chips.push('Szukaj: '+$('bcSearch').value);if($('bcStatus').value)chips.push('Status: '+$('bcStatus').selectedOptions[0].textContent);
+  $('bcActiveFilters').innerHTML=chips.map(x=>`<span class="bc-chip">${esc(x)}</span>`).join('');
+}
+function bcRenderHealth(items){
+  const rows=items.filter(x=>x.monthsWithAny);
+  const avgCombined=rows.map(x=>x.combined).filter(x=>x!==null);const regAvg=avgCombined.length?avgCombined.reduce((s,x)=>s+x,0)/avgCombined.length:null;
+  rows.forEach(x=>x.regionDiff=x.combined!==null&&regAvg!==null?x.combined-regAvg:null);
+  $('bcHealthGrid').innerHTML=rows.length?rows.map(a=>`<article class="bc-health-card ${a.status.key}">
+    <div class="bc-health-head"><div><div class="bc-health-name">${esc(a.branch.name)}</div><div class="bc-health-meta">aktywny region</div></div><span class="bc-status ${a.status.key}">${a.status.label}</span></div>
+    <div class="bc-score-line"><div><span class="bc-score">${a.score===null?'—':a.score.toFixed(0)}<small>/100</small></span><div class="muted">wynik punktowy</div></div><div class="bc-trend ${a.trend.dir==='up'?'good':a.trend.dir==='down'?'bad':''}">${a.trend.arrow} ${a.trend.label}</div></div>
+    <div class="bc-health-stats"><div class="bc-health-stat"><b class="${bcCls(a.ukPct)}">${bcFmtPct(a.ukPct)}</b><span>UK</span></div><div class="bc-health-stat"><b class="${bcCls(a.detailPct)}">${bcFmtPct(a.detailPct)}</b><span>Detal</span></div><div class="bc-health-stat"><b class="${a.regionDiff===null?'muted':a.regionDiff>=0?'good':'bad'}">${a.regionDiff===null?'—':(a.regionDiff>=0?'+':'')+(a.regionDiff*100).toFixed(1)+' p.p.'}</b><span>vs średnia regionu</span></div></div>
+  </article>`).join(''):'<div class="empty">Brak danych dla wybranego zakresu.</div>';
+}
+function bcRenderTable(items){
+  let last=null,body='';const group=$('bcGroup').value;
+  items.forEach(a=>{if(group==='status'&&a.status.label!==last){body+=`<tr><td colspan="10"><strong>${esc(a.status.label)}</strong></td></tr>`;last=a.status.label}
+    body+=`<tr><td><b>${esc(a.branch.name)}</b></td><td><span class="bc-status ${a.status.key}">${a.status.label}</span></td><td><b>${a.score===null?'—':a.score.toFixed(0)}</b></td><td>${a.trend.arrow} ${a.trend.label.replace('Trend ','')}</td><td class="${bcCls(a.ukPct)}">${bcFmtPct(a.ukPct)}</td><td class="${bcYoyCls(a.ukYoy)}">${bcFmtPct(a.ukYoy)}</td><td class="${bcCls(a.detailPct)}">${bcFmtPct(a.detailPct)}</td><td class="${bcYoyCls(a.detailYoy)}">${bcFmtPct(a.detailYoy)}</td><td class="${bcCls(a.combined)}">${bcFmtPct(a.combined)}</td><td>${a.regionDiff===null?'—':(a.regionDiff>=0?'+':'')+(a.regionDiff*100).toFixed(1)+' p.p.'}</td></tr>`});
+  $('bcComparisonTable').innerHTML=`<table><thead><tr><th>Oddział</th><th>Status</th><th>Punkty</th><th>Trend</th><th>% planu UK</th><th>UK r/r</th><th>% planu Detal</th><th>Detal r/r</th><th>Wynik łączny</th><th>vs średnia regionu</th></tr></thead><tbody>${body||'<tr><td colspan="10">Brak danych.</td></tr>'}</tbody></table>`;
+}
+function bcRenderBars(items,key,target){
+  const rows=items.filter(x=>x[key]!==null).slice(0,12);
+  $(target).innerHTML=rows.length?rows.map(a=>`<div class="bc-bar-row ${bcCls(a[key])}"><span>${esc(a.branch.name)}</span><div class="bc-bar"><i style="width:${Math.min(120,a[key]*100)}%"></i></div><b>${bcFmtPct(a[key])}</b></div>`).join(''):'<div class="empty">Brak danych.</div>';
+}
+function bcMonthlyMetric(row,key){const u=bcPct(row.ukActual,row.ukPlan),d=bcPct(row.detailActual,row.detailPlan);if(key==='ukPct')return u;if(key==='detailPct')return d;const v=[u,d].filter(x=>x!==null);return v.length?v.reduce((s,x)=>s+x,0)/v.length:null}
+function bcHeatClass(v){return v===null?'bc-heat-empty':v>=1?'bc-heat-good':v>=.9?'bc-heat-warn':'bc-heat-bad'}
+function bcRenderHeat(items){
+  const metric=$('bcHeatMetric').value;
+  $('bcHeatmap').innerHTML=`<table><thead><tr><th>Oddział</th>${BCMONTHS.map(m=>`<th>${m.slice(0,3)}</th>`).join('')}</tr></thead><tbody>${items.map(a=>`<tr><td><b>${esc(a.branch.name)}</b></td>${a.months.map(r=>{const v=bcMonthlyMetric(r,metric);return `<td class="${bcHeatClass(v)}">${bcFmtPct(v)}</td>`}).join('')}</tr>`).join('')}</tbody></table>`;
+}
+function bcAggregatePeriod(a,from,to,source){
+  const rows=a.months.slice(from,to+1);let uk=0,de=0;
+  rows.forEach(r=>{uk+=source==='previous'?r.ukPrev:r.ukActual;de+=source==='previous'?r.detailPrev:r.detailActual});return {uk,detail:de}
+}
+function bcRenderPeriod(items){
+  const cf=Number($('bcCompareFrom').value),ct=Number($('bcCompareTo').value),source=$('bcCompareSource').value;
+  const f=Number($('bcFrom').value),t=Number($('bcTo').value),y=$('bcYear').value,py=$('bcPrevYear').value;
+  $('bcPeriodSummary').textContent=`Okres bazowy: ${BCMONTHS[f-1]}–${BCMONTHS[t-1]} ${y} • okres porównawczy: ${BCMONTHS[cf-1]}–${BCMONTHS[ct-1]} ${source==='previous'?py:y}.`;
+  $('bcPeriodTable').innerHTML=`<table><thead><tr><th>Oddział</th><th>UK – okres bazowy</th><th>UK – porównanie</th><th>Zmiana UK</th><th>Detal – okres bazowy</th><th>Detal – porównanie</th><th>Zmiana Detal</th></tr></thead><tbody>${items.map(a=>{const base=bcAggregatePeriod(a,f-1,t-1,'current'),comp=bcAggregatePeriod(a,cf-1,ct-1,source),uy=bcYoy(base.uk,comp.uk),dy=bcYoy(base.detail,comp.detail);return `<tr><td><b>${esc(a.branch.name)}</b></td><td>${money(base.uk)}</td><td>${money(comp.uk)}</td><td class="${bcYoyCls(uy)}">${bcFmtPct(uy)}</td><td>${money(base.detail)}</td><td>${money(comp.detail)}</td><td class="${bcYoyCls(dy)}">${bcFmtPct(dy)}</td></tr>`}).join('')}</tbody></table>`;
+}
+function bcRenderData(){
+  const id=$('bcDataBranch').value,a=bcCache.find(x=>x.branch.id===id);if(!a)return $('bcDataTable').innerHTML='<div class="empty">Wybierz oddział.</div>';
+  $('bcDataTable').innerHTML=`<table><thead><tr><th>Miesiąc</th><th>Plan UK</th><th>Wykonanie UK</th><th>UK poprzedni rok</th><th>Plan Detal</th><th>Wykonanie Detal</th><th>Detal poprzedni rok</th></tr></thead><tbody>${a.months.map((r,i)=>`<tr><td>${BCMONTHS[i]}</td><td>${money(r.ukPlan)}</td><td>${money(r.ukActual)}</td><td>${money(r.ukPrev)}</td><td>${money(r.detailPlan)}</td><td>${money(r.detailActual)}</td><td>${money(r.detailPrev)}</td></tr>`).join('')}</tbody></table>`;
+}
+function bcRenderInsights(items){
+  const alerts=[];items.filter(a=>a.monthsWithAny).forEach(a=>{if(a.status.key==='bad')alerts.push({t:'bad',h:`${a.branch.name}: słaba kondycja`,p:`Wynik punktowy ${a.score?.toFixed(0)}/100. Oddział wymaga analizy i działań.`});if(a.ukPct!==null&&a.ukPct<.8)alerts.push({t:'bad',h:`${a.branch.name}: bardzo niska realizacja UK`,p:`UK wynosi ${bcFmtPct(a.ukPct)} planu.`});if(a.detailPct!==null&&a.detailPct<.8)alerts.push({t:'bad',h:`${a.branch.name}: bardzo niska realizacja Detalu`,p:`Detal wynosi ${bcFmtPct(a.detailPct)} planu.`});if(a.trend.dir==='down')alerts.push({t:'warn',h:`${a.branch.name}: trend spadkowy`,p:'Ostatni dostępny miesiąc jest słabszy od poprzedniego.'})});
+  $('bcAlertList').innerHTML=alerts.length?alerts.map(x=>`<div class="bc-alert ${x.t}"><h4>${esc(x.h)}</h4><p>${esc(x.p)}</p></div>`).join(''):'<div class="empty">Brak istotnych alertów.</div>';
+  $('bcStrengthWeakness').innerHTML=items.filter(x=>x.monthsWithAny).map(a=>{const s=[],w=[];if(a.ukPct!==null)(a.ukPct>=1?s:w).push(`UK ${bcFmtPct(a.ukPct)}`);if(a.detailPct!==null)(a.detailPct>=1?s:w).push(`Detal ${bcFmtPct(a.detailPct)}`);if(a.ukYoy!==null)(a.ukYoy>=0?s:w).push(`UK r/r ${bcFmtPct(a.ukYoy)}`);if(a.detailYoy!==null)(a.detailYoy>=0?s:w).push(`Detal r/r ${bcFmtPct(a.detailYoy)}`);return `<div class="bc-sw"><h4>${esc(a.branch.name)}</h4><p><b>Mocne:</b> ${esc(s.join(', ')||'brak wyraźnej przewagi')}</p><p><b>Słabe:</b> ${esc(w.join(', ')||'brak istotnych sygnałów')}</p></div>`}).join('');
+  const best=[...items].filter(x=>x.score!==null).sort((a,b)=>b.score-a.score)[0],worst=[...items].filter(x=>x.score!==null).sort((a,b)=>a.score-b.score)[0];
+  const ins=[];if(best)ins.push({h:'Najmocniejszy oddział',p:`${best.branch.name}: ${best.score.toFixed(0)}/100.`});if(worst&&worst!==best)ins.push({h:'Największa przestrzeń do poprawy',p:`${worst.branch.name}: ${worst.score.toFixed(0)}/100.`});
+  $('bcInsightList').innerHTML=ins.map(x=>`<div class="bc-insight good"><h4>${esc(x.h)}</h4><p>${esc(x.p)}</p></div>`).join('')||'<div class="empty">Brak danych.</div>';
+}
+async function loadBranchCompare(){
+  const year=Number($('bcYear').value)||new Date().getFullYear(),prev=Number($('bcPrevYear').value)||year-1,from=Number($('bcFrom').value)-1,to=Number($('bcTo').value)-1;
+  if(from>to){$('bcTo').value=from+1;return loadBranchCompare()}
+  const [cur,old]=await Promise.all([bcLoadYearRows(year),bcLoadYearRows(prev)]);
+  bcCache=branches.map(b=>bcAggregate(b,cur,old,from,to));
+  let items=bcFiltered(bcCache);
+  const data=items.filter(x=>x.monthsWithAny),avg=data.map(x=>x.combined).filter(x=>x!==null);const reg=avg.length?avg.reduce((s,x)=>s+x,0)/avg.length:null;items.forEach(x=>x.regionDiff=x.combined!==null&&reg!==null?x.combined-reg:null);
+  bcRenderMetrics(items,bcCache);bcRenderHealth(items);bcRenderTable(items);bcRenderBars(items,'ukPct','bcUkChart');bcRenderBars(items,'detailPct','bcDetailChart');bcRenderHeat(items);bcRenderPeriod(items);bcRenderData();bcRenderInsights(items);
+}
+
 async function loadRegionMap(){
   const d=new Date(),rows=await branchMetricsFor(d.getFullYear(),d.getMonth()+1);
   $('regionMapGrid').innerHTML=rows.map(x=>{let cls=!Number.isFinite(x.score)?'':x.score>=80?'good':x.score>=60?'warn':'bad';return `<div class="map-card ${cls}" onclick="openBranchFromMap('${x.branch.id}')"><h4>${esc(x.branch.name)}</h4><div class="score">${Number.isFinite(x.score)?Math.round(x.score):'—'}</div><div class="muted">UK: ${pct(x.uk)}<br>Detal: ${pct(x.de)}<br>VoIP: ${pct(x.voip)}<br>Controlling: ${pct(x.ctrl)}</div></div>`}).join('')||'<div class="empty">Brak oddziałów.</div>';
@@ -2117,7 +2334,7 @@ async function showApp(session,modeResolved=false){
   refreshAdminRegionName();await loadBranches();
   clearLog();clearMeeting();clearTask();clearVisit();clearNote();$('salesEntryDate').value=today();
   let d=new Date();$('kpiYear').value=d.getFullYear();$('kpiMonth').value=d.getMonth()+1;$('comparisonYear').value=d.getFullYear();$('comparisonMonth').value=d.getMonth()+1;
-  ['analysisFromM','analysisToM','bcMonth'].forEach(fillMonthSelect);$('analysisYear').value=d.getFullYear();$('analysisFromM').value=1;$('analysisToM').value=d.getMonth()+1;$('bcYear').value=d.getFullYear();$('bcMonth').value=d.getMonth()+1;
+  ['analysisFromM','analysisToM','bcFrom','bcTo','bcCompareFrom','bcCompareTo'].forEach(fillMonthSelect);$('analysisYear').value=d.getFullYear();$('analysisFromM').value=1;$('analysisToM').value=d.getMonth()+1;$('bcYear').value=d.getFullYear();$('bcPrevYear').value=d.getFullYear()-1;$('bcFrom').value=1;$('bcTo').value=d.getMonth()+1;$('bcCompareFrom').value=1;$('bcCompareTo').value=d.getMonth()+1;
   $('bonusYear').value=d.getFullYear();$('bonusQuarter').value=Math.floor(d.getMonth()/3)+1;$('bonusMonthYear').value=d.getFullYear();fillMonthSelect('bonusMonthSelect');$('bonusMonthSelect').value=d.getMonth()+1;$('archiveMonth').value=d.toISOString().slice(0,7);
 }
 function showLogin(){$('appView').classList.add('hidden');$('modeView').classList.add('hidden');$('loginView').classList.remove('hidden');workMode=null;workModeRegion=null}
@@ -2131,7 +2348,7 @@ $('tabOrderBackdrop').onclick=e=>{if(e.target===$('tabOrderBackdrop'))closeTabOr
 document.addEventListener('keydown',e=>{if(e.key==='Escape'&&!$('tabOrderBackdrop').classList.contains('hidden'))closeTabOrder()});
 
 
-$('analysisYear').onchange=loadAnalysis;$('analysisFromM').onchange=loadAnalysis;$('analysisToM').onchange=loadAnalysis;$('loadBranchCompareBtn').onclick=loadBranchCompare;$('refreshMapBtn').onclick=loadRegionMap;
+$('analysisYear').onchange=loadAnalysis;$('analysisFromM').onchange=loadAnalysis;$('analysisToM').onchange=loadAnalysis;$('refreshMapBtn').onclick=loadRegionMap;
 $('addRegionBtn')&&($('addRegionBtn').onclick=manageAddRegion);$('renameRegionBtn')&&($('renameRegionBtn').onclick=manageRenameRegion);$('deleteRegionBtn')&&($('deleteRegionBtn').onclick=manageDeleteRegion);
 $('prepareNextMeetingBtn')&&($('prepareNextMeetingBtn').onclick=prepareNextMeeting);$('printMeetingBtn')&&($('printMeetingBtn').onclick=printMeeting);
 $('uploadAttachmentBtn').onclick=uploadAttachment;$('attachmentFilter').onchange=loadAttachments;
@@ -2152,6 +2369,19 @@ $('confirmUserModeBtn').onclick=confirmUserMode;
 $('cancelModeRegionBtn').onclick=()=>{$('modeRegionBox').classList.add('hidden');msg('modeMsg','')};
 $('changeModeBtn').onclick=changeWorkMode;
 $('modeLogoutBtn').onclick=async()=>{await sb.auth.signOut();$('modeView').classList.add('hidden');showLogin()};
+
+document.querySelectorAll('[data-bctab]').forEach(btn=>btn.onclick=()=>{
+  document.querySelectorAll('[data-bctab]').forEach(x=>x.classList.toggle('active',x===btn));
+  const tab=btn.dataset.bctab;
+  $('bcDashboard').classList.toggle('active',tab==='dashboard');
+  $('bcData').classList.toggle('active',tab==='data');
+  $('bcInsights').classList.toggle('active',tab==='insights');
+  if(tab==='data')bcRenderData();
+});
+['bcYear','bcPrevYear','bcFrom','bcTo','bcStatus','bcGroup','bcSort','bcHeatMetric','bcCompareSource','bcCompareFrom','bcCompareTo'].forEach(id=>$(id).onchange=loadBranchCompare);
+$('bcSearch').oninput=loadBranchCompare;
+$('bcClearFilters').onclick=()=>{$('bcSearch').value='';$('bcStatus').value='';$('bcGroup').value='';$('bcSort').value='score';loadBranchCompare()};
+$('bcDataBranch').onchange=bcRenderData;
 $('logoutBtn').onclick=async()=>{await sb.auth.signOut();showLogin()};
 $('loadComparisonBtn').onclick=loadComparison;$('regionSelect').onchange=loadBranches;$('addBranchBtn').onclick=addBranch;
 $('saveContact').onclick=saveContact;$('clearContact').onclick=clearContact;$('contactFilter').onchange=loadContacts;$('contactSearch').oninput=loadContacts;
