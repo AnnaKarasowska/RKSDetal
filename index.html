@@ -2,7 +2,7 @@
 <html lang="pl">
 <head>
 <meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
-<title>Eltrox RKS – Supabase v8.6</title>
+<title>Eltrox RKS – Supabase v8.6.1</title>
 <style>
 :root{--o:#f36f21;--od:#d85d12;--bg:#eef1f4;--w:#fff;--line:#d9dde3;--t:#242424;--m:#6b7280;--r:#c9372c;--g:#25894b;--b:#2f71c8;--sh:0 8px 24px rgba(0,0,0,.08)}
 *{box-sizing:border-box}html,body{margin:0;min-height:100%;font-family:Arial,Helvetica,sans-serif;background:var(--bg);color:var(--t)}button,input,select,textarea{font:inherit}button{cursor:pointer}.hidden{display:none!important}
@@ -175,7 +175,7 @@ input,select,textarea{width:100%;padding:9px 10px;border:1px solid var(--line);b
 @media(max-width:950px){.g2,.g3,.g4{grid-template-columns:1fr}.header{align-items:flex-start;flex-direction:column}.nav{top:108px}}
 </style></head>
 <body>
-<div id="loginView" class="login-shell"><div class="login-card"><div class="brand"><h1>Eltrox RKS</h1><p>Wersja online v8.6</p></div><form id="loginForm" class="form"><label>E-mail<input id="loginEmail" type="email" required></label><label>Hasło<input id="loginPassword" type="password" required></label><button class="btn primary">Zaloguj</button><div id="loginMsg" class="msg"></div></form></div></div>
+<div id="loginView" class="login-shell"><div class="login-card"><div class="brand"><h1>Eltrox RKS</h1><p>Wersja online v8.6.1</p></div><form id="loginForm" class="form"><label>E-mail<input id="loginEmail" type="email" required></label><label>Hasło<input id="loginPassword" type="password" required></label><button class="btn primary">Zaloguj</button><div id="loginMsg" class="msg"></div></form></div></div>
 
 <div id="modeView" class="mode-shell hidden">
   <div class="mode-card">
@@ -997,12 +997,16 @@ async function renderSalesEntry(){
   const month=date.slice(0,7),isMonday=new Date(date+'T12:00:00').getDay()===1;
   const rows=await salesMonthRows(month);
   const exact=new Map(rows.filter(x=>x.result_date===date).map(x=>[x.branch_id,x]));
+  const latestOnOrBefore=new Map();
+  rows.filter(x=>x.result_date<=date).forEach(x=>{
+    if(!latestOnOrBefore.has(x.branch_id))latestOnOrBefore.set(x.branch_id,x);
+  });
   let up=0,ue=0,dp=0,de=0;
 
   $('salesEntryBody').innerHTML=branches.map(b=>{
-    const day=exact.get(b.id)||{};
+    const day=exact.get(b.id)||latestOnOrBefore.get(b.id)||{};
     const uplan=salesPlanFromMonth(rows,b.id,'uk_plan'),dplan=salesPlanFromMonth(rows,b.id,'detail_plan');
-    const uexec=day.uk_execution??'',dexec=day.detail_execution??'',est=day.uk_estimate??'';
+    const uexec=day.uk_execution??'',dexec=day.detail_execution??'',est=exact.get(b.id)?.uk_estimate??'';
     const ur=salesRatio(uexec,uplan),dr=salesRatio(dexec,dplan);
     const n1=parseSalesEntryNumber(uplan),n2=parseSalesEntryNumber(uexec),n3=parseSalesEntryNumber(dplan),n4=parseSalesEntryNumber(dexec);
     if(Number.isFinite(n1))up+=n1;if(Number.isFinite(n2))ue+=n2;if(Number.isFinite(n3))dp+=n3;if(Number.isFinite(n4))de+=n4;
@@ -1027,6 +1031,16 @@ async function renderSalesEntry(){
 
   document.querySelectorAll('#salesEntryBody input').forEach(x=>{
     x.onfocus=()=>{x.value=x.dataset.raw??'';setTimeout(()=>x.select(),0)};
+    x.oninput=()=>{
+      const tr=x.closest('tr');if(!tr)return;
+      const raw=(sel)=>parseSalesEntryNumber(tr.querySelector(sel)?.value);
+      const upv=raw('.se-up'),uev=raw('.se-ue'),dpv=raw('.se-dp'),dev=raw('.se-de');
+      const cells=tr.querySelectorAll('.sales-entry-pct');
+      const ur=Number.isFinite(upv)&&upv>0&&Number.isFinite(uev)?uev/upv:NaN;
+      const dr=Number.isFinite(dpv)&&dpv>0&&Number.isFinite(dev)?dev/dpv:NaN;
+      if(cells[0]){cells[0].textContent=salesRatioText(ur);cells[0].className='sales-entry-pct '+salesRatioClass(ur)}
+      if(cells[1]){cells[1].textContent=salesRatioText(dr);cells[1].className='sales-entry-pct '+salesRatioClass(dr)}
+    };
     x.onchange=async()=>{
       const n=parseSalesEntryNumber(x.value);x.dataset.raw=Number.isFinite(n)?String(n):'';
       await saveSalesEntry(false);
@@ -1053,16 +1067,22 @@ async function saveSalesEntry(showAlert=true){
     const monthBranchRows=oldRows.filter(r=>r.branch_id===b.id);
     if(monthBranchRows.length){
       const ids=monthBranchRows.map(r=>r.id);
-      const {error}=await sb.from('sales_results').update({uk_plan:up,detail_plan:dp}).in('id',ids);
+      const {error}=await sb.from('sales_results').update({uk_plan:up ?? 0,detail_plan:dp ?? 0}).in('id',ids);
       if(error)return msg('salesMsg',error.message,'error');
     }
 
-    const row={region_id:rid(),branch_id:b.id,result_date:date,uk_plan:up,uk_execution:ue,uk_estimate:est,detail_plan:dp,detail_execution:de};
     const allBlank=[up,ue,est,dp,de].every(v=>v===null);
     if(allBlank&&existing.id){
-      const {error}=await sb.from('sales_results').delete().eq('id',existing.id);if(error)return msg('salesMsg',error.message,'error');
+      const {error}=await sb.from('sales_results').delete().eq('id',existing.id);
+      if(error)return msg('salesMsg',error.message,'error');
     }else if(!allBlank){
-      const {error}=await sb.from('sales_results').upsert(row,{onConflict:'branch_id,result_date'});if(error)return msg('salesMsg',error.message,'error');
+      const row={
+        region_id:rid(),branch_id:b.id,result_date:date,
+        uk_plan:up ?? 0,uk_execution:ue ?? 0,uk_estimate:est ?? 0,
+        detail_plan:dp ?? 0,detail_execution:de ?? 0
+      };
+      const {error}=await sb.from('sales_results').upsert(row,{onConflict:'branch_id,result_date'});
+      if(error)return msg('salesMsg',error.message,'error');
     }
   }
   $('salesEntryStatus').textContent='Zapisano';
