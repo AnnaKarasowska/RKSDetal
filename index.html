@@ -2,7 +2,7 @@
 <html lang="pl">
 <head>
 <meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
-<title>Eltrox RKS – Supabase v14.3</title><meta name="theme-color" content="#ef6c00"><meta name="apple-mobile-web-app-capable" content="yes"><meta name="apple-mobile-web-app-status-bar-style" content="default"><meta name="apple-mobile-web-app-title" content="Eltrox RKS"><link rel="manifest" href="./manifest.webmanifest"><link rel="apple-touch-icon" href="./icon-192.png">
+<title>Eltrox RKS – Supabase v14.4</title><meta name="theme-color" content="#ef6c00"><meta name="apple-mobile-web-app-capable" content="yes"><meta name="apple-mobile-web-app-status-bar-style" content="default"><meta name="apple-mobile-web-app-title" content="Eltrox RKS"><link rel="manifest" href="./manifest.webmanifest"><link rel="apple-touch-icon" href="./icon-192.png">
 <style>
 :root{--o:#f36f21;--od:#d85d12;--bg:#eef1f4;--w:#fff;--line:#d9dde3;--t:#242424;--m:#6b7280;--r:#c9372c;--g:#25894b;--b:#2f71c8;--sh:0 8px 24px rgba(0,0,0,.08)}
 *{box-sizing:border-box}html,body{margin:0;min-height:100%;font-family:Arial,Helvetica,sans-serif;background:var(--bg);color:var(--t)}button,input,select,textarea{font:inherit}button{cursor:pointer}.hidden{display:none!important}
@@ -431,7 +431,7 @@ input,select,textarea{width:100%;padding:9px 10px;border:1px solid var(--line);b
 @media(max-width:950px){.g2,.g3,.g4{grid-template-columns:1fr}.header{align-items:flex-start;flex-direction:column}.nav{top:108px}}
 </style></head>
 <body>
-<div id="loginView" class="login-shell"><div class="login-card"><div class="brand"><h1>Eltrox RKS</h1><p>Wersja online v14.3</p></div><form id="loginForm" class="form"><label>E-mail<input id="loginEmail" type="email" required></label><label>Hasło<input id="loginPassword" type="password" required></label><button class="btn primary">Zaloguj</button><div id="loginMsg" class="msg"></div></form></div></div>
+<div id="loginView" class="login-shell"><div class="login-card"><div class="brand"><h1>Eltrox RKS</h1><p>Wersja online v14.4</p></div><form id="loginForm" class="form"><label>E-mail<input id="loginEmail" type="email" required></label><label>Hasło<input id="loginPassword" type="password" required></label><button class="btn primary">Zaloguj</button><div id="loginMsg" class="msg"></div></form></div></div>
 
 <div id="modeView" class="mode-shell hidden">
   <div class="mode-card">
@@ -446,7 +446,7 @@ input,select,textarea{width:100%;padding:9px 10px;border:1px solid var(--line);b
       <div class="controls" style="margin-top:10px"><button id="confirmUserModeBtn" class="btn primary">Pracuj w tym regionie</button><button id="cancelModeRegionBtn" class="btn">Wstecz</button></div>
     </div>
     <div id="modeMsg" class="msg"></div>
-    <div style="margin-top:12px"><button id="modeLogoutBtn" class="btn">Wyloguj</button></div>
+    <div style="margin-top:12px"><button id="modeLogoutBtn" class="btn" type="button" onclick="forceLogout()">Wyloguj</button></div>
   </div>
 </div>
 <div id="appView" class="hidden">
@@ -457,7 +457,7 @@ input,select,textarea{width:100%;padding:9px 10px;border:1px solid var(--line);b
 <div class="global-period"><label>Okres globalny<input id="globalPeriod" type="month"></label><button id="applyGlobalPeriod" class="btn">Ustaw okres</button></div><button id="installPwaBtn" class="btn pwa-install">Zainstaluj aplikację</button><button id="tabOrderBtn" class="btn">Kolejność zakładek</button>
 <button id="exportBackupBtn" class="btn">Kopia regionu</button>
 <button id="importBackupBtn" class="btn">Przywróć kopię</button><input id="importBackupFile" type="file" accept=".json,application/json" hidden>
-<button id="logoutBtn" class="btn">Wyloguj</button></div></header>
+<button id="logoutBtn" class="btn" type="button" onclick="forceLogout()">Wyloguj</button></div></header>
 <nav class="nav">
 <button class="tab active" data-v="dashboard">Na dziś</button><button class="tab" data-v="analysis">Analiza regionu</button><button class="tab" data-v="comparison">Porównanie regionów</button><button class="tab" data-v="branchCompare">Porównanie oddziałów</button><button class="tab" data-v="regionMap">Mapa regionu</button><button class="tab" data-v="branches">Oddziały</button><button class="tab" data-v="contacts">Kontakty</button><button class="tab" data-v="contactLogs">Rejestr kontaktów</button><button class="tab" data-v="meetings">1:1</button><button class="tab" data-v="tasks">Terminarz</button><button class="tab" data-v="visits">Wizyty</button><button class="tab" data-v="sales">UK / Detal</button><button class="tab" data-v="kpis">KPI / Controlling</button><button class="tab" data-v="notes">Notatki</button><button class="tab" data-v="management">Zarządzanie oddziałem</button><button class="tab" data-v="decisions">Decyzje / Eskalacje</button><button class="tab" data-v="checklist">Checklista RKS</button><button class="tab" data-v="weekPlan">Plan tygodnia</button><button class="tab" data-v="adminCenter">Centrum admin</button><button class="tab" data-v="trash">Kosz</button><button class="tab" data-v="branchCard">Karta oddziału</button><button class="tab" data-v="history">Historia</button><button class="tab" data-v="attachments">Załączniki</button><button class="tab" data-v="dataIO">Import / eksport</button><button class="tab" data-v="reportsBonus">Raporty / premia</button>
 </nav>
@@ -1230,7 +1230,33 @@ input,select,textarea{width:100%;padding:9px 10px;border:1px solid var(--line);b
 <script src="https://cdn.jsdelivr.net/npm/jszip@3.10.1/dist/jszip.min.js"></script>
 <script>
 const SUPABASE_URL='https://irfutrratkzbgerodkqu.supabase.co',SUPABASE_PUBLISHABLE_KEY='sb_publishable_oq5YUJnhoN1DdWKpy6yh5A_axoYBQfW';
+
 const sb=window.supabase.createClient(SUPABASE_URL,SUPABASE_PUBLISHABLE_KEY),$=id=>document.getElementById(id);
+
+async function forceLogout(){
+  const btn=$('logoutBtn')||$('modeLogoutBtn');
+  if(btn){btn.disabled=true;btn.textContent='Wylogowywanie...'}
+  try{
+    // Najpierw kończymy sesję Supabase.
+    const {error}=await sb.auth.signOut({scope:'local'});
+    if(error)console.error('Błąd wylogowania:',error);
+  }catch(e){
+    console.error('Błąd wylogowania:',e);
+  }finally{
+    // Interfejs wraca do logowania niezależnie od błędu sieciowego.
+    user=null;
+    workMode=null;
+    workModeRegion=null;
+    if($('appView'))$('appView').classList.add('hidden');
+    if($('modeView'))$('modeView').classList.add('hidden');
+    if($('loginView'))$('loginView').classList.remove('hidden');
+    if($('loginPassword'))$('loginPassword').value='';
+    if($('logoutBtn')){$('logoutBtn').disabled=false;$('logoutBtn').textContent='Wyloguj'}
+    if($('modeLogoutBtn')){$('modeLogoutBtn').disabled=false;$('modeLogoutBtn').textContent='Wyloguj'}
+  }
+}
+window.forceLogout=forceLogout;
+
 let workMode=null,workModeRegion=null;
 let user=null,profile=null,branches=[],edit={contact:null,log:null,meeting:null,task:null,visit:null,note:null};
 
@@ -3939,7 +3965,7 @@ $('chooseUserModeBtn').onclick=chooseUserMode;
 $('confirmUserModeBtn').onclick=confirmUserMode;
 $('cancelModeRegionBtn').onclick=()=>{$('modeRegionBox').classList.add('hidden');msg('modeMsg','')};
 $('changeModeBtn').onclick=changeWorkMode;
-$('modeLogoutBtn').onclick=async()=>{await sb.auth.signOut();$('modeView').classList.add('hidden');showLogin()};
+$('modeLogoutBtn').onclick=forceLogout;
 
 document.querySelectorAll('[data-bctab]').forEach(btn=>btn.onclick=()=>{
   document.querySelectorAll('[data-bctab]').forEach(x=>x.classList.toggle('active',x===btn));
@@ -3975,7 +4001,7 @@ $('refreshAdminCenterBtn').onclick=loadAdminCenter;$('exportFullMonthlyReportBtn
 
 $('saveDecisionBtn').onclick=saveDecision;$('decisionFilterBranch').onchange=loadDecisions;$('decisionFilterStatus').onchange=loadDecisions;
 $('addPinnedNoteBtn').onclick=addPinnedNote;$('installPwaBtn').onclick=installPwa;$('closePwaHelp').onclick=()=>$('pwaHelpModal').classList.add('hidden');
-$('logoutBtn').onclick=async()=>{await sb.auth.signOut();showLogin()};
+$('logoutBtn').onclick=forceLogout;
 $('loadComparisonBtn').onclick=loadComparison;$('regionSelect').onchange=loadBranches;$('addBranchBtn').onclick=addBranch;
 $('saveContact').onclick=saveContact;$('clearContact').onclick=clearContact;$('contactFilter').onchange=loadContacts;$('contactSearch').oninput=loadContacts;
 $('saveLog').onclick=saveLog;$('clearLog').onclick=clearLog;$('logFilter').onchange=loadLogs;
