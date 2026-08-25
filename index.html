@@ -2,7 +2,7 @@
 <html lang="pl">
 <head>
 <meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
-<title>Eltrox RKS – Supabase v14.6</title><meta name="theme-color" content="#ef6c00"><meta name="apple-mobile-web-app-capable" content="yes"><meta name="apple-mobile-web-app-status-bar-style" content="default"><meta name="apple-mobile-web-app-title" content="Eltrox RKS"><link rel="manifest" href="./manifest.webmanifest"><link rel="apple-touch-icon" href="./icon-192.png">
+<title>Eltrox RKS – Supabase v14.7</title><meta name="theme-color" content="#ef6c00"><meta name="apple-mobile-web-app-capable" content="yes"><meta name="apple-mobile-web-app-status-bar-style" content="default"><meta name="apple-mobile-web-app-title" content="Eltrox RKS"><link rel="manifest" href="./manifest.webmanifest"><link rel="apple-touch-icon" href="./icon-192.png">
 <style>
 :root{--o:#f36f21;--od:#d85d12;--bg:#eef1f4;--w:#fff;--line:#d9dde3;--t:#242424;--m:#6b7280;--r:#c9372c;--g:#25894b;--b:#2f71c8;--sh:0 8px 24px rgba(0,0,0,.08)}
 *{box-sizing:border-box}html,body{margin:0;min-height:100%;font-family:Arial,Helvetica,sans-serif;background:var(--bg);color:var(--t)}button,input,select,textarea{font:inherit}button{cursor:pointer}.hidden{display:none!important}
@@ -399,6 +399,50 @@ input,select,textarea{width:100%;padding:9px 10px;border:1px solid var(--line);b
 
 /* v14 — decyzje, powiązania, efekty, walidacja, PWA */
 .decision-grid{display:grid;grid-template-columns:390px minmax(0,1fr);gap:12px}
+
+/* v14.7 — poprawiony układ Decyzje / Eskalacje */
+#decisions{min-width:0}
+#decisions .head{align-items:flex-end}
+#decisions .head>div:first-child{min-width:280px;flex:1}
+#decisions .head>.controls{flex:0 0 auto}
+#decisions .head>.controls label{min-width:170px}
+#decisions .decision-grid{
+  display:grid;
+  grid-template-columns:minmax(420px,520px) minmax(0,1fr);
+  gap:14px;
+  align-items:start;
+}
+#decisions .panel{min-width:0;overflow:hidden}
+#decisions .form{min-width:0}
+#decisions .form>label,
+#decisions .form input,
+#decisions .form select,
+#decisions .form textarea{min-width:0;max-width:100%}
+#decisions .decision-form-row{
+  display:grid;
+  grid-template-columns:minmax(0,1fr) minmax(0,1fr);
+  gap:10px;
+  min-width:0;
+}
+#decisions .decision-form-row>*{min-width:0}
+#decisions #decisionDescription{min-height:110px}
+#decisions #saveDecisionBtn{justify-self:start;min-width:120px}
+#decisions #decisionList{min-width:0}
+#decisions .decision-item{min-width:0;overflow:hidden}
+#decisions .decision-item .top{min-width:0}
+#decisions .decision-item b,
+#decisions .decision-item .meta,
+#decisions .decision-item div{overflow-wrap:anywhere}
+@media(max-width:1100px){
+  #decisions .decision-grid{grid-template-columns:1fr}
+  #decisions .head>.controls{width:100%}
+  #decisions .head>.controls label{flex:1;min-width:180px}
+}
+@media(max-width:650px){
+  #decisions .decision-form-row{grid-template-columns:1fr}
+  #decisions .head>.controls{display:grid;grid-template-columns:1fr}
+}
+
 .decision-item{border:1px solid var(--line);border-left:5px solid #7b61a8;border-radius:11px;padding:11px;background:#fff;margin-bottom:8px}
 .decision-item.escalated{border-left-color:#c93d37}.decision-item.closed{border-left-color:#168451;opacity:.82}
 .decision-item .meta,.link-item .meta,.outcome-item .meta{font-size:10px;color:var(--m);margin-top:4px}
@@ -431,7 +475,7 @@ input,select,textarea{width:100%;padding:9px 10px;border:1px solid var(--line);b
 @media(max-width:950px){.g2,.g3,.g4{grid-template-columns:1fr}.header{align-items:flex-start;flex-direction:column}.nav{top:108px}}
 </style></head>
 <body>
-<div id="loginView" class="login-shell"><div class="login-card"><div class="brand"><h1>Eltrox RKS</h1><p>Wersja online v14.6</p></div><form id="loginForm" class="form"><label>E-mail<input id="loginEmail" type="email" required></label><label>Hasło<input id="loginPassword" type="password" required></label><button class="btn primary">Zaloguj</button><div id="loginMsg" class="msg"></div></form></div></div>
+<div id="loginView" class="login-shell"><div class="login-card"><div class="brand"><h1>Eltrox RKS</h1><p>Wersja online v14.7</p></div><form id="loginForm" class="form"><label>E-mail<input id="loginEmail" type="email" required></label><label>Hasło<input id="loginPassword" type="password" required></label><button class="btn primary">Zaloguj</button><div id="loginMsg" class="msg"></div></form></div></div>
 
 <div id="modeView" class="mode-shell hidden">
   <div class="mode-card">
@@ -938,15 +982,15 @@ input,select,textarea{width:100%;padding:9px 10px;border:1px solid var(--line);b
         <label>Oddział<select id="decisionBranch"></select></label>
         <label>Temat<input id="decisionTitle" placeholder="np. zgoda na rekrutację drugiego KUK"></label>
         <label>Opis<textarea id="decisionDescription"></textarea></label>
-        <div class="g2"><label>Typ<select id="decisionType"><option value="decision">Decyzja</option><option value="escalation">Eskalacja</option></select></label><label>Priorytet<select id="decisionPriority"><option value="high">Wysoki</option><option value="normal" selected>Normalny</option><option value="low">Niski</option></select></label></div>
-        <div class="g2"><label>Decydent / osoba odpowiedzialna<input id="decisionOwner"></label><label>Termin<input id="decisionDeadline" type="date"></label></div>
+        <div class="decision-form-row"><label>Typ<select id="decisionType"><option value="decision">Decyzja</option><option value="escalation">Eskalacja</option></select></label><label>Priorytet<select id="decisionPriority"><option value="high">Wysoki</option><option value="normal" selected>Normalny</option><option value="low">Niski</option></select></label></div>
+        <div class="decision-form-row"><label>Decydent / osoba odpowiedzialna<input id="decisionOwner"></label><label>Termin<input id="decisionDeadline" type="date"></label></div>
         <button id="saveDecisionBtn" class="btn primary">Dodaj</button>
       </div>
       <div id="decisionMsg" class="msg"></div>
     </section>
     <section class="panel">
       <h3>Lista decyzji</h3>
-      <div id="decisionList"></div>
+      <div id="decisionList"><div class="empty">Brak otwartych decyzji / eskalacji dla wybranych filtrów.</div></div>
     </section>
   </div>
 </section>
