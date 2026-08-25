@@ -2,7 +2,7 @@
 <html lang="pl">
 <head>
 <meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
-<title>Eltrox RKS – Supabase v9</title>
+<title>Eltrox RKS – Supabase v10</title>
 <style>
 :root{--o:#f36f21;--od:#d85d12;--bg:#eef1f4;--w:#fff;--line:#d9dde3;--t:#242424;--m:#6b7280;--r:#c9372c;--g:#25894b;--b:#2f71c8;--sh:0 8px 24px rgba(0,0,0,.08)}
 *{box-sizing:border-box}html,body{margin:0;min-height:100%;font-family:Arial,Helvetica,sans-serif;background:var(--bg);color:var(--t)}button,input,select,textarea{font:inherit}button{cursor:pointer}.hidden{display:none!important}
@@ -338,6 +338,27 @@ input,select,textarea{width:100%;padding:9px 10px;border:1px solid var(--line);b
 @media(max-width:1100px){.brief-grid,.branch-state-grid{grid-template-columns:repeat(2,1fr)}.manage-grid{grid-template-columns:1fr}}
 @media(max-width:650px){.brief-grid,.branch-state-grid{grid-template-columns:1fr}}
 
+
+/* v10 — wygoda, zamykanie miesiąca, audyt, szybkie akcje */
+.global-period{display:flex;align-items:end;gap:6px;flex-wrap:wrap}
+.global-period label{font-size:10px;font-weight:800;color:var(--m)}
+.quick-add-fab{position:fixed;right:22px;bottom:22px;z-index:70;width:52px;height:52px;border-radius:50%;border:0;background:var(--o);color:#fff;font-size:28px;font-weight:900;box-shadow:0 8px 24px rgba(0,0,0,.18);cursor:pointer}
+.quick-modal{position:fixed;inset:0;background:rgba(0,0,0,.35);display:grid;place-items:center;z-index:100;padding:16px}
+.quick-card{width:min(680px,100%);background:#fff;border-radius:16px;padding:18px;box-shadow:0 20px 60px rgba(0,0,0,.25)}
+.quick-options{display:grid;grid-template-columns:repeat(3,1fr);gap:10px}.quick-option{border:1px solid var(--line);border-radius:12px;padding:14px;background:#fff;cursor:pointer;text-align:left}.quick-option:hover{border-color:var(--o);background:#fffaf7}.quick-option b{display:block}.quick-option span{display:block;color:var(--m);font-size:11px;margin-top:4px}
+.audit-table{font-size:11px}.audit-json{max-width:520px;white-space:pre-wrap;word-break:break-word;font-family:ui-monospace,monospace;font-size:9px;color:#555}
+.close-month-box{border:1px solid var(--line);border-left:5px solid #7b61a8;border-radius:12px;padding:12px;background:#fff}
+.closed-badge{display:inline-block;padding:4px 8px;border-radius:999px;background:#eee7f8;color:#654996;font-size:10px;font-weight:900}
+.month-summary{white-space:pre-wrap;line-height:1.55;font-size:12px}
+.mobile-actionbar{display:none}
+@media(max-width:800px){
+  .header .ha{gap:6px}.global-period{width:100%}.global-period label{flex:1}.global-period input{width:100%}
+  .quick-options{grid-template-columns:1fr 1fr}.quick-add-fab{right:14px;bottom:14px}
+  .mobile-actionbar{display:flex;position:sticky;bottom:0;z-index:35;background:#fff;border-top:1px solid var(--line);padding:8px;gap:6px;justify-content:space-around}
+  .mobile-actionbar .btn{flex:1}
+}
+@media(max-width:520px){.quick-options{grid-template-columns:1fr}}
+
 @media(max-width:950px){
   .dashboard-v45 .grid2{grid-template-columns:1fr}
 }
@@ -361,7 +382,7 @@ input,select,textarea{width:100%;padding:9px 10px;border:1px solid var(--line);b
 @media(max-width:950px){.g2,.g3,.g4{grid-template-columns:1fr}.header{align-items:flex-start;flex-direction:column}.nav{top:108px}}
 </style></head>
 <body>
-<div id="loginView" class="login-shell"><div class="login-card"><div class="brand"><h1>Eltrox RKS</h1><p>Wersja online v9</p></div><form id="loginForm" class="form"><label>E-mail<input id="loginEmail" type="email" required></label><label>Hasło<input id="loginPassword" type="password" required></label><button class="btn primary">Zaloguj</button><div id="loginMsg" class="msg"></div></form></div></div>
+<div id="loginView" class="login-shell"><div class="login-card"><div class="brand"><h1>Eltrox RKS</h1><p>Wersja online v10</p></div><form id="loginForm" class="form"><label>E-mail<input id="loginEmail" type="email" required></label><label>Hasło<input id="loginPassword" type="password" required></label><button class="btn primary">Zaloguj</button><div id="loginMsg" class="msg"></div></form></div></div>
 
 <div id="modeView" class="mode-shell hidden">
   <div class="mode-card">
@@ -384,7 +405,7 @@ input,select,textarea{width:100%;padding:9px 10px;border:1px solid var(--line);b
 <div class="searchbox"><input id="globalSearch" type="search" placeholder="Szukaj w aplikacji..."><div id="globalSearchResults" class="search-results hidden"></div></div>
 <label style="min-width:210px">Region<select id="regionSelect"></select></label>
 <span id="roleBadge" class="badge"></span><span id="workModeBadge" class="mode-badge"></span><button id="changeModeBtn" class="btn">Zmień tryb</button>
-<button id="tabOrderBtn" class="btn">Kolejność zakładek</button>
+<div class="global-period"><label>Okres globalny<input id="globalPeriod" type="month"></label><button id="applyGlobalPeriod" class="btn">Ustaw okres</button></div><button id="tabOrderBtn" class="btn">Kolejność zakładek</button>
 <button id="exportBackupBtn" class="btn">Kopia regionu</button>
 <button id="importBackupBtn" class="btn">Przywróć kopię</button><input id="importBackupFile" type="file" accept=".json,application/json" hidden>
 <button id="logoutBtn" class="btn">Wyloguj</button></div></header>
@@ -465,7 +486,7 @@ input,select,textarea{width:100%;padding:9px 10px;border:1px solid var(--line);b
     </div>
     
 <section class="panel" style="margin-top:12px">
-  <div class="bc-section-title"><div><h3>Region w skrócie</h3><p>Gotowy briefing do rozmowy z przełożonym.</p></div></div>
+  <div class="bc-section-title"><div><h3>Region w skrócie</h3><p>Gotowy briefing do rozmowy z przełożonym.</p></div><div class="controls"><button id="exportRegionBriefExcel" class="btn">Eksport Excel</button><button id="printRegionBrief" class="btn">Drukuj / PDF</button></div></div>
   <div id="regionBriefMetrics" class="brief-grid"></div>
   <div class="grid2">
     <div><h4>Największe ryzyka</h4><div id="regionBriefRisks" class="alert-board"></div></div>
@@ -640,7 +661,7 @@ input,select,textarea{width:100%;padding:9px 10px;border:1px solid var(--line);b
 
         <div class="controls">
           <button id="saveMeeting" class="btn primary">Zapisz notatkę</button>
-          <button id="prepareNextMeetingBtn" class="btn">Przygotuj kolejne 1:1</button>
+          <button id="prepareNextMeetingBtn" class="btn">Automatycznie przygotuj 1:1</button>
           <button id="clearMeeting" class="btn">Nowa notatka</button>
         </div>
       </div>
@@ -828,6 +849,11 @@ input,select,textarea{width:100%;padding:9px 10px;border:1px solid var(--line);b
     </section>
 
     <section class="manage-card visit-full">
+      <div class="head"><div><h3 style="margin:0">Automatyczne podsumowanie miesiąca</h3><p>Wynik, KPI, kadry, ryzyka, cele i działania w jednym raporcie.</p></div>
+      <div class="controls"><label>Miesiąc<input id="autoSummaryMonth" type="month"></label><button id="generateMonthlySummaryBtn" class="btn primary">Generuj podsumowanie</button><button id="saveSummaryAsCommentBtn" class="btn">Zapisz jako komentarz RKS</button></div></div>
+      <div id="monthlyAutoSummary" class="month-summary muted">Wybierz miesiąc i wygeneruj podsumowanie.</div>
+    </section>
+    <section class="manage-card visit-full">
       <h3>Komentarz miesięczny RKS</h3>
       <div class="form">
         <label>Miesiąc<input id="monthlyCommentMonth" type="month"></label>
@@ -1005,13 +1031,44 @@ input,select,textarea{width:100%;padding:9px 10px;border:1px solid var(--line);b
     <div style="margin-top:12px"><h3>Podsumowanie kwartału – region</h3><div id="bonusQuarterSummary" class="table"></div></div>
   </div>
 
+  
   <div class="g2" style="margin-top:12px">
+    <section class="panel close-month-box">
+      <h3>Zamykanie miesiąca</h3>
+      <div class="form">
+        <label>Miesiąc<input id="closeMonthKey" type="month"></label>
+        <label>Powód / komentarz<input id="closeMonthNote" placeholder="np. miesiąc rozliczony"></label>
+        <div class="controls"><button id="closeMonthBtn" class="btn primary">Zamknij miesiąc</button><button id="reopenMonthBtn" class="btn">Otwórz miesiąc</button><span id="closeMonthStatus"></span></div>
+      </div>
+      <div class="muted">Po zamknięciu miesiąca wyniki UK/Detal i KPI z tego miesiąca nie mogą być zmieniane, dopóki miesiąc nie zostanie ponownie otwarty.</div>
+    </section>
+    <section class="panel">
+      <div class="head"><div><h3 style="margin:0">Log zmian</h3><p>Kto, kiedy i co zmienił.</p></div><button id="refreshAuditBtn" class="btn">Odśwież</button></div>
+      <div id="auditLogTable" class="table audit-table"></div>
+    </section>
+  </div>
+<div class="g2" style="margin-top:12px">
     <div class="panel"><h3>Archiwum miesiąca</h3><div class="form"><label>Miesiąc<input id="archiveMonth" type="month"></label><button id="createArchiveBtn" class="btn primary">Utwórz archiwum</button><div id="archiveMsg" class="msg"></div></div></div>
     <div class="panel"><h3>Archiwa</h3><div id="archiveList" class="list"></div></div>
   </div>
 </section>
 
-</main></div>
+</main>
+<div id="quickAddModal" class="quick-modal hidden">
+  <div class="quick-card">
+    <div class="head"><div><h3 style="margin:0">Szybkie dodawanie</h3><p>Dodaj najczęstszy wpis bez szukania zakładki.</p></div><button id="closeQuickAdd" class="btn">Zamknij</button></div>
+    <div class="quick-options">
+      <button class="quick-option" data-quick="tasks"><b>Zadanie</b><span>Terminarz i deadline</span></button>
+      <button class="quick-option" data-quick="notes"><b>Notatka</b><span>Notatka do oddziału</span></button>
+      <button class="quick-option" data-quick="contactLogs"><b>Kontakt</b><span>Telefon, e-mail lub GG</span></button>
+      <button class="quick-option" data-quick="management-risk"><b>Ryzyko</b><span>Ryzyko i plan działania</span></button>
+      <button class="quick-option" data-quick="management-goal"><b>Cel</b><span>Cel miesięczny / kwartalny</span></button>
+      <button class="quick-option" data-quick="visits"><b>Wizyta</b><span>Raport z wizyty</span></button>
+    </div>
+  </div>
+</div>
+<button id="quickAddFab" class="quick-add-fab" title="Szybkie dodawanie">+</button>
+</div>
 
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 <script src="https://cdn.jsdelivr.net/npm/xlsx@0.18.5/dist/xlsx.full.min.js"></script>
@@ -1450,6 +1507,7 @@ async function renderSalesEntry(){
 }
 async function saveSalesEntry(showAlert=true){
   const date=$('salesEntryDate').value;if(!date)return;
+  if(await isMonthClosed(date.slice(0,7)))return msg('salesMsg','Ten miesiąc jest zamknięty. Otwórz go w Raporty / premia, aby edytować wyniki.','error');
   const month=date.slice(0,7),[y,m]=month.split('-').map(Number);
   const from=`${month}-01`,to=new Date(y,m,1).toISOString().slice(0,10);
   const isMonday=new Date(date+'T12:00:00').getDay()===1;
@@ -1577,6 +1635,7 @@ async function renderMonthlyKpi(){
 }
 async function saveMonthlyKpi(showAlert=true){
   const voipKey=$('voipMonth').value,controlKey=$('controlKpiMonth').value;
+  if((voipKey&&await isMonthClosed(voipKey))||(controlKey&&await isMonthClosed(controlKey)))return msg('kpiMsg','Co najmniej jeden z wybranych miesięcy jest zamknięty.','error');
   const vp=kpiPeriodParts(voipKey),cp=kpiPeriodParts(controlKey);
   if(!vp&&!cp)return;
 
@@ -2047,12 +2106,7 @@ function applyRoleUi(){updateWorkModeUi()}
 
 function meetingContent(){return {results:$('meetingResults')?.value.trim()||'',investments:$('meetingInvestments')?.value.trim()||'',problems:$('meetingProblems')?.value.trim()||'',organization:$('meetingOrganization')?.value.trim()||'',rks_comment:$('meetingRksComment')?.value.trim()||'',summary:$('meetingSummary')?.value.trim()||''}}
 function setMeetingContent(c={}){if(!$('meetingResults'))return;$('meetingResults').value=c.results||'';$('meetingInvestments').value=c.investments||'';$('meetingProblems').value=c.problems||'';$('meetingOrganization').value=c.organization||'';$('meetingRksComment').value=c.rks_comment||'';$('meetingSummary').value=c.summary||''}
-async function prepareNextMeeting(){
-  const bid=$('meetingBranch').value;if(!bid)return;
-  const {data}=await sb.from('meeting_notes').select('*').eq('branch_id',bid).order('meeting_date',{ascending:false}).limit(1).maybeSingle();
-  clearMeeting();$('meetingBranch').value=bid;$('meetingDate').value=today();
-  if(data){$('meetingTopics').value=(data.content?.summary||data.urgent_topics||'');}
-}
+async function prepareNextMeeting(){return autoPrepareOneToOne()}
 async function printMeeting(){await renderMeetingNoteV45();setTimeout(()=>window.print(),80)}
 
 async function createTasksFromVisit(id){const v=(window._visits||[]).find(x=>x.id===id);if(!v)return;await syncVisitRecommendationsToTasksOnline(v);await loadTasks();alert('Zalecenia zostały zsynchronizowane z terminarzem.')}
@@ -2867,6 +2921,137 @@ async function loadRegionBrief(){
   $('regionBriefActions').innerHTML=actions.slice(0,8).map(x=>`<div class="alert-row"><b>${esc(bn(x.b))}</b><div class="meta">${esc(x.t)}</div></div>`).join('')||'<div class="muted">Brak pilnych potrzeb.</div>';
 }
 
+
+async function isMonthClosed(monthKey){
+  const {data,error}=await sb.from('closed_months').select('id').eq('region_id',rid()).eq('month_key',monthKey).maybeSingle();
+  if(error)throw error;return !!data;
+}
+async function applyGlobalPeriodValue(){
+  const key=$('globalPeriod').value;if(!key)return;
+  const [y,m]=key.split('-').map(Number);
+  if($('analysisYear'))$('analysisYear').value=y;
+  if($('analysisFromM'))$('analysisFromM').value=m;
+  if($('analysisToM'))$('analysisToM').value=m;
+  if($('salesEntryDate'))$('salesEntryDate').value=`${key}-01`;
+  if($('voipMonth'))$('voipMonth').value=key;
+  if($('controlKpiMonth'))$('controlKpiMonth').value=key;
+  if($('monthlyCommentMonth'))$('monthlyCommentMonth').value=key;
+  if($('autoSummaryMonth'))$('autoSummaryMonth').value=key;
+  if($('bonusMonthYear'))$('bonusMonthYear').value=y;
+  if($('bonusMonthSelect'))$('bonusMonthSelect').value=m;
+  if($('closeMonthKey'))$('closeMonthKey').value=key;
+  const active=document.querySelector('.view.active')?.id;
+  const loaders={dashboard:loadDashboard,analysis:loadAnalysis,sales:loadSales,kpis:loadKpis,management:loadManagement,reportsBonus:calculateMonthlyBonus};
+  if(loaders[active])await loaders[active]();
+}
+function openQuick(view,sub=''){
+  $('quickAddModal').classList.add('hidden');
+  const btn=document.querySelector(`.tab[data-v="${view}"]`);if(btn)btn.click();
+  setTimeout(()=>{
+    if(view==='management'){
+      if(sub==='risk')$('riskTitle')?.focus();
+      if(sub==='goal')$('goalTitle')?.focus();
+    }else{
+      const map={tasks:'taskTitle',notes:'noteText',contactLogs:'logPerson',visits:'visitParticipants'};
+      $(map[view])?.focus();
+    }
+  },80);
+}
+async function autoPrepareOneToOne(){
+  const bid=$('meetingBranch').value;if(!bid)return;
+  const now=new Date(),year=now.getFullYear(),month=now.getMonth()+1,from=`${year}-${String(month).padStart(2,'0')}-01`,to=new Date(year,month,1).toISOString().slice(0,10);
+  const [tasks,risks,goals,staff,comments,sales,kpi]=await Promise.all([
+    sb.from('tasks').select('*').eq('branch_id',bid).neq('status','done'),
+    sb.from('branch_risks').select('*').eq('branch_id',bid).neq('status','closed'),
+    sb.from('branch_goals').select('*').eq('branch_id',bid).neq('status','done'),
+    sb.from('branch_goals').select('*').eq('branch_id',bid).neq('status','done'),
+    sb.from('branch_staffing').select('*').eq('branch_id',bid).maybeSingle(),
+    sb.from('monthly_rks_comments').select('*').eq('branch_id',bid).order('month_key',{ascending:false}).limit(1),
+    sb.from('sales_results').select('*').eq('branch_id',bid).gte('result_date',from).lt('result_date',to).order('result_date',{ascending:false}).limit(1),
+    sb.from('monthly_kpis').select('*').eq('branch_id',bid).order('year',{ascending:false}).order('month',{ascending:false}).limit(1)
+  ]);
+  const t=tasks.data||[],r=risks.data||[],g=goals.data||[],st=staff.data||null,c=(comments.data||[])[0],s=(sales.data||[])[0]||{},k=(kpi.data||[])[0]||{};
+  const urgent=[];
+  r.filter(x=>x.level==='high').forEach(x=>urgent.push(`RYZYKO: ${x.title}`));
+  t.filter(x=>x.priority==='high').forEach(x=>urgent.push(`ZADANIE: ${x.title}`));
+  g.filter(x=>x.deadline&&x.deadline<today()).forEach(x=>urgent.push(`CEL PO TERMINIE: ${x.title}`));
+  $('meetingTopics').value=urgent.join('\n')||'Brak automatycznie wykrytych tematów pilnych.';
+  $('meetingResults').value=`UK: ${s.uk_plan?((Number(s.uk_execution||0)/Number(s.uk_plan))*100).toFixed(1)+'%':'—'}; Detal: ${s.detail_plan?((Number(s.detail_execution||0)/Number(s.detail_plan))*100).toFixed(1)+'%':'—'}; VoIP: ${k.voip??'—'}%; Controlling: ${k.controlling??'—'}%`;
+  $('meetingProblems').value=r.map(x=>`${x.title} — ${x.action_plan||''}`).join('\n');
+  $('meetingOrganization').value=`Kadry: ${st?`${st.staff_count||0} osób, ${st.vacancies||0} wakatów, ${st.onboarding||0} wdrażanych. ${st.comment||''}`:'brak danych'}\nOtwarte cele: ${g.map(x=>x.title).join(', ')||'brak'}\nOtwarte zadania: ${t.length}`;
+  $('meetingRksComment').value=c?.comment||'';
+  $('meetingSummary').value=g.map(x=>`${x.title} (${x.progress||0}%)`).join('\n');
+  await renderMeetingNoteV45();
+  msg('meetingMsg','Notatka została automatycznie przygotowana z aktualnych danych oddziału.','ok');
+}
+async function generateMonthlySummary(){
+  const bid=$('manageBranch').value,key=$('autoSummaryMonth').value;if(!bid||!key)return;
+  const [y,m]=key.split('-').map(Number),from=`${key}-01`,to=new Date(y,m,1).toISOString().slice(0,10);
+  const [sales,kpi,tasks,risks,goals,staff,visits]=await Promise.all([
+    sb.from('sales_results').select('*').eq('branch_id',bid).gte('result_date',from).lt('result_date',to).order('result_date',{ascending:false}).limit(1),
+    sb.from('monthly_kpis').select('*').eq('branch_id',bid).eq('year',y).eq('month',m).maybeSingle(),
+    sb.from('tasks').select('*').eq('branch_id',bid),
+    sb.from('branch_risks').select('*').eq('branch_id',bid).neq('status','closed'),
+    sb.from('branch_goals').select('*').eq('branch_id',bid),
+    sb.from('branch_staffing').select('*').eq('branch_id',bid).maybeSingle(),
+    sb.from('visits').select('*').eq('branch_id',bid).gte('visit_date',from).lt('visit_date',to)
+  ]);
+  const s=(sales.data||[])[0]||{},k=kpi.data||{},st=staff.data||null;
+  const uk=s.uk_plan?Number(s.uk_execution||0)/Number(s.uk_plan)*100:NaN,det=s.detail_plan?Number(s.detail_execution||0)/Number(s.detail_plan)*100:NaN;
+  const done=(tasks.data||[]).filter(x=>x.status==='done').length,open=(tasks.data||[]).filter(x=>x.status!=='done').length;
+  const text=[
+    `PODSUMOWANIE ${key} — ${bn(bid)}`,
+    `UK: ${Number.isFinite(uk)?uk.toFixed(1)+'%':'—'} | Detal: ${Number.isFinite(det)?det.toFixed(1)+'%':'—'}`,
+    `VoIP UK: ${k.voip_uk??'—'}% | VoIP Detal: ${k.voip_detail??'—'}% | Średni VoIP: ${k.voip??'—'}% | Controlling: ${k.controlling??'—'}%`,
+    `Kadry: ${st?`${st.staff_count||0} osób, ${st.vacancies||0} wakatów, ${st.onboarding||0} we wdrożeniu. ${st.comment||''}`:'brak danych'}`,
+    `Ryzyka: ${(risks.data||[]).map(x=>`${x.level}: ${x.title}`).join('; ')||'brak otwartych ryzyk'}`,
+    `Cele: ${(goals.data||[]).map(x=>`${x.title} — ${x.progress||0}% (${x.status})`).join('; ')||'brak celów'}`,
+    `Zadania: ${done} wykonanych / ${open} otwartych`,
+    `Wizyty w miesiącu: ${(visits.data||[]).length}`
+  ].join('\n');
+  $('monthlyAutoSummary').textContent=text;
+}
+async function saveSummaryAsComment(){
+  const text=$('monthlyAutoSummary').textContent,key=$('autoSummaryMonth').value,bid=$('manageBranch').value;
+  if(!key||!bid||!text||text.startsWith('Wybierz'))return;
+  const {error}=await sb.from('monthly_rks_comments').upsert({region_id:rid(),branch_id:bid,month_key:key,comment:text,created_by:user.id},{onConflict:'branch_id,month_key'});
+  if(error)return msg('managementMsg',error.message,'error');
+  msg('managementMsg','Podsumowanie zapisano jako komentarz RKS.','ok');await loadManagement();
+}
+async function exportRegionBriefExcel(){
+  await loadRegionBrief();
+  const rows=[];
+  const risks=await sb.from('branch_risks').select('*').eq('region_id',rid()).neq('status','closed');
+  const staffing=await sb.from('branch_staffing').select('*').eq('region_id',rid());
+  branches.forEach(b=>{
+    const rs=(risks.data||[]).filter(x=>x.branch_id===b.id);
+    const st=(staffing.data||[]).find(x=>x.branch_id===b.id);
+    rows.push({Oddział:b.name,'Wysokie ryzyka':rs.filter(x=>x.level==='high').length,'Wszystkie ryzyka':rs.length,'Liczba osób':st?.staff_count??'','Wakaty':st?.vacancies??'','Komentarz kadrowy':st?.comment??''});
+  });
+  const ws=XLSX.utils.json_to_sheet(rows),wb=XLSX.utils.book_new();XLSX.utils.book_append_sheet(wb,ws,'Region');XLSX.writeFile(wb,`Raport-regionu-${today()}.xlsx`);
+}
+async function closeMonth(){
+  const key=$('closeMonthKey').value;if(!key)return;
+  if(!confirm(`Zamknąć miesiąc ${key}? Wyniki i KPI nie będą mogły być edytowane.`))return;
+  const {error}=await sb.from('closed_months').upsert({region_id:rid(),month_key:key,note:$('closeMonthNote').value.trim(),closed_by:user.id},{onConflict:'region_id,month_key'});
+  if(error)return alert(error.message);await refreshClosedMonthStatus();
+}
+async function reopenMonth(){
+  const key=$('closeMonthKey').value;if(!key)return;
+  if(!confirm(`Ponownie otworzyć miesiąc ${key}?`))return;
+  const {error}=await sb.from('closed_months').delete().eq('region_id',rid()).eq('month_key',key);if(error)return alert(error.message);await refreshClosedMonthStatus();
+}
+async function refreshClosedMonthStatus(){
+  const key=$('closeMonthKey').value;if(!key)return;
+  const closed=await isMonthClosed(key);
+  $('closeMonthStatus').innerHTML=closed?'<span class="closed-badge">MIESIĄC ZAMKNIĘTY</span>':'<span class="badge">otwarty</span>';
+}
+async function loadAuditLog(){
+  const {data,error}=await sb.from('audit_logs').select('*').eq('region_id',rid()).order('changed_at',{ascending:false}).limit(150);
+  if(error)return $('auditLogTable').innerHTML=`<div class="empty">${esc(error.message)}</div>`;
+  $('auditLogTable').innerHTML=(data||[]).length?`<table><tr><th>Data</th><th>Użytkownik</th><th>Tabela</th><th>Operacja</th><th>Rekord</th><th>Zmiana</th></tr>${data.map(x=>`<tr><td>${new Date(x.changed_at).toLocaleString('pl-PL')}</td><td>${esc(x.changed_by_email||x.changed_by||'—')}</td><td>${esc(x.table_name)}</td><td>${esc(x.operation)}</td><td>${esc(x.record_id||'')}</td><td><details><summary>pokaż</summary><div class="audit-json">${esc(JSON.stringify({old:x.old_data,new:x.new_data},null,2))}</div></details></td></tr>`).join('')}</table>`:'<div class="empty">Brak zmian.</div>';
+}
+
 async function loadDashboard(){
   if(!rid()||!branches.length)return;
   $('todayRegionBadge').textContent=$('regionSelect').selectedOptions[0]?.textContent||'';
@@ -2942,7 +3127,7 @@ async function loadBranchState(){
   if(!$('cardBranch')||!$('stateResult'))return;
   const bid=$('cardBranch').value;if(!bid)return;
   const now=new Date(),year=now.getFullYear(),month=now.getMonth()+1,from=`${year}-${String(month).padStart(2,'0')}-01`,to=new Date(year,month,1).toISOString().slice(0,10);
-  const [sales,kpi,staff,risk,logs,visits,meetings]=await Promise.all([
+  const [sales,kpi,staff,risk,goals,logs,visits,meetings]=await Promise.all([
     sb.from('sales_results').select('*').eq('branch_id',bid).gte('result_date',from).lt('result_date',to).order('result_date',{ascending:false}).limit(1),
     sb.from('monthly_kpis').select('*').eq('branch_id',bid).order('year',{ascending:false}).order('month',{ascending:false}).limit(1),
     sb.from('branch_staffing').select('*').eq('branch_id',bid).maybeSingle(),
@@ -2962,7 +3147,7 @@ async function loadBranchState(){
   $('stateKpi').textContent=k.voip==null?'—':`${Number(k.voip).toFixed(1)}%`;
   $('stateStaff').textContent=st?`${st.staff_count||0} os. • ${st.vacancies||0} wak.`:'—';
   const high=risks.filter(x=>x.level==='high').length,med=risks.filter(x=>x.level==='medium').length;
-  $('stateRisk').textContent=high?`${high} wysokie`:med?`${med} średnie`:'brak wysokich';
+  $('stateRisk').textContent=(high?`${high} wysokie`:med?`${med} średnie`:'brak wysokich')+` • ${(goals.data||[]).length} cel. otw.`;
   const dates=[(logs.data||[])[0]?.contact_date,(visits.data||[])[0]?.visit_date,(meetings.data||[])[0]?.meeting_date].filter(Boolean).sort().reverse();
   $('stateContact').textContent=dates[0]?fd(dates[0]):'—';
 }
@@ -3061,7 +3246,7 @@ async function showApp(session,modeResolved=false){
     $('controlKpiMonth').value=`${cd.getFullYear()}-${String(cd.getMonth()+1).padStart(2,'0')}`;
   }$('comparisonYear').value=d.getFullYear();$('comparisonMonth').value=d.getMonth()+1;
   ['analysisFromM','analysisToM','bcFrom','bcTo','bcCompareFrom','bcCompareTo'].forEach(fillMonthSelect);$('analysisYear').value=d.getFullYear();$('analysisFromM').value=1;$('analysisToM').value=d.getMonth()+1;$('bcYear').value=d.getFullYear();$('bcPrevYear').value=d.getFullYear()-1;$('bcFrom').value=1;$('bcTo').value=d.getMonth()+1;$('bcCompareFrom').value=1;$('bcCompareTo').value=d.getMonth()+1;
-  $('bonusYear').value=d.getFullYear();$('bonusQuarter').value=Math.floor(d.getMonth()/3)+1;$('bonusMonthYear').value=d.getFullYear();fillMonthSelect('bonusMonthSelect');$('bonusMonthSelect').value=d.getMonth()+1;$('archiveMonth').value=d.toISOString().slice(0,7);$('personnelDate').value=today();$('visitPlanDate').value=today();$('monthlyCommentMonth').value=d.toISOString().slice(0,7);
+  $('bonusYear').value=d.getFullYear();$('bonusQuarter').value=Math.floor(d.getMonth()/3)+1;$('bonusMonthYear').value=d.getFullYear();fillMonthSelect('bonusMonthSelect');$('bonusMonthSelect').value=d.getMonth()+1;$('archiveMonth').value=d.toISOString().slice(0,7);$('personnelDate').value=today();$('visitPlanDate').value=today();$('monthlyCommentMonth').value=d.toISOString().slice(0,7);$('globalPeriod').value=d.toISOString().slice(0,7);$('autoSummaryMonth').value=d.toISOString().slice(0,7);$('closeMonthKey').value=d.toISOString().slice(0,7);
 }
 function showLogin(){$('appView').classList.add('hidden');$('modeView').classList.add('hidden');$('loginView').classList.remove('hidden');workMode=null;workModeRegion=null}
 document.querySelectorAll('.tab').forEach(b=>b.onclick=()=>{document.querySelectorAll('.tab').forEach(x=>x.classList.toggle('active',x===b));document.querySelectorAll('.view').forEach(x=>x.classList.toggle('active',x.id===b.dataset.v));if(b.dataset.v==='dashboard')loadDashboard();if(b.dataset.v==='analysis')loadAnalysis();if(b.dataset.v==='comparison')loadComparison();if(b.dataset.v==='branchCompare')loadBranchCompare();if(b.dataset.v==='regionMap')loadRegionMap();if(b.dataset.v==='branchCard'){loadCard();loadBranchState();}if(b.dataset.v==='history')loadHistory()});
@@ -3113,6 +3298,13 @@ $('refreshToday').onclick=loadDashboard;
 $('manageBranch').onchange=loadManagement;
 $('saveGoalBtn').onclick=saveGoal;$('saveStaffBtn').onclick=saveStaff;$('saveRiskBtn').onclick=saveRisk;
 $('saveVisitPlanBtn').onclick=saveVisitPlan;$('savePersonnelBtn').onclick=savePersonnel;$('saveMonthlyCommentBtn').onclick=saveMonthlyComment;
+
+$('applyGlobalPeriod').onclick=applyGlobalPeriodValue;
+$('quickAddFab').onclick=()=>$('quickAddModal').classList.remove('hidden');$('closeQuickAdd').onclick=()=>$('quickAddModal').classList.add('hidden');
+document.querySelectorAll('[data-quick]').forEach(b=>b.onclick=()=>{const q=b.dataset.quick;if(q.startsWith('management-'))openQuick('management',q.split('-')[1]);else openQuick(q)});
+$('generateMonthlySummaryBtn').onclick=generateMonthlySummary;$('saveSummaryAsCommentBtn').onclick=saveSummaryAsComment;
+$('exportRegionBriefExcel').onclick=exportRegionBriefExcel;$('printRegionBrief').onclick=()=>window.print();
+$('closeMonthBtn').onclick=closeMonth;$('reopenMonthBtn').onclick=reopenMonth;$('closeMonthKey').onchange=refreshClosedMonthStatus;$('refreshAuditBtn').onclick=loadAuditLog;
 $('logoutBtn').onclick=async()=>{await sb.auth.signOut();showLogin()};
 $('loadComparisonBtn').onclick=loadComparison;$('regionSelect').onchange=loadBranches;$('addBranchBtn').onclick=addBranch;
 $('saveContact').onclick=saveContact;$('clearContact').onclick=clearContact;$('contactFilter').onchange=loadContacts;$('contactSearch').oninput=loadContacts;
