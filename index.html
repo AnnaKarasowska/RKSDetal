@@ -2,7 +2,7 @@
 <html lang="pl">
 <head>
 <meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
-<title>Eltrox RKS – Supabase v8.11</title>
+<title>Eltrox RKS – Supabase v8.12</title>
 <style>
 :root{--o:#f36f21;--od:#d85d12;--bg:#eef1f4;--w:#fff;--line:#d9dde3;--t:#242424;--m:#6b7280;--r:#c9372c;--g:#25894b;--b:#2f71c8;--sh:0 8px 24px rgba(0,0,0,.08)}
 *{box-sizing:border-box}html,body{margin:0;min-height:100%;font-family:Arial,Helvetica,sans-serif;background:var(--bg);color:var(--t)}button,input,select,textarea{font:inherit}button{cursor:pointer}.hidden{display:none!important}
@@ -340,7 +340,7 @@ input,select,textarea{width:100%;padding:9px 10px;border:1px solid var(--line);b
 @media(max-width:950px){.g2,.g3,.g4{grid-template-columns:1fr}.header{align-items:flex-start;flex-direction:column}.nav{top:108px}}
 </style></head>
 <body>
-<div id="loginView" class="login-shell"><div class="login-card"><div class="brand"><h1>Eltrox RKS</h1><p>Wersja online v8.11</p></div><form id="loginForm" class="form"><label>E-mail<input id="loginEmail" type="email" required></label><label>Hasło<input id="loginPassword" type="password" required></label><button class="btn primary">Zaloguj</button><div id="loginMsg" class="msg"></div></form></div></div>
+<div id="loginView" class="login-shell"><div class="login-card"><div class="brand"><h1>Eltrox RKS</h1><p>Wersja online v8.12</p></div><form id="loginForm" class="form"><label>E-mail<input id="loginEmail" type="email" required></label><label>Hasło<input id="loginPassword" type="password" required></label><button class="btn primary">Zaloguj</button><div id="loginMsg" class="msg"></div></form></div></div>
 
 <div id="modeView" class="mode-shell hidden">
   <div class="mode-card">
@@ -835,7 +835,7 @@ input,select,textarea{width:100%;padding:9px 10px;border:1px solid var(--line);b
     <div class="bonus-rate-v45"><h4>Detal – per oddział / miesiąc</h4><p>≥100%: <strong>100 zł</strong></p><p>90–99,9%: <strong>50 zł</strong></p></div>
     <div class="bonus-rate-v45"><h4>UK – per oddział / miesiąc</h4><p>≥100%: <strong>150 zł</strong></p><p>90–99,9%: <strong>75 zł</strong></p></div>
     <div class="bonus-rate-v45"><h4>KPI – per oddział / miesiąc</h4><p>≥100%: <strong>100 zł</strong></p><p>90–99,9%: <strong>50 zł</strong></p></div>
-    <div class="bonus-rate-v45"><h4>Premia regionalna – kwartalna</h4><p>Detal regionu ≥100%: <strong>1000 zł</strong></p><p>UK regionu ≥100%: <strong>1000 zł</strong></p><p>KPI regionu ≥100%: <strong>1000 zł</strong></p></div>
+    <div class="bonus-rate-v45"><h4>Premia regionalna – kwartalna</h4><p>Detal: suma wykonania Q / suma planów Q ≥100%: <strong>1000 zł</strong></p><p>UK: suma wykonania Q / suma planów Q ≥100%: <strong>1000 zł</strong></p><p>KPI: średnia controllingu w kwartale ≥100%: <strong>1000 zł</strong></p></div>
   </div>
 
   <div class="panel">
@@ -2088,7 +2088,7 @@ async function calculateBonus(){
 
   let monthlyTotal=0;
   let sumDetalPlan=0,sumDetalExec=0,sumUkPlan=0,sumUkExec=0;
-  let kpiSum=0,kpiCount=0;
+  let controllingSum=0,controllingCount=0;
   const rows=[];
   const overrides=await bonusOverrideMap(months);
 
@@ -2107,9 +2107,7 @@ async function calculateBonus(){
       const ukPct=ukPlan?ukExec/ukPlan*100:NaN;
 
       const c=controls.get(branch.id);
-      // v45: KPI do premii = wynik controllingu mailowego; ręczny override tylko gdy controllingu brak.
-      let kpi=NaN;
-      let kpiLocked=false;
+      let kpi=NaN,kpiLocked=false;
       if(c && c.controlling!==null && c.controlling!==undefined && c.controlling!==''){
         kpi=Number(c.controlling);
         kpiLocked=Number.isFinite(kpi);
@@ -2122,11 +2120,24 @@ async function calculateBonus(){
       const premUk=bonusLadder(ukPct,BONUS_RATES.uk100,BONUS_RATES.uk90);
       const premKpi=bonusLadder(kpi,BONUS_RATES.kpi100,BONUS_RATES.kpi90);
       const total=premDetal+premUk+premKpi;
-
       monthlyTotal+=total;
-      sumDetalPlan+=detailPlan;sumDetalExec+=detailExec;
-      sumUkPlan+=ukPlan;sumUkExec+=ukExec;
-      if(Number.isFinite(kpi)){kpiSum+=kpi;kpiCount++}
+
+      // PREMIA KWARTALNA REGIONU:
+      // sumujemy plan i wykonanie każdego oddziału z każdego miesiąca kwartału.
+      sumDetalPlan+=detailPlan;
+      sumDetalExec+=detailExec;
+      sumUkPlan+=ukPlan;
+      sumUkExec+=ukExec;
+
+      // KPI regionalne kwartalne = średnia z CONTROLLINGU z danego kwartału.
+      // Każdy dostępny wynik oddział/miesiąc jest jednym składnikiem średniej.
+      if(c && c.controlling!==null && c.controlling!==undefined && c.controlling!==''){
+        const ctrl=Number(c.controlling);
+        if(Number.isFinite(ctrl)){
+          controllingSum+=ctrl;
+          controllingCount++;
+        }
+      }
 
       rows.push(`<tr>
         <td>${esc(bonusMonthLabel(month))}</td><td>${esc(branch.name)}</td>
@@ -2138,13 +2149,15 @@ async function calculateBonus(){
     }
   }
 
-  const detailRegionPct=sumDetalPlan?sumDetalExec/sumDetalPlan*100:NaN;
-  const ukRegionPct=sumUkPlan?sumUkExec/sumUkPlan*100:NaN;
-  const kpiAvg=kpiCount?kpiSum/kpiCount:NaN;
+  const detailRegionPct=sumDetalPlan>0 ? (sumDetalExec/sumDetalPlan)*100 : NaN;
+  const ukRegionPct=sumUkPlan>0 ? (sumUkExec/sumUkPlan)*100 : NaN;
+  const kpiAvg=controllingCount ? controllingSum/controllingCount : NaN;
 
+  // Premia regionalna kwartalna tylko przy wyniku >= 100%.
   const regDetal=Number.isFinite(detailRegionPct)&&detailRegionPct>=100?BONUS_RATES.regionDetal:0;
   const regUk=Number.isFinite(ukRegionPct)&&ukRegionPct>=100?BONUS_RATES.regionUk:0;
   const regKpi=Number.isFinite(kpiAvg)&&kpiAvg>=100?BONUS_RATES.regionKpi:0;
+
   const quarterlyTotal=regDetal+regUk+regKpi;
   const grand=monthlyTotal+quarterlyTotal;
 
@@ -2154,17 +2167,44 @@ async function calculateBonus(){
   $('bonusKpiAvg').textContent=Number.isFinite(kpiAvg)?pct(kpiAvg):'—';
   $('bonusGrandTotal').textContent=money(grand);
 
-  $('bonusQuarterSummary').innerHTML=`<table><thead><tr><th>Składnik regionalny</th><th>Plan Q</th><th>Wykonanie Q</th><th>Realizacja</th><th>Premia</th></tr></thead><tbody>
-    <tr><td>Detal regionu</td><td>${money(sumDetalPlan)}</td><td>${money(sumDetalExec)}</td><td>${Number.isFinite(detailRegionPct)?pct(detailRegionPct):'—'}</td><td>${money(regDetal)}</td></tr>
-    <tr><td>UK regionu</td><td>${money(sumUkPlan)}</td><td>${money(sumUkExec)}</td><td>${Number.isFinite(ukRegionPct)?pct(ukRegionPct):'—'}</td><td>${money(regUk)}</td></tr>
-    <tr><td>KPI regionu</td><td>—</td><td>${kpiCount} wyników</td><td>${Number.isFinite(kpiAvg)?pct(kpiAvg):'—'}</td><td>${money(regKpi)}</td></tr>
-    <tr><td><strong>Premia kwartalna regionalna</strong></td><td></td><td></td><td></td><td><strong>${money(quarterlyTotal)}</strong></td></tr>
-  </tbody></table>`;
+  $('bonusQuarterSummary').innerHTML=`<table>
+    <thead><tr><th>Składnik regionalny</th><th>Plan / podstawa</th><th>Wykonanie / wynik</th><th>Realizacja</th><th>Premia</th></tr></thead>
+    <tbody>
+      <tr>
+        <td>Detal regionu</td>
+        <td>${money(sumDetalPlan)}</td>
+        <td>${money(sumDetalExec)}</td>
+        <td><strong>${Number.isFinite(detailRegionPct)?pct(detailRegionPct):'—'}</strong></td>
+        <td><strong>${money(regDetal)}</strong></td>
+      </tr>
+      <tr>
+        <td>UK regionu</td>
+        <td>${money(sumUkPlan)}</td>
+        <td>${money(sumUkExec)}</td>
+        <td><strong>${Number.isFinite(ukRegionPct)?pct(ukRegionPct):'—'}</strong></td>
+        <td><strong>${money(regUk)}</strong></td>
+      </tr>
+      <tr>
+        <td>KPI regionu (średnia z controllingu)</td>
+        <td>${controllingCount} wyników controllingu</td>
+        <td>${Number.isFinite(kpiAvg)?pct(kpiAvg):'—'}</td>
+        <td><strong>${Number.isFinite(kpiAvg)?pct(kpiAvg):'—'}</strong></td>
+        <td><strong>${money(regKpi)}</strong></td>
+      </tr>
+      <tr>
+        <td><strong>Premia regionalna kwartalna</strong></td>
+        <td></td><td></td><td></td>
+        <td><strong>${money(quarterlyTotal)}</strong></td>
+      </tr>
+    </tbody>
+  </table>`;
 
   document.querySelectorAll('.bonus-kpi-input:not([readonly])').forEach(input=>{
     input.onchange=async()=>{
-      try{await saveBonusKpiOverride(input.dataset.month,input.dataset.branchId,input.value);await calculateBonus()}
-      catch(e){alert(e.message)}
+      try{
+        await saveBonusKpiOverride(input.dataset.month,input.dataset.branchId,input.value);
+        await calculateBonus();
+      }catch(e){alert(e.message)}
     };
   });
 }
