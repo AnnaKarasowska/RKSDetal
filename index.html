@@ -2,7 +2,7 @@
 <html lang="pl">
 <head>
 <meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
-<title>Eltrox RKS – Supabase v12</title>
+<title>Eltrox RKS – Supabase v13</title>
 <style>
 :root{--o:#f36f21;--od:#d85d12;--bg:#eef1f4;--w:#fff;--line:#d9dde3;--t:#242424;--m:#6b7280;--r:#c9372c;--g:#25894b;--b:#2f71c8;--sh:0 8px 24px rgba(0,0,0,.08)}
 *{box-sizing:border-box}html,body{margin:0;min-height:100%;font-family:Arial,Helvetica,sans-serif;background:var(--bg);color:var(--t)}button,input,select,textarea{font:inherit}button{cursor:pointer}.hidden{display:none!important}
@@ -380,6 +380,22 @@ input,select,textarea{width:100%;padding:9px 10px;border:1px solid var(--line);b
 @media(max-width:1050px){.week-board{grid-template-columns:1fr 1fr}.admin-grid{grid-template-columns:1fr 1fr}}
 @media(max-width:650px){.week-board,.admin-grid{grid-template-columns:1fr}}
 
+
+/* v13 — rozbudowana historia oddziału */
+.history-toolbar{display:grid;grid-template-columns:220px 160px 160px minmax(180px,1fr) auto;gap:8px;align-items:end;margin-bottom:12px}
+.history-summary{display:grid;grid-template-columns:repeat(6,minmax(0,1fr));gap:8px;margin-bottom:12px}
+.history-summary .brief-box strong{font-size:18px}
+.history-timeline{position:relative;display:grid;gap:10px;padding-left:26px}
+.history-timeline:before{content:"";position:absolute;left:8px;top:4px;bottom:4px;width:3px;background:#e5e7eb;border-radius:999px}
+.history-event{position:relative;background:#fff;border:1px solid var(--line);border-radius:12px;padding:11px 12px;box-shadow:var(--shadow)}
+.history-event:before{content:"";position:absolute;left:-23px;top:17px;width:11px;height:11px;border-radius:50%;background:#6c7480;border:3px solid #fff;box-shadow:0 0 0 1px #dfe3e8}
+.history-event.sales:before{background:#3767a6}.history-event.kpi:before{background:#7b61a8}.history-event.meeting:before{background:#d39118}.history-event.visit:before{background:#168451}.history-event.contact:before{background:#25a4a6}.history-event.note:before{background:#8c6d45}.history-event.staff:before{background:#4b7d3b}.history-event.risk:before{background:#c93d37}.history-event.goal:before{background:#2f6f9f}.history-event.task:before{background:#555}.history-event.comment:before{background:#9b4d89}
+.history-event .he-head{display:flex;justify-content:space-between;gap:10px;align-items:flex-start}.history-event .he-title{font-weight:900}.history-event .he-date{font-size:10px;color:var(--m);white-space:nowrap}.history-event .he-text{font-size:11px;line-height:1.5;color:#4f5865;margin-top:5px;white-space:pre-wrap}.history-event .he-meta{font-size:10px;color:var(--m);margin-top:5px}
+.history-chip{display:inline-block;padding:3px 7px;border-radius:999px;background:#f2f4f7;font-size:9px;font-weight:900;margin-right:5px}
+.history-empty{padding:18px;text-align:center;color:var(--m)}
+@media(max-width:1100px){.history-toolbar{grid-template-columns:1fr 1fr}.history-summary{grid-template-columns:repeat(3,1fr)}}
+@media(max-width:650px){.history-toolbar,.history-summary{grid-template-columns:1fr}}
+
 @media(max-width:950px){
   .dashboard-v45 .grid2{grid-template-columns:1fr}
 }
@@ -403,7 +419,7 @@ input,select,textarea{width:100%;padding:9px 10px;border:1px solid var(--line);b
 @media(max-width:950px){.g2,.g3,.g4{grid-template-columns:1fr}.header{align-items:flex-start;flex-direction:column}.nav{top:108px}}
 </style></head>
 <body>
-<div id="loginView" class="login-shell"><div class="login-card"><div class="brand"><h1>Eltrox RKS</h1><p>Wersja online v12</p></div><form id="loginForm" class="form"><label>E-mail<input id="loginEmail" type="email" required></label><label>Hasło<input id="loginPassword" type="password" required></label><button class="btn primary">Zaloguj</button><div id="loginMsg" class="msg"></div></form></div></div>
+<div id="loginView" class="login-shell"><div class="login-card"><div class="brand"><h1>Eltrox RKS</h1><p>Wersja online v13</p></div><form id="loginForm" class="form"><label>E-mail<input id="loginEmail" type="email" required></label><label>Hasło<input id="loginPassword" type="password" required></label><button class="btn primary">Zaloguj</button><div id="loginMsg" class="msg"></div></form></div></div>
 
 <div id="modeView" class="mode-shell hidden">
   <div class="mode-card">
@@ -934,15 +950,51 @@ input,select,textarea{width:100%;padding:9px 10px;border:1px solid var(--line);b
   <div class="controls"><button id="refreshTrashBtn" class="btn primary">Odśwież</button><button id="emptyExpiredTrashBtn" class="btn danger">Usuń wygasłe</button></div></div>
   <div id="trashList" class="manage-list"></div>
 </section>
-<section id="branchCard" class="view"><div class="head"><div><h2>Karta oddziału</h2><p>Zbiorczy obraz wybranego oddziału.</p></div><label style="min-width:260px">Oddział<select id="cardBranch"></select></label></div><div id="cardContent"></div></section>
-<section id="history" class="view"><div class="head"><div><h2>Historia oddziału</h2><p>Łączna chronologia kontaktów, 1:1, wizyt i notatek.</p></div><label style="min-width:260px">Oddział<select id="historyBranch"></select></label></div><div class="panel"><div id="historyList" class="timeline"></div></div>
-<div class="branch-state-grid" id="branchStateGrid">
-  <div class="branch-state"><span>Status automatyczny</span><strong id="stateAutoStatus">—</strong></div><div class="branch-state"><span>Priorytet RKS</span><strong id="statePriority">—</strong></div><div class="branch-state"><span>Trend 3M</span><strong id="stateTrend3m">—</strong></div><div class="branch-state"><span>Wynik</span><strong id="stateResult">—</strong></div>
-  <div class="branch-state"><span>KPI</span><strong id="stateKpi">—</strong></div>
-  <div class="branch-state"><span>Kadry</span><strong id="stateStaff">—</strong></div>
-  <div class="branch-state"><span>Ryzyko</span><strong id="stateRisk">—</strong></div>
-  <div class="branch-state"><span>Ostatni kontakt</span><strong id="stateContact">—</strong></div>
-</div>
+<section id="branchCard" class="view">
+  <div class="head"><div><h2>Karta oddziału</h2><p>Zbiorczy obraz wybranego oddziału.</p></div><label style="min-width:260px">Oddział<select id="cardBranch"></select></label></div>
+  <div class="branch-state-grid" id="branchStateGrid">
+    <div class="branch-state"><span>Status automatyczny</span><strong id="stateAutoStatus">—</strong></div>
+    <div class="branch-state"><span>Priorytet RKS</span><strong id="statePriority">—</strong></div>
+    <div class="branch-state"><span>Trend 3M</span><strong id="stateTrend3m">—</strong></div>
+    <div class="branch-state"><span>Wynik</span><strong id="stateResult">—</strong></div>
+    <div class="branch-state"><span>KPI</span><strong id="stateKpi">—</strong></div>
+    <div class="branch-state"><span>Kadry</span><strong id="stateStaff">—</strong></div>
+    <div class="branch-state"><span>Ryzyko</span><strong id="stateRisk">—</strong></div>
+    <div class="branch-state"><span>Ostatni kontakt</span><strong id="stateContact">—</strong></div>
+  </div>
+  <div id="cardContent"></div>
+</section>
+<section id="history" class="view">
+  <div class="head">
+    <div><h2>Historia oddziału</h2><p>Pełna oś czasu oddziału: wyniki, KPI, 1:1, wizyty, kontakty, kadry, cele, ryzyka, zadania i komentarze RKS.</p></div>
+  </div>
+
+  <div class="history-toolbar">
+    <label>Oddział<select id="historyBranch"></select></label>
+    <label>Od<input id="historyFrom" type="date"></label>
+    <label>Do<input id="historyTo" type="date"></label>
+    <label>Szukaj<input id="historySearch" type="search" placeholder="np. controlling, rekrutacja, UK..."></label>
+    <button id="clearHistoryFilters" class="btn">Wyczyść filtry</button>
+  </div>
+
+  <div class="controls" style="margin-bottom:10px;flex-wrap:wrap">
+    <label><input type="checkbox" class="historyType" value="sales" checked> Wyniki</label>
+    <label><input type="checkbox" class="historyType" value="kpi" checked> KPI</label>
+    <label><input type="checkbox" class="historyType" value="meeting" checked> 1:1</label>
+    <label><input type="checkbox" class="historyType" value="visit" checked> Wizyty</label>
+    <label><input type="checkbox" class="historyType" value="contact" checked> Kontakty</label>
+    <label><input type="checkbox" class="historyType" value="note" checked> Notatki</label>
+    <label><input type="checkbox" class="historyType" value="staff" checked> Kadry</label>
+    <label><input type="checkbox" class="historyType" value="risk" checked> Ryzyka</label>
+    <label><input type="checkbox" class="historyType" value="goal" checked> Cele</label>
+    <label><input type="checkbox" class="historyType" value="task" checked> Zadania</label>
+    <label><input type="checkbox" class="historyType" value="comment" checked> Komentarze RKS</label>
+  </div>
+
+  <div id="historySummary" class="history-summary"></div>
+  <section class="panel">
+    <div id="historyList" class="history-timeline"></div>
+  </section>
 </section>
 
 
@@ -3448,15 +3500,81 @@ async function loadBranchState(){
 
 async function loadCard(){let id=$('cardBranch')?.value;if(!id)return;$('cardContent').innerHTML='<div class="empty">Ładowanie...</div>';let [c,l,m,t,v,s,k,n]=await Promise.all(['contacts','contact_logs','meeting_notes','tasks','visits','sales_results','monthly_kpis','branch_notes'].map(z=>sb.from(z).select('*').eq('region_id',rid()).eq('branch_id',id)));let contacts=c.data||[],logs=(l.data||[]).sort((a,b)=>b.contact_date.localeCompare(a.contact_date)),meet=(m.data||[]).sort((a,b)=>b.meeting_date.localeCompare(a.meeting_date)),tasks=(t.data||[]).filter(x=>x.status!=='done'),vis=(v.data||[]).sort((a,b)=>b.visit_date.localeCompare(a.visit_date)),sales=(s.data||[]).sort((a,b)=>b.result_date.localeCompare(a.result_date)),kpis=(k.data||[]).sort((a,b)=>(b.year*100+b.month)-(a.year*100+a.month)),notes=(n.data||[]).sort((a,b)=>b.note_date.localeCompare(a.note_date));let ss=sales[0],kk=kpis[0];$('cardContent').innerHTML=`<div class="g4"><div class="card"><h4>Ostatni kontakt</h4><div class="kpi" style="font-size:18px">${logs[0]?fd(logs[0].contact_date):'—'}</div><div class="muted">${logs[0]?esc(logs[0].channel):''}</div></div><div class="card"><h4>Otwarte zadania</h4><div class="kpi">${tasks.length}</div></div><div class="card"><h4>UK realizacja</h4><div class="kpi">${ss&&ss.uk_plan?Math.round(num(ss.uk_execution)/num(ss.uk_plan)*100):0}%</div></div><div class="card"><h4>Detal realizacja</h4><div class="kpi">${ss&&ss.detail_plan?Math.round(num(ss.detail_execution)/num(ss.detail_plan)*100):0}%</div></div></div><div class="g2" style="margin-top:12px"><div class="panel"><h3>Kontakty</h3>${contacts.map(x=>`<div class="item"><b>${esc((x.first_name||'')+' '+(x.last_name||''))}</b><div class="meta">${esc(x.position||'')} • ${esc(x.phone||'')} • ${esc(x.email||'')}</div></div>`).join('')||'<div class="empty">Brak</div>'}<h3 style="margin-top:14px">Ostatnie 1:1</h3>${meet[0]?`<div class="item"><b>${fd(meet[0].meeting_date)} • ${att(meet[0].attendance)}</b><div class="text">${esc(meet[0].urgent_topics||'')}</div></div>`:'<div class="empty">Brak</div>'}</div><div class="panel"><h3>KPI</h3>${kk?`<div class="g3"><div class="card"><h4>Okres</h4><b>${kk.month}/${kk.year}</b></div><div class="card"><h4>VoIP UK</h4><b>${kk.voip_uk==null?"—":num(kk.voip_uk)+"%"}</b></div><div class="card"><h4>VoIP Detal</h4><b>${kk.voip_detail==null?"—":num(kk.voip_detail)+"%"}</b></div><div class="card"><h4>Średni VoIP</h4><b>${kk.voip==null?"—":num(kk.voip)+"%"}</b></div><div class="card"><h4>Controlling</h4><b>${kk.controlling==null?"—":num(kk.controlling)+"%"}</b></div></div>`:'<div class="empty">Brak KPI</div>'}<h3 style="margin-top:14px">Ostatnia wizyta</h3>${vis[0]?`<div class="item"><b>${fd(vis[0].visit_date)}</b><div class="text">${esc(vis[0].topics||'')}</div></div>`:'<div class="empty">Brak</div>'}<h3 style="margin-top:14px">Ostatnia notatka</h3>${notes[0]?`<div class="item"><b>${fd(notes[0].note_date)}</b><div class="text">${esc(notes[0].note)}</div></div>`:'<div class="empty">Brak</div>'}</div></div>`}
 
-async function loadHistory(){let id=$('historyBranch')?.value;if(!id)return;let [l,m,v,n]=await Promise.all(['contact_logs','meeting_notes','visits','branch_notes'].map(z=>sb.from(z).select('*').eq('region_id',rid()).eq('branch_id',id)));let ev=[];(l.data||[]).forEach(x=>ev.push({d:x.contact_date,t:'Kontakt '+x.channel,x:(x.person?x.person+' – ':'')+(x.note||'')}));(m.data||[]).forEach(x=>ev.push({d:x.meeting_date,t:'Spotkanie 1:1',x:att(x.attendance)+(x.urgent_topics?' – '+x.urgent_topics:'')}));(v.data||[]).forEach(x=>ev.push({d:x.visit_date,t:'Wizyta',x:(x.topics||'')+(x.notes?' – '+x.notes:'')}));(n.data||[]).forEach(x=>ev.push({d:x.note_date,t:'Notatka',x:x.note}));ev.sort((a,b)=>b.d.localeCompare(a.d));$('historyList').innerHTML=ev.length?ev.map(e=>`<div class="event"><b>${fd(e.d)} • ${esc(e.t)}</b><div class="text">${esc(e.x||'')}</div></div>`).join(''):'<div class="empty">Brak historii.</div>'}
+async function loadHistory(){
+  const id=$('historyBranch')?.value;if(!id)return;
+  const from=$('historyFrom').value||'',to=$('historyTo').value||'',search=($('historySearch').value||'').trim().toLowerCase();
+  const selected=new Set([...document.querySelectorAll('.historyType:checked')].map(x=>x.value));
 
+  const [logs,meetings,visits,notes,sales,kpis,staffing,personnel,risks,goals,tasks,comments]=await Promise.all([
+    sb.from('contact_logs').select('*').eq('region_id',rid()).eq('branch_id',id),
+    sb.from('meeting_notes').select('*').eq('region_id',rid()).eq('branch_id',id),
+    sb.from('visits').select('*').eq('region_id',rid()).eq('branch_id',id),
+    sb.from('branch_notes').select('*').eq('region_id',rid()).eq('branch_id',id),
+    sb.from('sales_results').select('*').eq('region_id',rid()).eq('branch_id',id),
+    sb.from('monthly_kpis').select('*').eq('region_id',rid()).eq('branch_id',id),
+    sb.from('branch_staffing').select('*').eq('region_id',rid()).eq('branch_id',id),
+    sb.from('personnel_history').select('*').eq('region_id',rid()).eq('branch_id',id),
+    sb.from('branch_risks').select('*').eq('region_id',rid()).eq('branch_id',id),
+    sb.from('branch_goals').select('*').eq('region_id',rid()).eq('branch_id',id),
+    sb.from('tasks').select('*').eq('region_id',rid()).eq('branch_id',id),
+    sb.from('monthly_rks_comments').select('*').eq('region_id',rid()).eq('branch_id',id)
+  ]);
 
-async function loadOwnRegionsForMode(){
-  const {data,error}=await sb.from('region_memberships').select('region_id, regions(id,name)').eq('user_id',user.id);
-  if(error)throw error;
-  const rows=(data||[]).map(x=>x.regions).filter(Boolean);
-  $('modeRegionSelect').innerHTML=rows.map(r=>`<option value="${r.id}">${esc(r.name)}</option>`).join('');
-  return rows;
+  const ev=[];
+  const push=(e)=>{if(e?.d)ev.push(e)};
+  (logs.data||[]).forEach(x=>push({d:x.contact_date,type:'contact',title:`Kontakt ${x.channel||''}`,text:(x.person?x.person+' – ':'')+(x.note||''),meta:''}));
+  (meetings.data||[]).forEach(x=>push({d:x.meeting_date,type:'meeting',title:'Spotkanie 1:1',text:[att(x.attendance),x.urgent_topics].filter(Boolean).join(' – '),meta:''}));
+  (visits.data||[]).forEach(x=>push({d:x.visit_date,type:'visit',title:'Wizyta w oddziale',text:[x.topics,x.notes].filter(Boolean).join('\n'),meta:x.participants?`Uczestnicy: ${x.participants}`:''}));
+  (notes.data||[]).forEach(x=>push({d:x.note_date,type:'note',title:'Notatka',text:x.note||'',meta:''}));
+
+  (sales.data||[]).forEach(x=>{
+    const uk=Number(x.uk_plan)>0?Number(x.uk_execution||0)/Number(x.uk_plan)*100:NaN;
+    const det=Number(x.detail_plan)>0?Number(x.detail_execution||0)/Number(x.detail_plan)*100:NaN;
+    push({d:x.result_date,type:'sales',title:'Wyniki UK / Detal',
+      text:`UK: ${Number.isFinite(uk)?uk.toFixed(1)+'%':'—'} (${num(x.uk_execution)} / ${num(x.uk_plan)})\nDetal: ${Number.isFinite(det)?det.toFixed(1)+'%':'—'} (${num(x.detail_execution)} / ${num(x.detail_plan)})${x.uk_estimate!=null?`\nEstymacja UK: ${num(x.uk_estimate)}`:''}`,
+      meta:''});
+  });
+
+  (kpis.data||[]).forEach(x=>{
+    const d=`${x.year}-${String(x.month).padStart(2,'0')}-01`;
+    push({d,type:'kpi',title:'KPI miesięczne',text:`VoIP UK: ${x.voip_uk??'—'}%\nVoIP Detal: ${x.voip_detail??'—'}%\nŚredni VoIP: ${x.voip??'—'}%\nControlling: ${x.controlling??'—'}%`,meta:x.controlling_comment||''});
+  });
+
+  (staffing.data||[]).forEach(x=>push({d:(x.updated_at||x.created_at||today()).slice(0,10),type:'staff',title:'Status kadrowy',text:`${x.staff_count||0} osób • ${x.vacancies||0} wakatów • ${x.onboarding||0} we wdrożeniu`,meta:x.comment||''}));
+  (personnel.data||[]).forEach(x=>push({d:x.event_date,type:'staff',title:'Zmiana kadrowa',text:x.description||'',meta:''}));
+
+  (risks.data||[]).forEach(x=>push({d:(x.created_at||today()).slice(0,10),type:'risk',title:`Ryzyko: ${x.title}`,text:x.action_plan||'',meta:`Poziom: ${x.level} • status: ${x.status}`}));
+  (goals.data||[]).forEach(x=>push({d:(x.created_at||x.deadline||today()).slice(0,10),type:'goal',title:`Cel: ${x.title}`,text:x.note||'',meta:`Postęp: ${x.progress||0}% • status: ${x.status}${x.deadline?' • termin '+fd(x.deadline):''}`}));
+  (tasks.data||[]).forEach(x=>push({d:(x.updated_at||x.created_at||x.deadline||today()).slice(0,10),type:'task',title:`Zadanie: ${x.title}`,text:x.description||'',meta:`Status: ${x.status} • priorytet: ${x.priority}${x.deadline?' • termin '+fd(x.deadline):''}`}));
+  (comments.data||[]).forEach(x=>push({d:`${x.month_key}-01`,type:'comment',title:`Komentarz RKS — ${x.month_key}`,text:x.comment||'',meta:''}));
+
+  const filtered=ev.filter(e=>{
+    if(!selected.has(e.type))return false;
+    if(from&&e.d<from)return false;
+    if(to&&e.d>to)return false;
+    if(search){
+      const hay=`${e.title} ${e.text||''} ${e.meta||''}`.toLowerCase();
+      if(!hay.includes(search))return false;
+    }
+    return true;
+  }).sort((a,b)=>b.d.localeCompare(a.d));
+
+  const counts={sales:0,kpi:0,meeting:0,visit:0,contact:0,risk:0};
+  filtered.forEach(e=>{if(counts[e.type]!==undefined)counts[e.type]++});
+  $('historySummary').innerHTML=`
+    <div class="brief-box"><span>Wpisy</span><strong>${filtered.length}</strong></div>
+    <div class="brief-box"><span>Wyniki</span><strong>${counts.sales}</strong></div>
+    <div class="brief-box"><span>KPI</span><strong>${counts.kpi}</strong></div>
+    <div class="brief-box"><span>1:1 / wizyty</span><strong>${counts.meeting+counts.visit}</strong></div>
+    <div class="brief-box"><span>Kontakty</span><strong>${counts.contact}</strong></div>
+    <div class="brief-box"><span>Ryzyka</span><strong>${counts.risk}</strong></div>`;
+
+  const labels={sales:'Wyniki',kpi:'KPI',meeting:'1:1',visit:'Wizyta',contact:'Kontakt',note:'Notatka',staff:'Kadry',risk:'Ryzyko',goal:'Cel',task:'Zadanie',comment:'Komentarz RKS'};
+  $('historyList').innerHTML=filtered.length?filtered.map(e=>`<article class="history-event ${e.type}">
+    <div class="he-head"><div><span class="history-chip">${labels[e.type]||e.type}</span><span class="he-title">${esc(e.title)}</span></div><span class="he-date">${fd(e.d)}</span></div>
+    ${e.text?`<div class="he-text">${esc(e.text)}</div>`:''}
+    ${e.meta?`<div class="he-meta">${esc(e.meta)}</div>`:''}
+  </article>`).join(''):'<div class="history-empty">Brak wpisów spełniających wybrane filtry.</div>';
 }
 async function getCurrentWorkMode(){
   const {data,error}=await sb.rpc('get_current_work_mode');
@@ -3617,6 +3735,6 @@ $('saveMeeting').onclick=saveMeeting;$('clearMeeting').onclick=clearMeeting;$('m
 $('saveTask').onclick=saveTask;$('clearTask').onclick=clearTask;$('taskFilter').onchange=loadTasks;$('taskStatusFilter').onchange=loadTasks;
 $('saveVisit').onclick=saveVisit;$('clearVisit').onclick=clearVisit;$('addVisitRecommendation').onclick=()=>addVisitRecommendationRow();$('generateVisitForm').onclick=generateVisitSignatureForm;$('printVisitReport').onclick=printVisitSignatureForm;
 $('salesEntryDate').onchange=renderSalesEntry;$('saveSalesEntry').onclick=()=>saveSalesEntry(true);$('saveMonthlyKpi').onclick=()=>saveMonthlyKpi(true);$('voipMonth').onchange=renderMonthlyKpi;$('controlKpiMonth').onchange=renderMonthlyKpi;
-$('saveNote').onclick=saveNote;$('clearNote').onclick=clearNote;$('noteFilter').onchange=loadNotes;$('cardBranch').onchange=()=>{loadCard();loadBranchState()};$('historyBranch').onchange=loadHistory;
+$('saveNote').onclick=saveNote;$('clearNote').onclick=clearNote;$('noteFilter').onchange=loadNotes;$('cardBranch').onchange=()=>{loadCard();loadBranchState()};$('historyBranch').onchange=loadHistory;$('historyFrom').onchange=loadHistory;$('historyTo').onchange=loadHistory;$('historySearch').oninput=loadHistory;document.querySelectorAll('.historyType').forEach(x=>x.onchange=loadHistory);$('clearHistoryFilters').onclick=()=>{$('historyFrom').value='';$('historyTo').value='';$('historySearch').value='';document.querySelectorAll('.historyType').forEach(x=>x.checked=true);loadHistory()};
 (async()=>{let{data}=await sb.auth.getSession();if(data.session)showModeChooser(data.session,false);else showLogin()})();
 </script></body></html>
