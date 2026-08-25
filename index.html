@@ -3720,6 +3720,26 @@ async function loadHistory(){
     ${e.meta?`<div class="he-meta">${esc(e.meta)}</div>`:''}
   </article>`).join(''):'<div class="history-empty">Brak wpisów spełniających wybrane filtry.</div>';
 }
+
+async function loadOwnRegionsForMode(){
+  const {data,error}=await sb
+    .from('region_memberships')
+    .select('region_id, regions(id,name)')
+    .eq('user_id',user.id);
+  if(error)throw error;
+
+  const rows=(data||[])
+    .map(x=>x.regions)
+    .filter(Boolean)
+    .sort((a,b)=>(a.name||'').localeCompare(b.name||'','pl'));
+
+  $('modeRegionSelect').innerHTML=rows
+    .map(r=>`<option value="${r.id}">${esc(r.name)}</option>`)
+    .join('');
+
+  return rows;
+}
+
 async function getCurrentWorkMode(){
   const {data,error}=await sb.rpc('get_current_work_mode');
   if(error){console.warn(error.message);return null}
