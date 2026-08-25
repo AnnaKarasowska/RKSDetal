@@ -2,7 +2,7 @@
 <html lang="pl">
 <head>
 <meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
-<title>Eltrox RKS – Supabase v11</title>
+<title>Eltrox RKS – Supabase v12</title>
 <style>
 :root{--o:#f36f21;--od:#d85d12;--bg:#eef1f4;--w:#fff;--line:#d9dde3;--t:#242424;--m:#6b7280;--r:#c9372c;--g:#25894b;--b:#2f71c8;--sh:0 8px 24px rgba(0,0,0,.08)}
 *{box-sizing:border-box}html,body{margin:0;min-height:100%;font-family:Arial,Helvetica,sans-serif;background:var(--bg);color:var(--t)}button,input,select,textarea{font:inherit}button{cursor:pointer}.hidden{display:none!important}
@@ -369,6 +369,17 @@ input,select,textarea{width:100%;padding:9px 10px;border:1px solid var(--line);b
 .trash-actions{display:flex;gap:6px;flex-wrap:wrap}.trash-row{border:1px solid var(--line);border-radius:10px;padding:10px;background:#fff}.trash-row .meta{font-size:10px;color:var(--m);margin-top:4px}
 @media(max-width:800px){.checklist-grid{grid-template-columns:1fr}}
 
+
+/* v12 — zmiany od ostatniej wizyty, trend 3M, priorytet, plan tygodnia, domknięcie miesiąca */
+.change-list{display:grid;gap:8px}.change-item{border:1px solid var(--line);border-left:5px solid #3767a6;border-radius:10px;padding:10px;background:#fff}.change-item.good{border-left-color:#168451}.change-item.warn{border-left-color:#d39118}.change-item.bad{border-left-color:#c93d37}.change-item .meta{font-size:10px;color:var(--m);margin-top:4px}
+.trend-up{color:#168451}.trend-flat{color:#6c7480}.trend-down{color:#c93d37}.trend-chip{display:inline-block;padding:4px 8px;border-radius:999px;background:#f2f4f7;font-size:10px;font-weight:900}
+.priority-high{background:#fdebea;color:#a82823}.priority-medium{background:#fff4d6;color:#8a6600}.priority-low{background:#e8f7ef;color:#11703f}
+.week-board{display:grid;grid-template-columns:repeat(5,minmax(0,1fr));gap:10px}.week-day{border:1px solid var(--line);border-radius:12px;background:#fff;min-height:180px;padding:10px}.week-day h4{margin:0 0 8px}.week-slot{border:1px solid #e5e8ec;border-radius:9px;padding:8px;margin-bottom:7px}.week-slot.done{opacity:.55}.week-slot .meta{font-size:10px;color:var(--m);margin-top:3px}
+.close-check{display:grid;gap:6px;margin-top:8px}.close-check .ok{color:#168451}.close-check .bad{color:#c93d37}
+.admin-grid{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:10px}.admin-box{border:1px solid var(--line);border-radius:12px;padding:12px;background:#fff}.admin-box span{display:block;font-size:10px;color:var(--m);font-weight:800}.admin-box strong{display:block;font-size:21px;margin-top:5px}
+@media(max-width:1050px){.week-board{grid-template-columns:1fr 1fr}.admin-grid{grid-template-columns:1fr 1fr}}
+@media(max-width:650px){.week-board,.admin-grid{grid-template-columns:1fr}}
+
 @media(max-width:950px){
   .dashboard-v45 .grid2{grid-template-columns:1fr}
 }
@@ -392,7 +403,7 @@ input,select,textarea{width:100%;padding:9px 10px;border:1px solid var(--line);b
 @media(max-width:950px){.g2,.g3,.g4{grid-template-columns:1fr}.header{align-items:flex-start;flex-direction:column}.nav{top:108px}}
 </style></head>
 <body>
-<div id="loginView" class="login-shell"><div class="login-card"><div class="brand"><h1>Eltrox RKS</h1><p>Wersja online v11</p></div><form id="loginForm" class="form"><label>E-mail<input id="loginEmail" type="email" required></label><label>Hasło<input id="loginPassword" type="password" required></label><button class="btn primary">Zaloguj</button><div id="loginMsg" class="msg"></div></form></div></div>
+<div id="loginView" class="login-shell"><div class="login-card"><div class="brand"><h1>Eltrox RKS</h1><p>Wersja online v12</p></div><form id="loginForm" class="form"><label>E-mail<input id="loginEmail" type="email" required></label><label>Hasło<input id="loginPassword" type="password" required></label><button class="btn primary">Zaloguj</button><div id="loginMsg" class="msg"></div></form></div></div>
 
 <div id="modeView" class="mode-shell hidden">
   <div class="mode-card">
@@ -420,7 +431,7 @@ input,select,textarea{width:100%;padding:9px 10px;border:1px solid var(--line);b
 <button id="importBackupBtn" class="btn">Przywróć kopię</button><input id="importBackupFile" type="file" accept=".json,application/json" hidden>
 <button id="logoutBtn" class="btn">Wyloguj</button></div></header>
 <nav class="nav">
-<button class="tab active" data-v="dashboard">Na dziś</button><button class="tab" data-v="analysis">Analiza regionu</button><button class="tab" data-v="comparison">Porównanie regionów</button><button class="tab" data-v="branchCompare">Porównanie oddziałów</button><button class="tab" data-v="regionMap">Mapa regionu</button><button class="tab" data-v="branches">Oddziały</button><button class="tab" data-v="contacts">Kontakty</button><button class="tab" data-v="contactLogs">Rejestr kontaktów</button><button class="tab" data-v="meetings">1:1</button><button class="tab" data-v="tasks">Terminarz</button><button class="tab" data-v="visits">Wizyty</button><button class="tab" data-v="sales">UK / Detal</button><button class="tab" data-v="kpis">KPI / Controlling</button><button class="tab" data-v="notes">Notatki</button><button class="tab" data-v="management">Zarządzanie oddziałem</button><button class="tab" data-v="checklist">Checklista RKS</button><button class="tab" data-v="trash">Kosz</button><button class="tab" data-v="branchCard">Karta oddziału</button><button class="tab" data-v="history">Historia</button><button class="tab" data-v="attachments">Załączniki</button><button class="tab" data-v="dataIO">Import / eksport</button><button class="tab" data-v="reportsBonus">Raporty / premia</button>
+<button class="tab active" data-v="dashboard">Na dziś</button><button class="tab" data-v="analysis">Analiza regionu</button><button class="tab" data-v="comparison">Porównanie regionów</button><button class="tab" data-v="branchCompare">Porównanie oddziałów</button><button class="tab" data-v="regionMap">Mapa regionu</button><button class="tab" data-v="branches">Oddziały</button><button class="tab" data-v="contacts">Kontakty</button><button class="tab" data-v="contactLogs">Rejestr kontaktów</button><button class="tab" data-v="meetings">1:1</button><button class="tab" data-v="tasks">Terminarz</button><button class="tab" data-v="visits">Wizyty</button><button class="tab" data-v="sales">UK / Detal</button><button class="tab" data-v="kpis">KPI / Controlling</button><button class="tab" data-v="notes">Notatki</button><button class="tab" data-v="management">Zarządzanie oddziałem</button><button class="tab" data-v="checklist">Checklista RKS</button><button class="tab" data-v="weekPlan">Plan tygodnia</button><button class="tab" data-v="adminCenter">Centrum admin</button><button class="tab" data-v="trash">Kosz</button><button class="tab" data-v="branchCard">Karta oddziału</button><button class="tab" data-v="history">Historia</button><button class="tab" data-v="attachments">Załączniki</button><button class="tab" data-v="dataIO">Import / eksport</button><button class="tab" data-v="reportsBonus">Raporty / premia</button>
 </nav>
 
 <div id="tabOrderBackdrop" class="tab-order-backdrop hidden">
@@ -459,7 +470,18 @@ input,select,textarea{width:100%;padding:9px 10px;border:1px solid var(--line);b
     <section class="panel"><h3>Priorytety na dziś</h3><div id="todayPriorities" class="today-list"></div></section>
     <section class="panel"><h3>Najbliższe 7 dni</h3><div id="todayNext7" class="today-list"></div></section>
   </div>
+  
   <div class="grid2">
+    <section class="panel">
+      <div class="head"><div><h3 style="margin:0">Co się zmieniło od ostatniej wizyty</h3><p>Najważniejsze zmiany od poprzedniego otwarcia aplikacji.</p></div><button id="markChangesSeenBtn" class="btn">Oznacz jako przejrzane</button></div>
+      <div id="recentChanges" class="change-list"></div>
+    </section>
+    <section class="panel">
+      <div class="head"><div><h3 style="margin:0">Moje działania na ten tydzień</h3><p>Zadania, wizyty, cele i ryzyka wymagające reakcji.</p></div><button id="openWeekPlanBtn" class="btn">Otwórz plan tygodnia</button></div>
+      <div id="weekActions" class="today-list"></div>
+    </section>
+  </div>
+<div class="grid2">
     <section class="panel"><h3>Oddziały wymagające uwagi</h3><div id="todayBranches" class="today-list"></div></section>
     <section class="panel"><h3>Ostatni kontakt z oddziałami</h3><div id="todayContacts" class="today-list"></div></section>
   </div>
@@ -884,6 +906,29 @@ input,select,textarea{width:100%;padding:9px 10px;border:1px solid var(--line);b
   <div id="checklistGrid" class="checklist-grid"></div>
 </section>
 
+
+<section id="weekPlan" class="view">
+  <div class="head"><div><h2>Plan tygodnia RKS</h2><p>Przypisz działania do dni tygodnia i porównaj plan z wykonaniem.</p></div>
+  <div class="controls"><label>Tydzień od<input id="weekStart" type="date"></label><button id="refreshWeekPlanBtn" class="btn primary">Odśwież</button></div></div>
+  <section class="panel">
+    <div class="form">
+      <div class="g3"><label>Dzień<input id="weekActionDate" type="date"></label><label>Oddział<select id="weekActionBranch"></select></label><label>Typ<select id="weekActionType"><option value="contact">Kontakt</option><option value="visit">Wizyta</option><option value="meeting">1:1</option><option value="task">Zadanie</option><option value="other">Inne</option></select></label></div>
+      <label>Działanie<input id="weekActionTitle"></label>
+      <button id="saveWeekActionBtn" class="btn primary">Dodaj do planu</button>
+    </div>
+  </section>
+  <div id="weekBoard" class="week-board" style="margin-top:12px"></div>
+</section>
+
+<section id="adminCenter" class="view">
+  <div class="head"><div><h2>Centrum administracyjne</h2><p>Stan danych aplikacji, regionów i kopii zamknięcia miesiąca.</p></div><button id="refreshAdminCenterBtn" class="btn primary">Odśwież</button></div>
+  <div id="adminMetrics" class="admin-grid"></div>
+  <div class="grid2" style="margin-top:12px">
+    <section class="panel"><h3>Regiony</h3><div id="adminRegions" class="table"></div></section>
+    <section class="panel"><h3>Ostatnie snapshoty zamknięcia miesiąca</h3><div id="adminSnapshots" class="table"></div></section>
+  </div>
+</section>
+
 <section id="trash" class="view">
   <div class="head"><div><h2>Kosz</h2><p>Usunięte rekordy są przechowywane przez 30 dni i mogą zostać przywrócone.</p></div>
   <div class="controls"><button id="refreshTrashBtn" class="btn primary">Odśwież</button><button id="emptyExpiredTrashBtn" class="btn danger">Usuń wygasłe</button></div></div>
@@ -892,7 +937,7 @@ input,select,textarea{width:100%;padding:9px 10px;border:1px solid var(--line);b
 <section id="branchCard" class="view"><div class="head"><div><h2>Karta oddziału</h2><p>Zbiorczy obraz wybranego oddziału.</p></div><label style="min-width:260px">Oddział<select id="cardBranch"></select></label></div><div id="cardContent"></div></section>
 <section id="history" class="view"><div class="head"><div><h2>Historia oddziału</h2><p>Łączna chronologia kontaktów, 1:1, wizyt i notatek.</p></div><label style="min-width:260px">Oddział<select id="historyBranch"></select></label></div><div class="panel"><div id="historyList" class="timeline"></div></div>
 <div class="branch-state-grid" id="branchStateGrid">
-  <div class="branch-state"><span>Status automatyczny</span><strong id="stateAutoStatus">—</strong></div><div class="branch-state"><span>Wynik</span><strong id="stateResult">—</strong></div>
+  <div class="branch-state"><span>Status automatyczny</span><strong id="stateAutoStatus">—</strong></div><div class="branch-state"><span>Priorytet RKS</span><strong id="statePriority">—</strong></div><div class="branch-state"><span>Trend 3M</span><strong id="stateTrend3m">—</strong></div><div class="branch-state"><span>Wynik</span><strong id="stateResult">—</strong></div>
   <div class="branch-state"><span>KPI</span><strong id="stateKpi">—</strong></div>
   <div class="branch-state"><span>Kadry</span><strong id="stateStaff">—</strong></div>
   <div class="branch-state"><span>Ryzyko</span><strong id="stateRisk">—</strong></div>
@@ -1061,7 +1106,7 @@ input,select,textarea{width:100%;padding:9px 10px;border:1px solid var(--line);b
       <div class="form">
         <label>Miesiąc<input id="closeMonthKey" type="month"></label>
         <label>Powód / komentarz<input id="closeMonthNote" placeholder="np. miesiąc rozliczony"></label>
-        <div class="controls"><button id="closeMonthBtn" class="btn primary">Zamknij miesiąc</button><button id="reopenMonthBtn" class="btn">Otwórz miesiąc</button><span id="closeMonthStatus"></span></div>
+        <div class="controls"><button id="closeMonthBtn" class="btn primary">Zamknij miesiąc</button><button id="reopenMonthBtn" class="btn">Otwórz miesiąc</button><span id="closeMonthStatus"></span></div><div id="closeMonthCompleteness" class="close-check"></div><div class="controls" style="margin-top:8px"><button id="exportFullMonthlyReportBtn" class="btn">Eksport pełnego raportu miesiąca</button></div>
       </div>
       <div class="muted">Po zamknięciu miesiąca wyniki UK/Detal i KPI z tego miesiąca nie mogą być zmieniane, dopóki miesiąc nie zostanie ponownie otwarty.</div>
     </section>
@@ -1102,7 +1147,7 @@ const sb=window.supabase.createClient(SUPABASE_URL,SUPABASE_PUBLISHABLE_KEY),$=i
 let workMode=null,workModeRegion=null;
 let user=null,profile=null,branches=[],edit={contact:null,log:null,meeting:null,task:null,visit:null,note:null};
 
-const DEFAULT_TAB_ORDER=['dashboard','analysis','comparison','branchCompare','regionMap','branches','contacts','contactLogs','meetings','tasks','visits','sales','kpis','notes','management','checklist','trash','branchCard','history','attachments','dataIO','reportsBonus'];
+const DEFAULT_TAB_ORDER=['dashboard','analysis','comparison','branchCompare','regionMap','branches','contacts','contactLogs','meetings','tasks','visits','sales','kpis','notes','management','checklist','weekPlan','adminCenter','trash','branchCard','history','attachments','dataIO','reportsBonus'];
 let tabOrderDraft=[];
 
 function currentTabOrder(){
@@ -2899,7 +2944,7 @@ async function mgmtRows(table,branchId){
   const z=await qy;if(z.error)throw z.error;return z.data||[];
 }
 async function loadManagement(){
-  const bid=$('manageBranch').value;if(!bid)return;
+  const bid=$('manageBranch','weekActionBranch').value;if(!bid)return;
   const [goals,staff,risks,plans,personnel,comments]=await Promise.all([
     mgmtRows('branch_goals',bid),mgmtRows('branch_staffing',bid),mgmtRows('branch_risks',bid),
     mgmtRows('visit_plans',bid),mgmtRows('personnel_history',bid),mgmtRows('monthly_rks_comments',bid)
@@ -3046,9 +3091,14 @@ async function exportRegionBriefExcel(){
 }
 async function closeMonth(){
   const key=$('closeMonthKey').value;if(!key)return;
-  if(!confirm(`Zamknąć miesiąc ${key}? Wyniki i KPI nie będą mogły być edytowane.`))return;
+  const problems=await loadCloseMonthCompleteness();
+  if(problems?.length){
+    const ok=confirm(`W miesiącu ${key} wykryto ${problems.length} braków danych.\n\nCzy mimo to chcesz zamknąć miesiąc?`);
+    if(!ok)return;
+  }else if(!confirm(`Zamknąć miesiąc ${key}? Wyniki i KPI nie będą mogły być edytowane.`))return;
+  try{await createCloseSnapshot(key)}catch(e){return alert('Nie udało się utworzyć snapshotu przed zamknięciem: '+e.message)}
   const {error}=await sb.from('closed_months').upsert({region_id:rid(),month_key:key,note:$('closeMonthNote').value.trim(),closed_by:user.id},{onConflict:'region_id,month_key'});
-  if(error)return alert(error.message);await refreshClosedMonthStatus();
+  if(error)return alert(error.message);await refreshClosedMonthStatus();await loadAdminCenter();
 }
 async function reopenMonth(){
   const key=$('closeMonthKey').value;if(!key)return;
@@ -3056,6 +3106,7 @@ async function reopenMonth(){
   const {error}=await sb.from('closed_months').delete().eq('region_id',rid()).eq('month_key',key);if(error)return alert(error.message);await refreshClosedMonthStatus();
 }
 async function refreshClosedMonthStatus(){
+  await loadCloseMonthCompleteness();
   const key=$('closeMonthKey').value;if(!key)return;
   const closed=await isMonthClosed(key);
   $('closeMonthStatus').innerHTML=closed?'<span class="closed-badge">MIESIĄC ZAMKNIĘTY</span>':'<span class="badge">otwarty</span>';
@@ -3148,6 +3199,151 @@ window.restoreTrash=async id=>{
 };
 window.deleteTrashPermanently=async id=>{if(!confirm('Usunąć rekord na stałe?'))return;await sb.from('trash_records').delete().eq('id',id);await loadTrash()};
 async function emptyExpiredTrash(){const {error}=await sb.from('trash_records').delete().eq('region_id',rid()).lt('expires_at',new Date().toISOString());if(error)return alert(error.message);await loadTrash()}
+
+
+function monthBounds(key){const [y,m]=key.split('-').map(Number);return {y,m,from:`${key}-01`,to:new Date(y,m,1).toISOString().slice(0,10)}}
+async function getLastSeen(){
+  const {data,error}=await sb.from('user_app_state').select('last_seen_at').eq('user_id',user.id).maybeSingle();
+  if(error)return null;return data?.last_seen_at||null;
+}
+async function markChangesSeen(){
+  const now=new Date().toISOString();
+  const {error}=await sb.from('user_app_state').upsert({user_id:user.id,last_seen_at:now},{onConflict:'user_id'});
+  if(error)return alert(error.message);await loadRecentChanges();
+}
+async function loadRecentChanges(){
+  if(!$('recentChanges'))return;
+  const last=await getLastSeen();
+  let qy=sb.from('audit_logs').select('*').eq('region_id',rid()).order('changed_at',{ascending:false}).limit(40);
+  if(last)qy=qy.gt('changed_at',last);
+  const {data,error}=await qy;if(error)return $('recentChanges').innerHTML=`<div class="muted">${esc(error.message)}</div>`;
+  const rows=(data||[]).slice(0,12);
+  $('recentChanges').innerHTML=rows.length?rows.map(x=>{
+    const cls=x.operation==='DELETE'?'bad':x.operation==='INSERT'?'good':'warn';
+    const labels={sales_results:'wyniki UK/Detal',monthly_kpis:'KPI / controlling',branch_risks:'ryzyko',branch_goals:'cel',tasks:'zadanie',visits:'wizyta',meeting_notes:'1:1',branch_staffing:'kadry'};
+    return `<div class="change-item ${cls}"><b>${esc(labels[x.table_name]||x.table_name)} • ${esc(x.operation)}</b><div class="meta">${new Date(x.changed_at).toLocaleString('pl-PL')} • ${esc(x.changed_by_email||'')}</div></div>`;
+  }).join(''):'<div class="muted">Brak nowych zmian od poprzedniego oznaczenia jako przejrzane.</div>';
+}
+function startOfWeek(d=new Date()){const x=new Date(d);const day=(x.getDay()+6)%7;x.setDate(x.getDate()-day);x.setHours(0,0,0,0);return x}
+async function loadWeekActionsDashboard(){
+  if(!$('weekActions'))return;
+  const start=startOfWeek(),end=new Date(start);end.setDate(end.getDate()+7);
+  const s=start.toISOString().slice(0,10),e=end.toISOString().slice(0,10);
+  const [tasks,visits,goals,risks]=await Promise.all([
+    sb.from('tasks').select('*').eq('region_id',rid()).neq('status','done').gte('deadline',s).lt('deadline',e),
+    sb.from('visit_plans').select('*').eq('region_id',rid()).gte('planned_date',s).lt('planned_date',e),
+    sb.from('branch_goals').select('*').eq('region_id',rid()).neq('status','done').gte('deadline',s).lt('deadline',e),
+    sb.from('branch_risks').select('*').eq('region_id',rid()).eq('level','high').neq('status','closed')
+  ]);
+  const arr=[
+    ...(tasks.data||[]).map(x=>({date:x.deadline,b:x.branch_id,title:`Zadanie: ${x.title}`,view:'tasks'})),
+    ...(visits.data||[]).map(x=>({date:x.planned_date,b:x.branch_id,title:`Wizyta: ${x.purpose||''}`,view:'visits'})),
+    ...(goals.data||[]).map(x=>({date:x.deadline,b:x.branch_id,title:`Cel: ${x.title}`,view:'management'})),
+    ...(risks.data||[]).slice(0,4).map(x=>({date:s,b:x.branch_id,title:`Ryzyko: ${x.title}`,view:'management'}))
+  ].sort((a,b)=>(a.date||'').localeCompare(b.date||'')).slice(0,10);
+  $('weekActions').innerHTML=arr.length?arr.map(x=>`<div class="today-item warn"><div class="main"><b>${esc(x.title)}</b><div class="sub">${esc(bn(x.b))} • ${fd(x.date)}</div></div><button class="btn small go" onclick="todayGoToTab('${x.view}','${x.b}')">Otwórz</button></div>`).join(''):'<div class="muted">Brak zaplanowanych działań na ten tydzień.</div>';
+}
+async function threeMonthTrend(branchId){
+  const now=new Date(),months=[];
+  for(let i=2;i>=0;i--){const d=new Date(now.getFullYear(),now.getMonth()-i,1);months.push({y:d.getFullYear(),m:d.getMonth()+1,key:`${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,'0')}`})}
+  const vals=[];
+  for(const p of months){
+    const {data}=await sb.from('sales_results').select('*').eq('branch_id',branchId).gte('result_date',`${p.key}-01`).lt('result_date',new Date(p.y,p.m,1).toISOString().slice(0,10)).order('result_date',{ascending:false}).limit(1);
+    const r=(data||[])[0]||{};const xs=[];
+    if(Number(r.uk_plan)>0)xs.push(Number(r.uk_execution||0)/Number(r.uk_plan)*100);
+    if(Number(r.detail_plan)>0)xs.push(Number(r.detail_execution||0)/Number(r.detail_plan)*100);
+    vals.push(xs.length?xs.reduce((a,b)=>a+b,0)/xs.length:NaN);
+  }
+  const finite=vals.filter(Number.isFinite);
+  if(finite.length<2)return {label:'brak danych',cls:'trend-flat'};
+  const delta=finite[finite.length-1]-finite[0];
+  return delta>5?{label:`↑ ${delta.toFixed(1)} pp`,cls:'trend-up'}:delta<-5?{label:`↓ ${Math.abs(delta).toFixed(1)} pp`,cls:'trend-down'}:{label:'→ stabilny',cls:'trend-flat'};
+}
+function priorityFromAuto(auto){if(auto.key==='critical')return {label:'wysoki',cls:'priority-high'};if(auto.key==='attention')return {label:'średni',cls:'priority-medium'};return {label:'niski',cls:'priority-low'}}
+async function loadCloseMonthCompleteness(){
+  if(!$('closeMonthCompleteness'))return null;
+  const key=$('closeMonthKey').value;if(!key)return null;const {y,m,from,to}=monthBounds(key);
+  const [sales,kpi]=await Promise.all([
+    sb.from('sales_results').select('*').eq('region_id',rid()).gte('result_date',from).lt('result_date',to),
+    sb.from('monthly_kpis').select('*').eq('region_id',rid()).eq('year',y).eq('month',m)
+  ]);
+  const problems=[];
+  for(const b of branches){
+    const sr=(sales.data||[]).filter(x=>x.branch_id===b.id).sort((a,z)=>z.result_date.localeCompare(a.result_date))[0];
+    const kr=(kpi.data||[]).find(x=>x.branch_id===b.id);
+    if(!sr)problems.push(`${b.name}: brak wyników UK/Detal`);
+    else{
+      if(sr.uk_plan==null||sr.uk_execution==null)problems.push(`${b.name}: niepełne UK`);
+      if(sr.detail_plan==null||sr.detail_execution==null)problems.push(`${b.name}: niepełny Detal`);
+    }
+    if(!kr)problems.push(`${b.name}: brak KPI/controllingu`);
+    else{
+      if(kr.voip_uk==null||kr.voip_detail==null)problems.push(`${b.name}: niepełny VoIP`);
+      if(kr.controlling==null)problems.push(`${b.name}: brak controllingu`);
+    }
+  }
+  $('closeMonthCompleteness').innerHTML=problems.length?`<div class="bad"><b>Braki przed zamknięciem (${problems.length}):</b><br>${problems.slice(0,12).map(esc).join('<br>')}${problems.length>12?'<br>…':''}</div>`:'<div class="ok"><b>✓ Dane kompletne — miesiąc gotowy do zamknięcia.</b></div>';
+  return problems;
+}
+async function createCloseSnapshot(monthKey){
+  const {y,m,from,to}=monthBounds(monthKey);
+  const tables=['branches','contacts','contact_logs','meeting_notes','tasks','visits','branch_notes','monthly_kpis','sales_results','branch_goals','branch_staffing','branch_risks','visit_plans','personnel_history','monthly_rks_comments'];
+  const snap={month_key:monthKey,region_id:rid(),created_at:new Date().toISOString(),tables:{}};
+  for(const t of tables){
+    let qy=sb.from(t).select('*').eq('region_id',rid());
+    if(t==='monthly_kpis')qy=qy.eq('year',y).eq('month',m);
+    if(t==='sales_results')qy=qy.gte('result_date',from).lt('result_date',to);
+    const {data,error}=await qy;if(error)throw error;snap.tables[t]=data||[];
+  }
+  const {error}=await sb.from('region_close_snapshots').upsert({region_id:rid(),month_key:monthKey,snapshot:snap,created_by:user.id},{onConflict:'region_id,month_key'});
+  if(error)throw error;
+}
+async function loadWeekPlan(){
+  const start=$('weekStart').value;if(!start)return;
+  const d0=new Date(start+'T00:00:00'),end=new Date(d0);end.setDate(end.getDate()+5);
+  const {data,error}=await sb.from('weekly_plan_items').select('*').eq('region_id',rid()).gte('action_date',start).lt('action_date',end.toISOString().slice(0,10)).order('action_date');
+  if(error)return $('weekBoard').innerHTML=`<div class="empty">${esc(error.message)}</div>`;
+  const arr=data||[];
+  const days=[];for(let i=0;i<5;i++){const d=new Date(d0);d.setDate(d.getDate()+i);days.push(d)}
+  $('weekBoard').innerHTML=days.map(d=>{const key=d.toISOString().slice(0,10),items=arr.filter(x=>x.action_date===key);return `<div class="week-day"><h4>${d.toLocaleDateString('pl-PL',{weekday:'long',day:'2-digit',month:'2-digit'})}</h4>${items.map(x=>`<div class="week-slot ${x.status==='done'?'done':''}"><b>${esc(x.title)}</b><div class="meta">${esc(bn(x.branch_id))} • ${esc(x.action_type)}</div><div class="controls" style="margin-top:5px"><button class="btn small" onclick="toggleWeekItem('${x.id}','${x.status==='done'?'open':'done'}')">${x.status==='done'?'Cofnij':'Wykonane'}</button><button class="btn small danger" onclick="deleteWeekItem('${x.id}')">Usuń</button></div></div>`).join('')||'<div class="muted">Brak działań.</div>'}</div>`}).join('');
+}
+async function saveWeekAction(){
+  const r={region_id:rid(),branch_id:$('weekActionBranch').value,action_date:$('weekActionDate').value,action_type:$('weekActionType').value,title:$('weekActionTitle').value.trim(),status:'open',created_by:user.id};
+  if(!r.action_date||!r.title)return;const {error}=await sb.from('weekly_plan_items').insert(r);if(error)return alert(error.message);$('weekActionTitle').value='';await loadWeekPlan();
+}
+window.toggleWeekItem=async(id,status)=>{await sb.from('weekly_plan_items').update({status}).eq('id',id);await loadWeekPlan()};
+window.deleteWeekItem=async id=>{if(!confirm('Usunąć działanie z planu?'))return;await sb.from('weekly_plan_items').delete().eq('id',id);await loadWeekPlan()};
+async function loadAdminCenter(){
+  if(!$('adminMetrics'))return;
+  const [regionsRes,branchesRes,snapRes,trashRes,auditRes]=await Promise.all([
+    sb.from('regions').select('id,name'),sb.from('branches').select('id,region_id,name'),
+    sb.from('region_close_snapshots').select('id,region_id,month_key,created_at').order('created_at',{ascending:false}).limit(20),
+    sb.from('trash_records').select('id',{count:'exact',head:true}).eq('region_id',rid()),
+    sb.from('audit_logs').select('id',{count:'exact',head:true}).eq('region_id',rid())
+  ]);
+  const regs=regionsRes.data||[],br=branchesRes.data||[],sn=snapRes.data||[];
+  $('adminMetrics').innerHTML=`<div class="admin-box"><span>Regiony</span><strong>${regs.length}</strong></div><div class="admin-box"><span>Oddziały</span><strong>${br.length}</strong></div><div class="admin-box"><span>Rekordy w koszu</span><strong>${trashRes.count||0}</strong></div><div class="admin-box"><span>Logi zmian</span><strong>${auditRes.count||0}</strong></div>`;
+  $('adminRegions').innerHTML=`<table><tr><th>Region</th><th>Oddziały</th></tr>${regs.map(r=>`<tr><td>${esc(r.name)}</td><td>${br.filter(b=>b.region_id===r.id).length}</td></tr>`).join('')}</table>`;
+  $('adminSnapshots').innerHTML=sn.length?`<table><tr><th>Region</th><th>Miesiąc</th><th>Data snapshotu</th></tr>${sn.map(s=>`<tr><td>${esc(regs.find(r=>r.id===s.region_id)?.name||'—')}</td><td>${esc(s.month_key)}</td><td>${new Date(s.created_at).toLocaleString('pl-PL')}</td></tr>`).join('')}</table>`:'<div class="empty">Brak snapshotów.</div>';
+}
+async function exportFullMonthlyReport(){
+  const key=$('closeMonthKey').value;if(!key)return;const {y,m,from,to}=monthBounds(key);
+  const [sales,kpi,risks,staff,goals,comments]=await Promise.all([
+    sb.from('sales_results').select('*').eq('region_id',rid()).gte('result_date',from).lt('result_date',to),
+    sb.from('monthly_kpis').select('*').eq('region_id',rid()).eq('year',y).eq('month',m),
+    sb.from('branch_risks').select('*').eq('region_id',rid()).neq('status','closed'),
+    sb.from('branch_staffing').select('*').eq('region_id',rid()),
+    sb.from('branch_goals').select('*').eq('region_id',rid()),
+    sb.from('monthly_rks_comments').select('*').eq('region_id',rid()).eq('month_key',key)
+  ]);
+  const rows=branches.map(b=>{
+    const s=(sales.data||[]).filter(x=>x.branch_id===b.id).sort((a,z)=>z.result_date.localeCompare(a.result_date))[0]||{};
+    const k=(kpi.data||[]).find(x=>x.branch_id===b.id)||{},st=(staff.data||[]).find(x=>x.branch_id===b.id)||{},c=(comments.data||[]).find(x=>x.branch_id===b.id);
+    const uk=Number(s.uk_plan)>0?Number(s.uk_execution||0)/Number(s.uk_plan)*100:null,det=Number(s.detail_plan)>0?Number(s.detail_execution||0)/Number(s.detail_plan)*100:null;
+    return {Oddział:b.name,'UK %':uk,'Detal %':det,'VoIP UK':k.voip_uk,'VoIP Detal':k.voip_detail,'Średni VoIP':k.voip,'Controlling':k.controlling,'Wakaty':st.vacancies||0,'Wysokie ryzyka':(risks.data||[]).filter(x=>x.branch_id===b.id&&x.level==='high').length,'Otwarte cele':(goals.data||[]).filter(x=>x.branch_id===b.id&&x.status!=='done').length,'Komentarz RKS':c?.comment||''};
+  });
+  const wb=XLSX.utils.book_new(),ws=XLSX.utils.json_to_sheet(rows);XLSX.utils.book_append_sheet(wb,ws,'Raport miesięczny');XLSX.writeFile(wb,`Raport-regionu-${key}.xlsx`);
+}
 
 async function loadDashboard(){
   if(!rid()||!branches.length)return;
@@ -3247,7 +3443,7 @@ async function loadBranchState(){
   $('stateRisk').textContent=(high?`${high} wysokie`:med?`${med} średnie`:'brak wysokich')+` • ${(goals.data||[]).length} cel. otw.`;
   const dates=[(logs.data||[])[0]?.contact_date,(visits.data||[])[0]?.visit_date,(meetings.data||[])[0]?.meeting_date].filter(Boolean).sort().reverse();
   $('stateContact').textContent=dates[0]?fd(dates[0]):'—';
-  const auto=await branchAutoStatusData(bid);$('stateAutoStatus').innerHTML=`<span class="auto-status ${auto.key}">${auto.label}</span>`;
+  const auto=await branchAutoStatusData(bid);$('stateAutoStatus').innerHTML=`<span class="auto-status ${auto.key}">${auto.label}</span>`;const pr=priorityFromAuto(auto);$('statePriority').innerHTML=`<span class="auto-status ${pr.cls}">${pr.label}</span>`;const tr=await threeMonthTrend(bid);$('stateTrend3m').innerHTML=`<span class="trend-chip ${tr.cls}">${tr.label}</span>`;
 }
 
 async function loadCard(){let id=$('cardBranch')?.value;if(!id)return;$('cardContent').innerHTML='<div class="empty">Ładowanie...</div>';let [c,l,m,t,v,s,k,n]=await Promise.all(['contacts','contact_logs','meeting_notes','tasks','visits','sales_results','monthly_kpis','branch_notes'].map(z=>sb.from(z).select('*').eq('region_id',rid()).eq('branch_id',id)));let contacts=c.data||[],logs=(l.data||[]).sort((a,b)=>b.contact_date.localeCompare(a.contact_date)),meet=(m.data||[]).sort((a,b)=>b.meeting_date.localeCompare(a.meeting_date)),tasks=(t.data||[]).filter(x=>x.status!=='done'),vis=(v.data||[]).sort((a,b)=>b.visit_date.localeCompare(a.visit_date)),sales=(s.data||[]).sort((a,b)=>b.result_date.localeCompare(a.result_date)),kpis=(k.data||[]).sort((a,b)=>(b.year*100+b.month)-(a.year*100+a.month)),notes=(n.data||[]).sort((a,b)=>b.note_date.localeCompare(a.note_date));let ss=sales[0],kk=kpis[0];$('cardContent').innerHTML=`<div class="g4"><div class="card"><h4>Ostatni kontakt</h4><div class="kpi" style="font-size:18px">${logs[0]?fd(logs[0].contact_date):'—'}</div><div class="muted">${logs[0]?esc(logs[0].channel):''}</div></div><div class="card"><h4>Otwarte zadania</h4><div class="kpi">${tasks.length}</div></div><div class="card"><h4>UK realizacja</h4><div class="kpi">${ss&&ss.uk_plan?Math.round(num(ss.uk_execution)/num(ss.uk_plan)*100):0}%</div></div><div class="card"><h4>Detal realizacja</h4><div class="kpi">${ss&&ss.detail_plan?Math.round(num(ss.detail_execution)/num(ss.detail_plan)*100):0}%</div></div></div><div class="g2" style="margin-top:12px"><div class="panel"><h3>Kontakty</h3>${contacts.map(x=>`<div class="item"><b>${esc((x.first_name||'')+' '+(x.last_name||''))}</b><div class="meta">${esc(x.position||'')} • ${esc(x.phone||'')} • ${esc(x.email||'')}</div></div>`).join('')||'<div class="empty">Brak</div>'}<h3 style="margin-top:14px">Ostatnie 1:1</h3>${meet[0]?`<div class="item"><b>${fd(meet[0].meeting_date)} • ${att(meet[0].attendance)}</b><div class="text">${esc(meet[0].urgent_topics||'')}</div></div>`:'<div class="empty">Brak</div>'}</div><div class="panel"><h3>KPI</h3>${kk?`<div class="g3"><div class="card"><h4>Okres</h4><b>${kk.month}/${kk.year}</b></div><div class="card"><h4>VoIP UK</h4><b>${kk.voip_uk==null?"—":num(kk.voip_uk)+"%"}</b></div><div class="card"><h4>VoIP Detal</h4><b>${kk.voip_detail==null?"—":num(kk.voip_detail)+"%"}</b></div><div class="card"><h4>Średni VoIP</h4><b>${kk.voip==null?"—":num(kk.voip)+"%"}</b></div><div class="card"><h4>Controlling</h4><b>${kk.controlling==null?"—":num(kk.controlling)+"%"}</b></div></div>`:'<div class="empty">Brak KPI</div>'}<h3 style="margin-top:14px">Ostatnia wizyta</h3>${vis[0]?`<div class="item"><b>${fd(vis[0].visit_date)}</b><div class="text">${esc(vis[0].topics||'')}</div></div>`:'<div class="empty">Brak</div>'}<h3 style="margin-top:14px">Ostatnia notatka</h3>${notes[0]?`<div class="item"><b>${fd(notes[0].note_date)}</b><div class="text">${esc(notes[0].note)}</div></div>`:'<div class="empty">Brak</div>'}</div></div>`}
@@ -3344,7 +3540,7 @@ async function showApp(session,modeResolved=false){
     $('controlKpiMonth').value=`${cd.getFullYear()}-${String(cd.getMonth()+1).padStart(2,'0')}`;
   }$('comparisonYear').value=d.getFullYear();$('comparisonMonth').value=d.getMonth()+1;
   ['analysisFromM','analysisToM','bcFrom','bcTo','bcCompareFrom','bcCompareTo'].forEach(fillMonthSelect);$('analysisYear').value=d.getFullYear();$('analysisFromM').value=1;$('analysisToM').value=d.getMonth()+1;$('bcYear').value=d.getFullYear();$('bcPrevYear').value=d.getFullYear()-1;$('bcFrom').value=1;$('bcTo').value=d.getMonth()+1;$('bcCompareFrom').value=1;$('bcCompareTo').value=d.getMonth()+1;
-  $('bonusYear').value=d.getFullYear();$('bonusQuarter').value=Math.floor(d.getMonth()/3)+1;$('bonusMonthYear').value=d.getFullYear();fillMonthSelect('bonusMonthSelect');$('bonusMonthSelect').value=d.getMonth()+1;$('archiveMonth').value=d.toISOString().slice(0,7);$('personnelDate').value=today();$('visitPlanDate').value=today();$('monthlyCommentMonth').value=d.toISOString().slice(0,7);$('globalPeriod').value=d.toISOString().slice(0,7);$('autoSummaryMonth').value=d.toISOString().slice(0,7);$('closeMonthKey').value=d.toISOString().slice(0,7);$('checklistMonth').value=d.toISOString().slice(0,7);
+  $('bonusYear').value=d.getFullYear();$('bonusQuarter').value=Math.floor(d.getMonth()/3)+1;$('bonusMonthYear').value=d.getFullYear();fillMonthSelect('bonusMonthSelect');$('bonusMonthSelect').value=d.getMonth()+1;$('archiveMonth').value=d.toISOString().slice(0,7);$('personnelDate').value=today();$('visitPlanDate').value=today();$('monthlyCommentMonth').value=d.toISOString().slice(0,7);$('globalPeriod').value=d.toISOString().slice(0,7);$('autoSummaryMonth').value=d.toISOString().slice(0,7);$('closeMonthKey').value=d.toISOString().slice(0,7);$('checklistMonth').value=d.toISOString().slice(0,7);{const ws=startOfWeek(d);$('weekStart').value=ws.toISOString().slice(0,10);$('weekActionDate').value=ws.toISOString().slice(0,10);}
 }
 function showLogin(){$('appView').classList.add('hidden');$('modeView').classList.add('hidden');$('loginView').classList.remove('hidden');workMode=null;workModeRegion=null}
 document.querySelectorAll('.tab').forEach(b=>b.onclick=()=>{document.querySelectorAll('.tab').forEach(x=>x.classList.toggle('active',x===b));document.querySelectorAll('.view').forEach(x=>x.classList.toggle('active',x.id===b.dataset.v));if(b.dataset.v==='dashboard')loadDashboard();if(b.dataset.v==='analysis')loadAnalysis();if(b.dataset.v==='comparison')loadComparison();if(b.dataset.v==='branchCompare')loadBranchCompare();if(b.dataset.v==='regionMap')loadRegionMap();if(b.dataset.v==='branchCard'){loadCard();loadBranchState();}if(b.dataset.v==='history')loadHistory()});
@@ -3406,6 +3602,10 @@ $('closeMonthBtn').onclick=closeMonth;$('reopenMonthBtn').onclick=reopenMonth;$(
 
 $('refreshChecklistBtn').onclick=loadChecklist;$('checklistMonth').onchange=loadChecklist;
 $('refreshTrashBtn').onclick=loadTrash;$('emptyExpiredTrashBtn').onclick=emptyExpiredTrash;
+
+$('markChangesSeenBtn').onclick=markChangesSeen;$('openWeekPlanBtn').onclick=()=>document.querySelector('.tab[data-v="weekPlan"]')?.click();
+$('refreshWeekPlanBtn').onclick=loadWeekPlan;$('weekStart').onchange=loadWeekPlan;$('saveWeekActionBtn').onclick=saveWeekAction;
+$('refreshAdminCenterBtn').onclick=loadAdminCenter;$('exportFullMonthlyReportBtn').onclick=exportFullMonthlyReport;
 $('logoutBtn').onclick=async()=>{await sb.auth.signOut();showLogin()};
 $('loadComparisonBtn').onclick=loadComparison;$('regionSelect').onchange=loadBranches;$('addBranchBtn').onclick=addBranch;
 $('saveContact').onclick=saveContact;$('clearContact').onclick=clearContact;$('contactFilter').onchange=loadContacts;$('contactSearch').oninput=loadContacts;
