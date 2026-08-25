@@ -2,7 +2,7 @@
 <html lang="pl">
 <head>
 <meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
-<title>Eltrox RKS – Supabase v8.10</title>
+<title>Eltrox RKS – Supabase v8.11</title>
 <style>
 :root{--o:#f36f21;--od:#d85d12;--bg:#eef1f4;--w:#fff;--line:#d9dde3;--t:#242424;--m:#6b7280;--r:#c9372c;--g:#25894b;--b:#2f71c8;--sh:0 8px 24px rgba(0,0,0,.08)}
 *{box-sizing:border-box}html,body{margin:0;min-height:100%;font-family:Arial,Helvetica,sans-serif;background:var(--bg);color:var(--t)}button,input,select,textarea{font:inherit}button{cursor:pointer}.hidden{display:none!important}
@@ -305,6 +305,18 @@ input,select,textarea{width:100%;padding:9px 10px;border:1px solid var(--line);b
 @media(max-width:1200px){
   .dashboard-v45 .metrics{grid-template-columns:repeat(3,1fr)}
 }
+
+/* KPI miesięczne — układ v45 */
+.monthly-grid{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:10px;margin-bottom:12px}
+.monthly-card{background:#fff;border:1px solid var(--line);border-radius:13px;padding:13px;box-shadow:var(--shadow)}
+.monthly-card span{display:block;color:var(--m);font-size:11px;font-weight:750}
+.monthly-card strong{display:block;font-size:18px;margin-top:5px}
+.monthly-input{width:120px;text-align:right;padding:7px 8px;border:1px solid #cfd5dc;border-radius:7px;background:#fff}
+.monthly-input.avg{background:#f4f6f8;font-weight:800}
+.ctrl-comment-input{padding:7px 8px;border:1px solid #cfd5dc;border-radius:7px;background:#fff}
+.region-name-badge{display:inline-block;padding:4px 9px;border-radius:999px;background:#fff0e5;color:var(--od);font-size:11px;font-weight:900;vertical-align:middle}
+@media(max-width:850px){.monthly-grid{grid-template-columns:1fr}}
+
 @media(max-width:950px){
   .dashboard-v45 .grid2{grid-template-columns:1fr}
 }
@@ -328,7 +340,7 @@ input,select,textarea{width:100%;padding:9px 10px;border:1px solid var(--line);b
 @media(max-width:950px){.g2,.g3,.g4{grid-template-columns:1fr}.header{align-items:flex-start;flex-direction:column}.nav{top:108px}}
 </style></head>
 <body>
-<div id="loginView" class="login-shell"><div class="login-card"><div class="brand"><h1>Eltrox RKS</h1><p>Wersja online v8.10</p></div><form id="loginForm" class="form"><label>E-mail<input id="loginEmail" type="email" required></label><label>Hasło<input id="loginPassword" type="password" required></label><button class="btn primary">Zaloguj</button><div id="loginMsg" class="msg"></div></form></div></div>
+<div id="loginView" class="login-shell"><div class="login-card"><div class="brand"><h1>Eltrox RKS</h1><p>Wersja online v8.11</p></div><form id="loginForm" class="form"><label>E-mail<input id="loginEmail" type="email" required></label><label>Hasło<input id="loginPassword" type="password" required></label><button class="btn primary">Zaloguj</button><div id="loginMsg" class="msg"></div></form></div></div>
 
 <div id="modeView" class="mode-shell hidden">
   <div class="mode-card">
@@ -688,35 +700,43 @@ input,select,textarea{width:100%;padding:9px 10px;border:1px solid var(--line);b
 <div id="salesMsg" class="msg"></div>
 </div></section>
 
-<section id="kpis" class="view">
-  <div class="head"><div><h2>KPI VoIP / Controlling</h2><p>Miesięczne KPI oddziałów. VoIP wpisujesz osobno dla UK i Detalu, a średnia liczy się automatycznie.</p></div></div>
-  <div class="g2">
-    <div class="panel">
-      <h3>Dodaj / aktualizuj KPI</h3>
-      <div class="form">
-        <label>Oddział<select id="kpiBranch"></select></label>
-        <div class="g3">
-          <label>Rok<input id="kpiYear" type="number"></label>
-          <label>Miesiąc<input id="kpiMonth" type="number" min="1" max="12"></label>
-          <div></div>
-        </div>
-        <div class="g3">
-          <label>VoIP UK (%)<input id="kpiVoipUk" type="number" step="0.01"></label>
-          <label>VoIP Detal (%)<input id="kpiVoipDetail" type="number" step="0.01"></label>
-          <label>Średni VoIP (%)<input id="kpiVoipAvg" type="number" step="0.01" readonly></label>
-        </div>
-        <label>Controlling (%)<input id="kpiControlling" type="number" step="0.01"></label>
-        <label>Komentarz<textarea id="kpiComment"></textarea></label>
-        <button id="saveKpi" class="btn primary">Zapisz KPI</button>
-      </div>
-      <div id="kpiMsg" class="msg"></div>
+<section id="kpis" class="view"><div class="inner">
+  <div class="head">
+    <div>
+      <h2>KPI miesięczne oddziałów <span id="kpiActiveRegionName" class="region-name-badge"></span></h2>
+      <p>Wyniki uzupełniane raz w miesiącu z uwzględnieniem opóźnienia raportowania: VoIP = 2 miesiące, controlling = 1 miesiąc.</p>
     </div>
-    <div class="panel">
-      <label>Oddział<select id="kpiFilter"></select></label>
-      <div id="kpiTable" class="table" style="margin-top:10px"></div>
+    <div class="controls">
+      <label>Okres KPI VoIP<input id="voipMonth" type="month"></label>
+      <label>Okres controllingu<input id="controlKpiMonth" type="month"></label>
+      <button class="btn primary" id="saveMonthlyKpi">Zapisz dane miesięczne</button>
+      <span id="monthlySaveStatus" style="font-size:12px;font-weight:700;color:#168451"></span>
     </div>
   </div>
-</section>
+
+  <div class="monthly-grid">
+    <div class="monthly-card"><span>Wybrany okres KPI VoIP</span><strong id="voipPeriodLabel">—</strong></div>
+    <div class="monthly-card"><span>Wybrany okres controllingu</span><strong id="controlPeriodLabel">—</strong></div>
+    <div class="monthly-card"><span>Oddziały z kompletem danych</span><strong id="completeKpi">0</strong></div>
+  </div>
+
+  <section class="panel">
+    <h3>Dane za wybrany miesiąc</h3>
+    <div class="table-wrap"><table>
+      <thead><tr>
+        <th>Oddział</th>
+        <th>VoIP UK (%) <span id="voipThMonth"></span></th>
+        <th>VoIP Detal (%) <span id="voipDetailThMonth"></span></th>
+        <th>Średni VoIP (%)</th>
+        <th>Wynik controllingu (%) <span id="controlThMonth"></span></th>
+        <th style="text-align:left">Komentarz controllingu</th>
+      </tr></thead>
+      <tbody id="monthlyKpiBody"></tbody>
+    </table></div>
+    <p class="note">Okres dla KPI VoIP i controllingu wybierasz niezależnie. Wartości zapisują się również automatycznie po zmianie pola. Średni VoIP jest liczony automatycznie z VoIP UK i VoIP Detal. Analiza 360° zawsze pokazuje najnowszy dostępny średni wynik VoIP oraz najnowszy controlling.</p>
+  </section>
+  <div id="kpiMsg" class="msg"></div>
+</div></section>
 
 <section id="notes" class="view"><div class="head"><div><h2>Notatki do oddziału</h2><p>Wiele notatek z datą.</p></div></div><div class="g2"><div class="panel"><h3 id="noteTitle">Dodaj notatkę</h3><div class="form"><label>Oddział<select id="noteBranch"></select></label><label>Data<input id="noteDate" type="date"></label><label>Treść<textarea id="noteText"></textarea></label><div class="controls"><button id="saveNote" class="btn primary">Zapisz</button><button id="clearNote" class="btn">Wyczyść</button></div></div><div id="noteMsg" class="msg"></div></div><div class="panel"><label>Oddział<select id="noteFilter"></select></label><div id="noteList" class="list" style="margin-top:10px"></div></div></div></section>
 
@@ -974,7 +994,7 @@ const msg=(id,t,cl='')=>{$(id).textContent=t||'';$(id).className='msg '+cl};
 const today=()=>new Date().toISOString().slice(0,10),rid=()=>$('regionSelect').value,bn=id=>branches.find(b=>b.id===id)?.name||'—';
 const fd=v=>v?new Intl.DateTimeFormat('pl-PL').format(new Date(v+'T12:00:00')):'—',num=v=>Number(v||0),money=v=>num(v).toLocaleString('pl-PL',{maximumFractionDigits:2})+' zł';
 const allOpts=(all=true)=> (all?'<option value="all">Wszystkie oddziały</option>':'')+branches.map(b=>`<option value="${b.id}">${esc(b.name)}</option>`).join('');
-function fill(){['contactBranch','logBranch','meetingBranch','taskBranch','visitBranch','salesBranch','kpiBranch','noteBranch','cardBranch','historyBranch','attachmentBranch'].forEach(id=>{if($(id))$(id).innerHTML=allOpts(false)});['contactFilter','logFilter','meetingFilter','taskFilter','salesFilter','kpiFilter','noteFilter','attachmentFilter'].forEach(id=>{if($(id))$(id).innerHTML=allOpts(true)})}
+function fill(){['contactBranch','logBranch','meetingBranch','taskBranch','visitBranch','salesBranch','noteBranch','cardBranch','historyBranch','attachmentBranch'].forEach(id=>{if($(id))$(id).innerHTML=allOpts(false)});['contactFilter','logFilter','meetingFilter','taskFilter','salesFilter','noteFilter','attachmentFilter'].forEach(id=>{if($(id))$(id).innerHTML=allOpts(true)})}
 async function q(table,select='*'){return sb.from(table).select(select).eq('region_id',rid())}
 function att(v){return v==='present_manager'?'Obecny – kierownik':v==='present_sales'?'Obecny – handlowiec':v==='present_two'?'Obecne – 2 osoby':v==='absent_excused'?'Nieobecny – usprawiedliwione':'Nieobecny – nieusprawiedliwione'}
 function sl(v){return v==='todo'?'Do zrobienia':v==='progress'?'W trakcie':'Wykonane'}
@@ -1366,52 +1386,141 @@ async function loadSales(){return renderSalesEntry()}
 async function saveSales(){return saveSalesEntry(true)}
 
 
-function calcVoipAverage(){
-  const ukRaw=$('kpiVoipUk').value,detRaw=$('kpiVoipDetail').value;
-  const vals=[ukRaw,detRaw].filter(v=>String(v).trim()!=='').map(Number).filter(Number.isFinite);
-  $('kpiVoipAvg').value=vals.length?(vals.reduce((a,b)=>a+b,0)/vals.length).toFixed(2):'';
-}
-async function loadKpis(){
-  let x=await q('monthly_kpis');if(x.error)return;
-  window._kpis=x.data||[];
-  let f=$('kpiFilter').value,
-      a=window._kpis.filter(v=>f==='all'||v.branch_id===f).sort((a,b)=>(b.year*100+b.month)-(a.year*100+a.month));
-  $('kpiTable').innerHTML=a.length?`<table>
-    <tr><th>Okres</th><th>Oddział</th><th>VoIP UK</th><th>VoIP Detal</th><th>Średni VoIP</th><th>Controlling</th><th>Komentarz</th></tr>
-    ${a.map(v=>`<tr>
-      <td>${v.month}/${v.year}</td>
-      <td>${esc(bn(v.branch_id))}</td>
-      <td>${v.voip_uk===null||v.voip_uk===undefined?'—':num(v.voip_uk)+'%'}</td>
-      <td>${v.voip_detail===null||v.voip_detail===undefined?'—':num(v.voip_detail)+'%'}</td>
-      <td><strong>${v.voip===null||v.voip===undefined?'—':num(v.voip)+'%'}</strong></td>
-      <td>${v.controlling===null||v.controlling===undefined?'—':num(v.controlling)+'%'}</td>
-      <td>${esc(v.controlling_comment||'')}</td>
-    </tr>`).join('')}
-  </table>`:'<div class="empty">Brak KPI.</div>';
-}
-async function saveKpi(){
-  const ukRaw=$('kpiVoipUk').value,detRaw=$('kpiVoipDetail').value;
-  const uk=String(ukRaw).trim()===''?null:Number(ukRaw);
-  const det=String(detRaw).trim()===''?null:Number(detRaw);
-  const vals=[uk,det].filter(Number.isFinite);
-  const avg=vals.length?vals.reduce((a,b)=>a+b,0)/vals.length:null;
-  let r={
-    region_id:rid(),
-    branch_id:$('kpiBranch').value,
-    year:+$('kpiYear').value,
-    month:+$('kpiMonth').value,
-    voip_uk:uk,
-    voip_detail:det,
-    voip:avg,
-    controlling:String($('kpiControlling').value).trim()===''?null:Number($('kpiControlling').value),
-    controlling_comment:$('kpiComment').value.trim()
-  };
-  let{error}=await sb.from('monthly_kpis').upsert(r,{onConflict:'branch_id,year,month'});
-  if(error)return msg('kpiMsg',error.message,'error');
-  msg('kpiMsg','Zapisano.','ok');
-  await loadKpis();await loadCard();await loadDashboard();
-}
 
+function kpiMonthName(key){
+  if(!key)return '—';
+  const [y,m]=key.split('-').map(Number);
+  return new Intl.DateTimeFormat('pl-PL',{month:'long',year:'numeric'}).format(new Date(y,m-1,1));
+}
+function kpiPeriodParts(key){
+  if(!key)return null;
+  const [year,month]=key.split('-').map(Number);
+  return {year,month};
+}
+async function getMonthlyKpiRowsForPeriods(voipKey,controlKey){
+  const vp=kpiPeriodParts(voipKey),cp=kpiPeriodParts(controlKey);
+  const periods=[];
+  if(vp)periods.push(`and(year.eq.${vp.year},month.eq.${vp.month})`);
+  if(cp && (!vp || cp.year!==vp.year || cp.month!==vp.month))periods.push(`and(year.eq.${cp.year},month.eq.${cp.month})`);
+  if(!periods.length)return [];
+  const {data,error}=await sb.from('monthly_kpis').select('*').eq('region_id',rid()).or(periods.join(','));
+  if(error)throw error;
+  return data||[];
+}
+function monthlyKpiKey(branchId,year,month){return `${branchId}|${year}|${month}`}
+async function renderMonthlyKpi(){
+  if(!$('monthlyKpiBody'))return;
+  const voipKey=$('voipMonth').value,controlKey=$('controlKpiMonth').value;
+  if(!voipKey&&!controlKey)return;
+  const vp=kpiPeriodParts(voipKey),cp=kpiPeriodParts(controlKey);
+  const rows=await getMonthlyKpiRowsForPeriods(voipKey,controlKey);
+  const map=new Map(rows.map(r=>[monthlyKpiKey(r.branch_id,r.year,r.month),r]));
+
+  $('kpiActiveRegionName').textContent=$('regionSelect').selectedOptions[0]?.textContent||'';
+  $('voipPeriodLabel').textContent=kpiMonthName(voipKey);
+  $('controlPeriodLabel').textContent=kpiMonthName(controlKey);
+  $('voipThMonth').textContent=voipKey?`(${kpiMonthName(voipKey)})`:'';
+  $('voipDetailThMonth').textContent=voipKey?`(${kpiMonthName(voipKey)})`:'';
+  $('controlThMonth').textContent=controlKey?`(${kpiMonthName(controlKey)})`:'';
+
+  $('monthlyKpiBody').innerHTML=branches.map(b=>{
+    const vr=vp?map.get(monthlyKpiKey(b.id,vp.year,vp.month)):null;
+    const cr=cp?map.get(monthlyKpiKey(b.id,cp.year,cp.month)):null;
+    const uk=vr?.voip_uk??'';
+    const det=vr?.voip_detail??'';
+    const avg=vr?.voip??'';
+    const ctrl=cr?.controlling??'';
+    const comment=cr?.controlling_comment??'';
+    return `<tr>
+      <td><strong>${esc(b.name)}</strong></td>
+      <td><input class="monthly-input voip-uk-month-input" data-branch-id="${b.id}" type="number" min="0" max="200" step="0.1" value="${esc(uk)}"></td>
+      <td><input class="monthly-input voip-detail-month-input" data-branch-id="${b.id}" type="number" min="0" max="200" step="0.1" value="${esc(det)}"></td>
+      <td><input class="monthly-input avg voip-avg-month-input" data-branch-id="${b.id}" type="number" step="0.1" value="${esc(avg)}" readonly></td>
+      <td><input class="monthly-input ctrl-month-input" data-branch-id="${b.id}" type="number" min="0" max="200" step="0.1" value="${esc(ctrl)}"></td>
+      <td style="text-align:left"><input class="ctrl-comment-input" data-branch-id="${b.id}" type="text" value="${esc(comment)}" style="width:100%;min-width:260px"></td>
+    </tr>`;
+  }).join('')||'<tr><td colspan="6" class="muted">Brak oddziałów.</td></tr>';
+
+  function updateRowAverage(branchId){
+    const ukEl=document.querySelector(`.voip-uk-month-input[data-branch-id="${branchId}"]`);
+    const detEl=document.querySelector(`.voip-detail-month-input[data-branch-id="${branchId}"]`);
+    const avgEl=document.querySelector(`.voip-avg-month-input[data-branch-id="${branchId}"]`);
+    const vals=[ukEl?.value,detEl?.value].filter(v=>String(v??'').trim()!=='').map(Number).filter(Number.isFinite);
+    if(avgEl)avgEl.value=vals.length?(vals.reduce((a,b)=>a+b,0)/vals.length).toFixed(2):'';
+  }
+
+  branches.forEach(b=>{
+    document.querySelector(`.voip-uk-month-input[data-branch-id="${b.id}"]`)?.addEventListener('input',()=>updateRowAverage(b.id));
+    document.querySelector(`.voip-detail-month-input[data-branch-id="${b.id}"]`)?.addEventListener('input',()=>updateRowAverage(b.id));
+  });
+
+  document.querySelectorAll('.voip-uk-month-input,.voip-detail-month-input,.ctrl-month-input,.ctrl-comment-input').forEach(inp=>{
+    inp.onchange=()=>saveMonthlyKpi(false);
+  });
+
+  const complete=branches.filter(b=>{
+    const vr=vp?map.get(monthlyKpiKey(b.id,vp.year,vp.month)):null;
+    const cr=cp?map.get(monthlyKpiKey(b.id,cp.year,cp.month)):null;
+    const voipOk=!vp || (Number.isFinite(Number(vr?.voip_uk)) && Number.isFinite(Number(vr?.voip_detail)));
+    const ctrlOk=!cp || Number.isFinite(Number(cr?.controlling));
+    return voipOk&&ctrlOk;
+  }).length;
+  $('completeKpi').textContent=complete;
+}
+async function saveMonthlyKpi(showAlert=true){
+  const voipKey=$('voipMonth').value,controlKey=$('controlKpiMonth').value;
+  const vp=kpiPeriodParts(voipKey),cp=kpiPeriodParts(controlKey);
+  if(!vp&&!cp)return;
+
+  let savedVoip=0;
+  for(const b of branches){
+    if(vp){
+      const ukEl=document.querySelector(`.voip-uk-month-input[data-branch-id="${b.id}"]`);
+      const detEl=document.querySelector(`.voip-detail-month-input[data-branch-id="${b.id}"]`);
+      const ukRaw=ukEl?.value.trim()||'',detRaw=detEl?.value.trim()||'';
+      const uk=ukRaw===''?null:Number(ukRaw),det=detRaw===''?null:Number(detRaw);
+      const vals=[uk,det].filter(Number.isFinite),avg=vals.length?vals.reduce((a,z)=>a+z,0)/vals.length:null;
+      const {data:existing,error:findErr}=await sb.from('monthly_kpis').select('*').eq('branch_id',b.id).eq('year',vp.year).eq('month',vp.month).maybeSingle();
+      if(findErr)throw findErr;
+      if(existing){
+        const {error}=await sb.from('monthly_kpis').update({voip_uk:uk,voip_detail:det,voip:avg}).eq('id',existing.id);
+        if(error)throw error;
+      }else if(uk!==null||det!==null){
+        const {error}=await sb.from('monthly_kpis').insert({region_id:rid(),branch_id:b.id,year:vp.year,month:vp.month,voip_uk:uk,voip_detail:det,voip:avg});
+        if(error)throw error;
+      }
+      if(uk!==null||det!==null)savedVoip++;
+    }
+
+    if(cp){
+      const ctrlEl=document.querySelector(`.ctrl-month-input[data-branch-id="${b.id}"]`);
+      const commEl=document.querySelector(`.ctrl-comment-input[data-branch-id="${b.id}"]`);
+      const raw=ctrlEl?.value.trim()||'',comment=commEl?.value.trim()||'';
+      const ctrl=raw===''?null:Number(raw);
+      const {data:existing,error:findErr}=await sb.from('monthly_kpis').select('*').eq('branch_id',b.id).eq('year',cp.year).eq('month',cp.month).maybeSingle();
+      if(findErr)throw findErr;
+      if(existing){
+        const {error}=await sb.from('monthly_kpis').update({controlling:ctrl,controlling_comment:comment||null}).eq('id',existing.id);
+        if(error)throw error;
+      }else if(ctrl!==null||comment){
+        const {error}=await sb.from('monthly_kpis').insert({region_id:rid(),branch_id:b.id,year:cp.year,month:cp.month,controlling:ctrl,controlling_comment:comment||null});
+        if(error)throw error;
+      }
+    }
+  }
+
+  const status=$('monthlySaveStatus');
+  if(status){
+    status.textContent=`Zapisano • VoIP: ${savedVoip} oddz.`;
+    setTimeout(()=>{if(status)status.textContent=''},3500);
+  }
+  if(showAlert)alert(`Dane zapisano. KPI VoIP: ${kpiMonthName(voipKey)}; controlling: ${kpiMonthName(controlKey)}.`);
+  await renderMonthlyKpi();
+  await loadDashboard();
+  await loadCard();
+}
+async function loadKpis(){return renderMonthlyKpi()}
+async function saveKpi(){return saveMonthlyKpi(true)}
 async function loadNotes(){let x=await q('branch_notes');if(x.error)return;window._notes=x.data||[];let f=$('noteFilter').value,a=window._notes.filter(v=>f==='all'||v.branch_id===f).sort((a,b)=>b.note_date.localeCompare(a.note_date));$('noteList').innerHTML=a.length?a.map(v=>`<div class="item"><div class="top"><div><b>${esc(bn(v.branch_id))} • ${fd(v.note_date)}</b></div><div class="actions"><button class="btn small" onclick="editNote('${v.id}')">Edytuj</button><button class="btn small danger" onclick="delNote('${v.id}')">Usuń</button></div></div><div class="text">${esc(v.note)}</div></div>`).join(''):'<div class="empty">Brak notatek.</div>'}
 function clearNote(){edit.note=null;$('noteTitle').textContent='Dodaj notatkę';$('noteDate').value=today();$('noteText').value=''}
 async function saveNote(){let r={region_id:rid(),branch_id:$('noteBranch').value,note_date:$('noteDate').value,note:$('noteText').value.trim(),created_by:user.id};if(!r.note)return;let z=edit.note?await sb.from('branch_notes').update(r).eq('id',edit.note):await sb.from('branch_notes').insert(r);if(z.error)return msg('noteMsg',z.error.message,'error');clearNote();loadNotes();loadCard();loadHistory()}
@@ -2706,7 +2815,12 @@ async function showApp(session,modeResolved=false){
   }else{$('regionSelect').disabled=false}
   refreshAdminRegionName();await loadBranches();
   clearLog();clearMeeting();clearTask();clearVisit();clearNote();$('salesEntryDate').value=today();
-  let d=new Date();$('kpiYear').value=d.getFullYear();$('kpiMonth').value=d.getMonth()+1;calcVoipAverage();$('comparisonYear').value=d.getFullYear();$('comparisonMonth').value=d.getMonth()+1;
+  let d=new Date();{
+    const vd=new Date(d.getFullYear(),d.getMonth()-2,1);
+    const cd=new Date(d.getFullYear(),d.getMonth()-1,1);
+    $('voipMonth').value=`${vd.getFullYear()}-${String(vd.getMonth()+1).padStart(2,'0')}`;
+    $('controlKpiMonth').value=`${cd.getFullYear()}-${String(cd.getMonth()+1).padStart(2,'0')}`;
+  }$('comparisonYear').value=d.getFullYear();$('comparisonMonth').value=d.getMonth()+1;
   ['analysisFromM','analysisToM','bcFrom','bcTo','bcCompareFrom','bcCompareTo'].forEach(fillMonthSelect);$('analysisYear').value=d.getFullYear();$('analysisFromM').value=1;$('analysisToM').value=d.getMonth()+1;$('bcYear').value=d.getFullYear();$('bcPrevYear').value=d.getFullYear()-1;$('bcFrom').value=1;$('bcTo').value=d.getMonth()+1;$('bcCompareFrom').value=1;$('bcCompareTo').value=d.getMonth()+1;
   $('bonusYear').value=d.getFullYear();$('bonusQuarter').value=Math.floor(d.getMonth()/3)+1;$('bonusMonthYear').value=d.getFullYear();fillMonthSelect('bonusMonthSelect');$('bonusMonthSelect').value=d.getMonth()+1;$('archiveMonth').value=d.toISOString().slice(0,7);
 }
@@ -2766,7 +2880,7 @@ $('meetingAttendance').onchange=toggleComment;$('refreshMeetingPreviewBtn').oncl
 $('saveMeeting').onclick=saveMeeting;$('clearMeeting').onclick=clearMeeting;$('meetingFilter').onchange=loadMeetings;
 $('saveTask').onclick=saveTask;$('clearTask').onclick=clearTask;$('taskFilter').onchange=loadTasks;$('taskStatusFilter').onchange=loadTasks;
 $('saveVisit').onclick=saveVisit;$('clearVisit').onclick=clearVisit;$('addVisitRecommendation').onclick=()=>addVisitRecommendationRow();$('generateVisitForm').onclick=generateVisitSignatureForm;$('printVisitReport').onclick=printVisitSignatureForm;
-$('salesEntryDate').onchange=renderSalesEntry;$('saveSalesEntry').onclick=()=>saveSalesEntry(true);$('saveKpi').onclick=saveKpi;$('kpiFilter').onchange=loadKpis;$('kpiVoipUk').oninput=calcVoipAverage;$('kpiVoipDetail').oninput=calcVoipAverage;
+$('salesEntryDate').onchange=renderSalesEntry;$('saveSalesEntry').onclick=()=>saveSalesEntry(true);$('saveMonthlyKpi').onclick=()=>saveMonthlyKpi(true);$('voipMonth').onchange=renderMonthlyKpi;$('controlKpiMonth').onchange=renderMonthlyKpi;
 $('saveNote').onclick=saveNote;$('clearNote').onclick=clearNote;$('noteFilter').onchange=loadNotes;$('cardBranch').onchange=loadCard;$('historyBranch').onchange=loadHistory;
 (async()=>{let{data}=await sb.auth.getSession();if(data.session)showModeChooser(data.session,false);else showLogin()})();
 </script></body></html>
