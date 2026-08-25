@@ -2,7 +2,7 @@
 <html lang="pl">
 <head>
 <meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
-<title>Eltrox RKS – Supabase v8.12</title>
+<title>Eltrox RKS – Supabase v9</title>
 <style>
 :root{--o:#f36f21;--od:#d85d12;--bg:#eef1f4;--w:#fff;--line:#d9dde3;--t:#242424;--m:#6b7280;--r:#c9372c;--g:#25894b;--b:#2f71c8;--sh:0 8px 24px rgba(0,0,0,.08)}
 *{box-sizing:border-box}html,body{margin:0;min-height:100%;font-family:Arial,Helvetica,sans-serif;background:var(--bg);color:var(--t)}button,input,select,textarea{font:inherit}button{cursor:pointer}.hidden{display:none!important}
@@ -317,6 +317,27 @@ input,select,textarea{width:100%;padding:9px 10px;border:1px solid var(--line);b
 .region-name-badge{display:inline-block;padding:4px 9px;border-radius:999px;background:#fff0e5;color:var(--od);font-size:11px;font-weight:900;vertical-align:middle}
 @media(max-width:850px){.monthly-grid{grid-template-columns:1fr}}
 
+
+/* v9 — strategiczne zarządzanie regionem */
+.manage-grid{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+.manage-card{background:#fff;border:1px solid var(--line);border-radius:14px;padding:14px;box-shadow:var(--shadow)}
+.manage-card h3{margin:0 0 10px}
+.manage-list{display:grid;gap:8px}
+.manage-item{border:1px solid var(--line);border-radius:10px;padding:10px;background:#fff}
+.manage-item .top{display:flex;justify-content:space-between;gap:10px;align-items:flex-start}
+.manage-item .meta{font-size:10px;color:var(--m);margin-top:3px}
+.risk-high{border-left:5px solid #c93d37}.risk-medium{border-left:5px solid #d39118}.risk-low{border-left:5px solid #168451}
+.goal-progress{height:8px;border-radius:999px;background:#edf0f4;overflow:hidden;margin-top:7px}.goal-progress i{display:block;height:100%;background:currentColor}
+.brief-grid{display:grid;grid-template-columns:repeat(5,minmax(0,1fr));gap:10px;margin-bottom:12px}
+.brief-box{background:#fff;border:1px solid var(--line);border-radius:12px;padding:12px;box-shadow:var(--shadow)}
+.brief-box span{display:block;color:var(--m);font-size:10px;font-weight:800}.brief-box strong{display:block;font-size:19px;margin-top:5px}
+.alert-board{display:grid;gap:8px}.alert-row{border:1px solid var(--line);border-left:5px solid #d39118;border-radius:10px;padding:10px;background:#fff}
+.alert-row.bad{border-left-color:#c93d37}.alert-row.good{border-left-color:#168451}
+.branch-state-grid{display:grid;grid-template-columns:repeat(5,minmax(0,1fr));gap:8px;margin-bottom:12px}
+.branch-state{border:1px solid var(--line);border-radius:10px;padding:10px;background:#fafafa}.branch-state span{display:block;font-size:10px;color:var(--m);font-weight:800}.branch-state strong{display:block;margin-top:4px;font-size:14px}
+@media(max-width:1100px){.brief-grid,.branch-state-grid{grid-template-columns:repeat(2,1fr)}.manage-grid{grid-template-columns:1fr}}
+@media(max-width:650px){.brief-grid,.branch-state-grid{grid-template-columns:1fr}}
+
 @media(max-width:950px){
   .dashboard-v45 .grid2{grid-template-columns:1fr}
 }
@@ -340,7 +361,7 @@ input,select,textarea{width:100%;padding:9px 10px;border:1px solid var(--line);b
 @media(max-width:950px){.g2,.g3,.g4{grid-template-columns:1fr}.header{align-items:flex-start;flex-direction:column}.nav{top:108px}}
 </style></head>
 <body>
-<div id="loginView" class="login-shell"><div class="login-card"><div class="brand"><h1>Eltrox RKS</h1><p>Wersja online v8.12</p></div><form id="loginForm" class="form"><label>E-mail<input id="loginEmail" type="email" required></label><label>Hasło<input id="loginPassword" type="password" required></label><button class="btn primary">Zaloguj</button><div id="loginMsg" class="msg"></div></form></div></div>
+<div id="loginView" class="login-shell"><div class="login-card"><div class="brand"><h1>Eltrox RKS</h1><p>Wersja online v9</p></div><form id="loginForm" class="form"><label>E-mail<input id="loginEmail" type="email" required></label><label>Hasło<input id="loginPassword" type="password" required></label><button class="btn primary">Zaloguj</button><div id="loginMsg" class="msg"></div></form></div></div>
 
 <div id="modeView" class="mode-shell hidden">
   <div class="mode-card">
@@ -368,7 +389,7 @@ input,select,textarea{width:100%;padding:9px 10px;border:1px solid var(--line);b
 <button id="importBackupBtn" class="btn">Przywróć kopię</button><input id="importBackupFile" type="file" accept=".json,application/json" hidden>
 <button id="logoutBtn" class="btn">Wyloguj</button></div></header>
 <nav class="nav">
-<button class="tab active" data-v="dashboard">Na dziś</button><button class="tab" data-v="analysis">Analiza regionu</button><button class="tab" data-v="comparison">Porównanie regionów</button><button class="tab" data-v="branchCompare">Porównanie oddziałów</button><button class="tab" data-v="regionMap">Mapa regionu</button><button class="tab" data-v="branches">Oddziały</button><button class="tab" data-v="contacts">Kontakty</button><button class="tab" data-v="contactLogs">Rejestr kontaktów</button><button class="tab" data-v="meetings">1:1</button><button class="tab" data-v="tasks">Terminarz</button><button class="tab" data-v="visits">Wizyty</button><button class="tab" data-v="sales">UK / Detal</button><button class="tab" data-v="kpis">KPI / Controlling</button><button class="tab" data-v="notes">Notatki</button><button class="tab" data-v="branchCard">Karta oddziału</button><button class="tab" data-v="history">Historia</button><button class="tab" data-v="attachments">Załączniki</button><button class="tab" data-v="dataIO">Import / eksport</button><button class="tab" data-v="reportsBonus">Raporty / premia</button>
+<button class="tab active" data-v="dashboard">Na dziś</button><button class="tab" data-v="analysis">Analiza regionu</button><button class="tab" data-v="comparison">Porównanie regionów</button><button class="tab" data-v="branchCompare">Porównanie oddziałów</button><button class="tab" data-v="regionMap">Mapa regionu</button><button class="tab" data-v="branches">Oddziały</button><button class="tab" data-v="contacts">Kontakty</button><button class="tab" data-v="contactLogs">Rejestr kontaktów</button><button class="tab" data-v="meetings">1:1</button><button class="tab" data-v="tasks">Terminarz</button><button class="tab" data-v="visits">Wizyty</button><button class="tab" data-v="sales">UK / Detal</button><button class="tab" data-v="kpis">KPI / Controlling</button><button class="tab" data-v="notes">Notatki</button><button class="tab" data-v="management">Zarządzanie oddziałem</button><button class="tab" data-v="branchCard">Karta oddziału</button><button class="tab" data-v="history">Historia</button><button class="tab" data-v="attachments">Załączniki</button><button class="tab" data-v="dataIO">Import / eksport</button><button class="tab" data-v="reportsBonus">Raporty / premia</button>
 </nav>
 
 <div id="tabOrderBackdrop" class="tab-order-backdrop hidden">
@@ -442,7 +463,16 @@ input,select,textarea{width:100%;padding:9px 10px;border:1px solid var(--line);b
       <section class="panel"><h3>Ranking 360° oddziałów</h3><div style="font-size:11px;color:var(--m);margin:-4px 0 8px">Kliknij „rozbicie punktów” przy wyniku oddziału, aby zobaczyć dokładnie, skąd wzięła się ocena. Działania i decyzje są wyłącznie informacyjne.</div><div id="analysisRankTable" class="table-wrap"></div></section>
       <section class="panel"><h3>Najważniejsze wnioski</h3><div id="analysisInsights" class="insights"></div></section>
     </div>
-    <section class="panel" style="margin-top:12px"><h3>Źródła danych per oddział</h3><div id="analysisSourceTable" class="table-wrap"></div></section>
+    
+<section class="panel" style="margin-top:12px">
+  <div class="bc-section-title"><div><h3>Region w skrócie</h3><p>Gotowy briefing do rozmowy z przełożonym.</p></div></div>
+  <div id="regionBriefMetrics" class="brief-grid"></div>
+  <div class="grid2">
+    <div><h4>Największe ryzyka</h4><div id="regionBriefRisks" class="alert-board"></div></div>
+    <div><h4>Potrzeby kadrowe / najbliższe działania</h4><div id="regionBriefActions" class="alert-board"></div></div>
+  </div>
+</section>
+<section class="panel" style="margin-top:12px"><h3>Źródła danych per oddział</h3><div id="analysisSourceTable" class="table-wrap"></div></section>
   </div></section>
 
 <section id="branchCompare" class="view"><div class="inner bc-shell">
@@ -740,8 +770,86 @@ input,select,textarea{width:100%;padding:9px 10px;border:1px solid var(--line);b
 
 <section id="notes" class="view"><div class="head"><div><h2>Notatki do oddziału</h2><p>Wiele notatek z datą.</p></div></div><div class="g2"><div class="panel"><h3 id="noteTitle">Dodaj notatkę</h3><div class="form"><label>Oddział<select id="noteBranch"></select></label><label>Data<input id="noteDate" type="date"></label><label>Treść<textarea id="noteText"></textarea></label><div class="controls"><button id="saveNote" class="btn primary">Zapisz</button><button id="clearNote" class="btn">Wyczyść</button></div></div><div id="noteMsg" class="msg"></div></div><div class="panel"><label>Oddział<select id="noteFilter"></select></label><div id="noteList" class="list" style="margin-top:10px"></div></div></div></section>
 
+
+<section id="management" class="view">
+  <div class="head"><div><h2>Zarządzanie oddziałem</h2><p>Cele, kadry, ryzyka, plan wizyt i komentarze RKS w jednym miejscu.</p></div>
+  <div class="controls"><label>Oddział<select id="manageBranch"></select></label></div></div>
+
+  <div class="manage-grid">
+    <section class="manage-card">
+      <h3>Cele miesięczne / kwartalne</h3>
+      <div class="form">
+        <label>Cel<input id="goalTitle" placeholder="np. Detal ≥95% planu"></label>
+        <div class="g3"><label>Typ<select id="goalPeriod"><option value="month">Miesięczny</option><option value="quarter">Kwartalny</option></select></label><label>Termin<input id="goalDeadline" type="date"></label><label>Status<select id="goalStatus"><option value="open">Otwarte</option><option value="progress">W trakcie</option><option value="done">Zrealizowane</option></select></label></div>
+        <label>Postęp (%)<input id="goalProgress" type="number" min="0" max="100" step="1"></label>
+        <label>Komentarz<textarea id="goalNote"></textarea></label>
+        <button id="saveGoalBtn" class="btn primary">Dodaj cel</button>
+      </div>
+      <div id="goalList" class="manage-list" style="margin-top:12px"></div>
+    </section>
+
+    <section class="manage-card">
+      <h3>Status kadrowy</h3>
+      <div class="form">
+        <div class="g3"><label>Liczba osób<input id="staffCount" type="number" min="0"></label><label>Wakaty<input id="staffVacancies" type="number" min="0"></label><label>Nowe osoby / wdrożenie<input id="staffOnboarding" type="number" min="0"></label></div>
+        <label>Status / komentarz<textarea id="staffComment" placeholder="np. KUK przeciążony, rekrutacja w toku"></textarea></label>
+        <button id="saveStaffBtn" class="btn primary">Zapisz status kadrowy</button>
+      </div>
+      <div id="staffCurrent" style="margin-top:12px"></div>
+
+      <h3 style="margin-top:18px">Historia zmian kadrowych</h3>
+      <div class="form">
+        <label>Data<input id="personnelDate" type="date"></label>
+        <label>Zmiana<input id="personnelText" placeholder="np. nowy handlowiec od 01.09"></label>
+        <button id="savePersonnelBtn" class="btn">Dodaj wpis</button>
+      </div>
+      <div id="personnelList" class="manage-list" style="margin-top:10px"></div>
+    </section>
+
+    <section class="manage-card">
+      <h3>Ryzyka oddziału</h3>
+      <div class="form">
+        <label>Ryzyko<input id="riskTitle" placeholder="np. przeciążenie KUK"></label>
+        <div class="g2"><label>Poziom<select id="riskLevel"><option value="high">Wysokie</option><option value="medium">Średnie</option><option value="low">Niskie</option></select></label><label>Status<select id="riskStatus"><option value="open">Otwarte</option><option value="monitor">Monitorowane</option><option value="closed">Zamknięte</option></select></label></div>
+        <label>Plan działania<textarea id="riskAction"></textarea></label>
+        <button id="saveRiskBtn" class="btn primary">Dodaj ryzyko</button>
+      </div>
+      <div id="riskList" class="manage-list" style="margin-top:12px"></div>
+    </section>
+
+    <section class="manage-card">
+      <h3>Plan wizyt RKS</h3>
+      <div class="form">
+        <label>Planowana data<input id="visitPlanDate" type="date"></label>
+        <label>Cel wizyty<textarea id="visitPlanPurpose"></textarea></label>
+        <button id="saveVisitPlanBtn" class="btn primary">Zaplanuj wizytę</button>
+      </div>
+      <div id="visitPlanList" class="manage-list" style="margin-top:12px"></div>
+    </section>
+
+    <section class="manage-card visit-full">
+      <h3>Komentarz miesięczny RKS</h3>
+      <div class="form">
+        <label>Miesiąc<input id="monthlyCommentMonth" type="month"></label>
+        <label>Co się wydarzyło / co mnie martwi / czego oczekuję<textarea id="monthlyCommentText" style="min-height:130px"></textarea></label>
+        <button id="saveMonthlyCommentBtn" class="btn primary">Zapisz komentarz miesiąca</button>
+      </div>
+      <div id="monthlyCommentList" class="manage-list" style="margin-top:12px"></div>
+    </section>
+  </div>
+  <div id="managementMsg" class="msg"></div>
+</section>
+
 <section id="branchCard" class="view"><div class="head"><div><h2>Karta oddziału</h2><p>Zbiorczy obraz wybranego oddziału.</p></div><label style="min-width:260px">Oddział<select id="cardBranch"></select></label></div><div id="cardContent"></div></section>
-<section id="history" class="view"><div class="head"><div><h2>Historia oddziału</h2><p>Łączna chronologia kontaktów, 1:1, wizyt i notatek.</p></div><label style="min-width:260px">Oddział<select id="historyBranch"></select></label></div><div class="panel"><div id="historyList" class="timeline"></div></div></section>
+<section id="history" class="view"><div class="head"><div><h2>Historia oddziału</h2><p>Łączna chronologia kontaktów, 1:1, wizyt i notatek.</p></div><label style="min-width:260px">Oddział<select id="historyBranch"></select></label></div><div class="panel"><div id="historyList" class="timeline"></div></div>
+<div class="branch-state-grid" id="branchStateGrid">
+  <div class="branch-state"><span>Wynik</span><strong id="stateResult">—</strong></div>
+  <div class="branch-state"><span>KPI</span><strong id="stateKpi">—</strong></div>
+  <div class="branch-state"><span>Kadry</span><strong id="stateStaff">—</strong></div>
+  <div class="branch-state"><span>Ryzyko</span><strong id="stateRisk">—</strong></div>
+  <div class="branch-state"><span>Ostatni kontakt</span><strong id="stateContact">—</strong></div>
+</div>
+</section>
 
 
 <section id="attachments" class="view">
@@ -914,7 +1022,7 @@ const sb=window.supabase.createClient(SUPABASE_URL,SUPABASE_PUBLISHABLE_KEY),$=i
 let workMode=null,workModeRegion=null;
 let user=null,profile=null,branches=[],edit={contact:null,log:null,meeting:null,task:null,visit:null,note:null};
 
-const DEFAULT_TAB_ORDER=['dashboard','analysis','comparison','branchCompare','regionMap','branches','contacts','contactLogs','meetings','tasks','visits','sales','kpis','notes','branchCard','history','attachments','dataIO','reportsBonus'];
+const DEFAULT_TAB_ORDER=['dashboard','analysis','comparison','branchCompare','regionMap','branches','contacts','contactLogs','meetings','tasks','visits','sales','kpis','notes','management','branchCard','history','attachments','dataIO','reportsBonus'];
 let tabOrderDraft=[];
 
 function currentTabOrder(){
@@ -1755,6 +1863,7 @@ async function loadAnalysis(){
   const balanced=rows.filter(x=>Number.isFinite(x.ukPct)&&Number.isFinite(x.detailPct)).sort((a,b)=>Math.abs(a.ukPct-a.detailPct)-Math.abs(b.ukPct-b.detailPct))[0];
   if(balanced)insights.push({type:'good',title:'Najbardziej zrównoważony oddział',text:`${balanced.branch.name}: UK ${analysisPctRatio(balanced.ukPct)}, Detal ${analysisPctRatio(balanced.detailPct)}.`});
   if(!insights.length)insights.push({type:'good',title:'Brak krytycznych sygnałów',text:'Dla wybranego okresu nie wykryto wyraźnych odchyleń wymagających natychmiastowej reakcji.'});
+  await loadRegionBrief();
   $('analysisInsights').innerHTML=insights.map(i=>`<div class="insight ${i.type}"><h4>${esc(i.title)}</h4><p>${esc(i.text)}</p></div>`).join('');
 
   $('analysisSourceTable').innerHTML=`<table><thead><tr><th>Oddział</th><th>Centrum</th><th>Porównywarka</th><th>Informacja</th></tr></thead><tbody>${rows.map(x=>`<tr>
@@ -2716,6 +2825,48 @@ function todayGoToTab(view,branchId){
 }
 window.todayGoToTab=todayGoToTab;
 
+
+async function mgmtRows(table,branchId){
+  let qy=sb.from(table).select('*').eq('region_id',rid()).eq('branch_id',branchId);
+  const z=await qy;if(z.error)throw z.error;return z.data||[];
+}
+async function loadManagement(){
+  const bid=$('manageBranch').value;if(!bid)return;
+  const [goals,staff,risks,plans,personnel,comments]=await Promise.all([
+    mgmtRows('branch_goals',bid),mgmtRows('branch_staffing',bid),mgmtRows('branch_risks',bid),
+    mgmtRows('visit_plans',bid),mgmtRows('personnel_history',bid),mgmtRows('monthly_rks_comments',bid)
+  ]);
+  $('goalList').innerHTML=goals.sort((a,b)=>(a.deadline||'').localeCompare(b.deadline||'')).map(g=>`<div class="manage-item"><div class="top"><div><b>${esc(g.title)}</b><div class="meta">${g.period_type==='quarter'?'kwartalny':'miesięczny'} • ${fd(g.deadline)} • ${esc(g.status)}</div></div><button class="btn small danger" onclick="deleteMgmt('branch_goals','${g.id}')">Usuń</button></div><div class="goal-progress"><i style="width:${Math.max(0,Math.min(100,Number(g.progress)||0))}%"></i></div><div class="meta">${Number(g.progress)||0}% • ${esc(g.note||'')}</div></div>`).join('')||'<div class="muted">Brak celów.</div>';
+  const s=staff.sort((a,b)=>(b.updated_at||'').localeCompare(a.updated_at||''))[0];
+  $('staffCurrent').innerHTML=s?`<div class="manage-item"><b>${s.staff_count||0} osób • ${s.vacancies||0} wakatów • ${s.onboarding||0} we wdrożeniu</b><div class="meta">${esc(s.comment||'')}</div></div>`:'<div class="muted">Brak statusu kadrowego.</div>';
+  $('riskList').innerHTML=risks.filter(r=>r.status!=='closed').map(r=>`<div class="manage-item risk-${r.level}"><div class="top"><div><b>${esc(r.title)}</b><div class="meta">${r.level==='high'?'wysokie':r.level==='medium'?'średnie':'niskie'} • ${esc(r.status)}</div></div><button class="btn small danger" onclick="deleteMgmt('branch_risks','${r.id}')">Usuń</button></div><div class="meta">${esc(r.action_plan||'')}</div></div>`).join('')||'<div class="muted">Brak otwartych ryzyk.</div>';
+  $('visitPlanList').innerHTML=plans.sort((a,b)=>(a.planned_date||'').localeCompare(b.planned_date||'')).map(v=>`<div class="manage-item"><div class="top"><div><b>${fd(v.planned_date)}</b><div class="meta">${esc(v.purpose||'')}</div></div><button class="btn small danger" onclick="deleteMgmt('visit_plans','${v.id}')">Usuń</button></div></div>`).join('')||'<div class="muted">Brak zaplanowanych wizyt.</div>';
+  $('personnelList').innerHTML=personnel.sort((a,b)=>(b.event_date||'').localeCompare(a.event_date||'')).map(v=>`<div class="manage-item"><div class="top"><div><b>${fd(v.event_date)}</b><div class="meta">${esc(v.description)}</div></div><button class="btn small danger" onclick="deleteMgmt('personnel_history','${v.id}')">Usuń</button></div></div>`).join('')||'<div class="muted">Brak historii zmian.</div>';
+  $('monthlyCommentList').innerHTML=comments.sort((a,b)=>(b.month_key||'').localeCompare(a.month_key||'')).map(v=>`<div class="manage-item"><div class="top"><div><b>${esc(v.month_key)}</b><div class="meta">${esc(v.comment)}</div></div><button class="btn small danger" onclick="deleteMgmt('monthly_rks_comments','${v.id}')">Usuń</button></div></div>`).join('')||'<div class="muted">Brak komentarzy miesięcznych.</div>';
+}
+window.deleteMgmt=async(table,id)=>{if(!confirm('Usunąć wpis?'))return;const {error}=await sb.from(table).delete().eq('id',id);if(error)return alert(error.message);await loadManagement();await loadDashboard();await loadCard()};
+async function saveGoal(){const r={region_id:rid(),branch_id:$('manageBranch').value,title:$('goalTitle').value.trim(),period_type:$('goalPeriod').value,deadline:$('goalDeadline').value||null,status:$('goalStatus').value,progress:Number($('goalProgress').value)||0,note:$('goalNote').value.trim(),created_by:user.id};if(!r.title)return;const{error}=await sb.from('branch_goals').insert(r);if(error)return msg('managementMsg',error.message,'error');$('goalTitle').value='';$('goalNote').value='';await loadManagement()}
+async function saveStaff(){const r={region_id:rid(),branch_id:$('manageBranch').value,staff_count:Number($('staffCount').value)||0,vacancies:Number($('staffVacancies').value)||0,onboarding:Number($('staffOnboarding').value)||0,comment:$('staffComment').value.trim(),updated_by:user.id};const{error}=await sb.from('branch_staffing').upsert(r,{onConflict:'branch_id'});if(error)return msg('managementMsg',error.message,'error');await loadManagement();await loadDashboard();await loadCard()}
+async function saveRisk(){const r={region_id:rid(),branch_id:$('manageBranch').value,title:$('riskTitle').value.trim(),level:$('riskLevel').value,status:$('riskStatus').value,action_plan:$('riskAction').value.trim(),created_by:user.id};if(!r.title)return;const{error}=await sb.from('branch_risks').insert(r);if(error)return msg('managementMsg',error.message,'error');$('riskTitle').value='';$('riskAction').value='';await loadManagement();await loadDashboard();await loadCard()}
+async function saveVisitPlan(){const r={region_id:rid(),branch_id:$('manageBranch').value,planned_date:$('visitPlanDate').value,purpose:$('visitPlanPurpose').value.trim(),created_by:user.id};if(!r.planned_date)return;const{error}=await sb.from('visit_plans').insert(r);if(error)return msg('managementMsg',error.message,'error');$('visitPlanPurpose').value='';await loadManagement();await loadDashboard()}
+async function savePersonnel(){const r={region_id:rid(),branch_id:$('manageBranch').value,event_date:$('personnelDate').value||today(),description:$('personnelText').value.trim(),created_by:user.id};if(!r.description)return;const{error}=await sb.from('personnel_history').insert(r);if(error)return msg('managementMsg',error.message,'error');$('personnelText').value='';await loadManagement();await loadCard()}
+async function saveMonthlyComment(){const r={region_id:rid(),branch_id:$('manageBranch').value,month_key:$('monthlyCommentMonth').value,comment:$('monthlyCommentText').value.trim(),created_by:user.id};if(!r.month_key||!r.comment)return;const{error}=await sb.from('monthly_rks_comments').upsert(r,{onConflict:'branch_id,month_key'});if(error)return msg('managementMsg',error.message,'error');await loadManagement();await loadCard()}
+async function loadRegionBrief(){
+  if(!$('regionBriefMetrics'))return;
+  const [risks,staff,plans,goals]=await Promise.all([
+    sb.from('branch_risks').select('*').eq('region_id',rid()).neq('status','closed'),
+    sb.from('branch_staffing').select('*').eq('region_id',rid()),
+    sb.from('visit_plans').select('*').eq('region_id',rid()).gte('planned_date',today()),
+    sb.from('branch_goals').select('*').eq('region_id',rid()).neq('status','done')
+  ]);
+  const r=risks.data||[],s=staff.data||[],p=plans.data||[],g=goals.data||[];
+  const high=r.filter(x=>x.level==='high').length,vac=s.reduce((a,x)=>a+(Number(x.vacancies)||0),0),openGoals=g.length,next=p.sort((a,b)=>a.planned_date.localeCompare(b.planned_date))[0];
+  $('regionBriefMetrics').innerHTML=`<div class="brief-box"><span>Wysokie ryzyka</span><strong>${high}</strong></div><div class="brief-box"><span>Wakaty</span><strong>${vac}</strong></div><div class="brief-box"><span>Otwarte cele</span><strong>${openGoals}</strong></div><div class="brief-box"><span>Najbliższa wizyta</span><strong>${next?fd(next.planned_date):'—'}</strong></div><div class="brief-box"><span>Oddziały</span><strong>${branches.length}</strong></div>`;
+  $('regionBriefRisks').innerHTML=r.filter(x=>x.level==='high').slice(0,6).map(x=>`<div class="alert-row bad"><b>${esc(bn(x.branch_id))}: ${esc(x.title)}</b><div class="meta">${esc(x.action_plan||'')}</div></div>`).join('')||'<div class="muted">Brak wysokich ryzyk.</div>';
+  const actions=[...s.filter(x=>Number(x.vacancies)>0).map(x=>({b:x.branch_id,t:`${x.vacancies} wakat(y) • ${x.comment||''}`})),...g.slice(0,6).map(x=>({b:x.branch_id,t:x.title}))];
+  $('regionBriefActions').innerHTML=actions.slice(0,8).map(x=>`<div class="alert-row"><b>${esc(bn(x.b))}</b><div class="meta">${esc(x.t)}</div></div>`).join('')||'<div class="muted">Brak pilnych potrzeb.</div>';
+}
+
 async function loadDashboard(){
   if(!rid()||!branches.length)return;
   $('todayRegionBadge').textContent=$('regionSelect').selectedOptions[0]?.textContent||'';
@@ -2746,6 +2897,14 @@ async function loadDashboard(){
     const m=metricMap.get(b.id)||{score:NaN};
     return {b,status:todayStatus(m.score),last:lastContact(b.id)};
   });
+  
+  const [riskRes,staffRes,planRes]=await Promise.all([
+    sb.from('branch_risks').select('*').eq('region_id',rid()).neq('status','closed'),
+    sb.from('branch_staffing').select('*').eq('region_id',rid()),
+    sb.from('visit_plans').select('*').eq('region_id',rid()).gte('planned_date',today())
+  ]);
+  const strategicRisks=riskRes.data||[],staffing=staffRes.data||[],visitPlans=planRes.data||[];
+
   const attention=branchRows.filter(x=>x.status.cls!=='good');
   const stale=branchRows.filter(x=>!x.last||todayDaysFrom(x.last.date)<-14);
   const ym=new Date().toISOString().slice(0,7);
@@ -2753,19 +2912,59 @@ async function loadDashboard(){
 
   $('todayOverdue').textContent=overdue.length;
   $('todayWeek').textContent=week.length;
-  $('todayAttention').textContent=attention.length;
+  const attentionIds=new Set(attention.map(x=>x.b.id));
+  strategicRisks.filter(x=>x.level==='high').forEach(x=>attentionIds.add(x.branch_id));
+  staffing.filter(x=>Number(x.vacancies)>0).forEach(x=>attentionIds.add(x.branch_id));
+  $('todayAttention').textContent=attentionIds.size;
   $('todayNoContact').textContent=stale.length;
   $('todayOpen').textContent=open.length;
   $('todayDoneMonth').textContent=doneMonth;
 
-  const priority=[...overdue,...open.filter(t=>t.priority==='high'&&!overdue.some(o=>o.id===t.id))].slice(0,10);
-  $('todayPriorities').innerHTML=priority.length?priority.map(t=>`<div class="today-item bad"><div class="main"><b>${esc(t.title)}</b><div class="sub">${esc(bn(t.branch_id))} • ${esc(t.owner||'bez odpowiedzialnego')} • termin ${fd(t.deadline)}</div></div><button class="btn small go" onclick="todayGoToTab('tasks','${t.branch_id}')">Otwórz</button></div>`).join(''):'<div class="muted">Brak pilnych spraw.</div>';
+  const dataAlerts=[];
+  const currentYm=new Date().toISOString().slice(0,7);
+  const kpiCurrent=await sb.from('monthly_kpis').select('branch_id,year,month').eq('region_id',rid());
+  const kpiSet=new Set((kpiCurrent.data||[]).map(x=>`${x.branch_id}|${x.year}-${String(x.month).padStart(2,'0')}`));
+  branches.forEach(b=>{if(!kpiSet.has(`${b.id}|${currentYm}`))dataAlerts.push({title:'Brak KPI za bieżący miesiąc',branch_id:b.id,owner:'',deadline:null,kind:'data'})});
+  const priority=[...overdue,...open.filter(t=>t.priority==='high'&&!overdue.some(o=>o.id===t.id))].slice(0,8);
+  const priorityHtml=priority.map(t=>`<div class="today-item bad"><div class="main"><b>${esc(t.title)}</b><div class="sub">${esc(bn(t.branch_id))} • ${esc(t.owner||'bez odpowiedzialnego')} • termin ${fd(t.deadline)}</div></div><button class="btn small go" onclick="todayGoToTab('tasks','${t.branch_id}')">Otwórz</button></div>`).join('');
+  const alertHtml=dataAlerts.slice(0,4).map(a=>`<div class="today-item warn"><div class="main"><b>${esc(a.title)}</b><div class="sub">${esc(bn(a.branch_id))}</div></div><button class="btn small go" onclick="todayGoToTab('kpis','${a.branch_id}')">KPI</button></div>`).join('');
+  $('todayPriorities').innerHTML=(priorityHtml+alertHtml)||'<div class="muted">Brak pilnych spraw.</div>';
 
   $('todayNext7').innerHTML=week.length?week.slice(0,12).map(t=>`<div class="today-item warn"><div class="main"><b>${esc(t.title)}</b><div class="sub">${esc(bn(t.branch_id))} • ${fd(t.deadline)}</div></div><button class="btn small go" onclick="todayGoToTab('tasks','${t.branch_id}')">Otwórz</button></div>`).join(''):'<div class="muted">Brak terminów w najbliższych 7 dniach.</div>';
 
   $('todayBranches').innerHTML=attention.length?attention.sort((a,b)=>(Number.isFinite(a.status.score)?a.status.score:0)-(Number.isFinite(b.status.score)?b.status.score:0)).map(x=>`<div class="today-item ${x.status.cls}"><div class="main"><b>${esc(x.b.name)}</b><div class="sub">${x.status.label}${Number.isFinite(x.status.score)?' • '+Math.round(x.status.score)+'/100':''}</div></div><button class="btn small go" onclick="todayGoToTab('branchCard','${x.b.id}')">Karta</button></div>`).join(''):'<div class="muted">Wszystkie oddziały w dobrej kondycji.</div>';
 
   $('todayContacts').innerHTML=branchRows.sort((a,b)=>(a.last?.date||'').localeCompare(b.last?.date||'')).map(x=>`<div class="today-item ${(!x.last||todayDaysFrom(x.last.date)<-14)?'warn':'good'}"><div class="main"><b>${esc(x.b.name)}</b><div class="sub">${x.last?`${esc(x.last.type)}: ${fd(x.last.date)}`:'brak zapisanej wizyty / 1:1'}</div></div><button class="btn small go" onclick="todayGoToTab('history','${x.b.id}')">Historia</button></div>`).join('');
+}
+
+
+async function loadBranchState(){
+  if(!$('cardBranch')||!$('stateResult'))return;
+  const bid=$('cardBranch').value;if(!bid)return;
+  const now=new Date(),year=now.getFullYear(),month=now.getMonth()+1,from=`${year}-${String(month).padStart(2,'0')}-01`,to=new Date(year,month,1).toISOString().slice(0,10);
+  const [sales,kpi,staff,risk,logs,visits,meetings]=await Promise.all([
+    sb.from('sales_results').select('*').eq('branch_id',bid).gte('result_date',from).lt('result_date',to).order('result_date',{ascending:false}).limit(1),
+    sb.from('monthly_kpis').select('*').eq('branch_id',bid).order('year',{ascending:false}).order('month',{ascending:false}).limit(1),
+    sb.from('branch_staffing').select('*').eq('branch_id',bid).maybeSingle(),
+    sb.from('branch_risks').select('*').eq('branch_id',bid).neq('status','closed'),
+    sb.from('contact_logs').select('*').eq('branch_id',bid).order('contact_date',{ascending:false}).limit(1),
+    sb.from('visits').select('*').eq('branch_id',bid).order('visit_date',{ascending:false}).limit(1),
+    sb.from('meeting_notes').select('*').eq('branch_id',bid).order('meeting_date',{ascending:false}).limit(1)
+  ]);
+  const s=(sales.data||[])[0]||{},k=(kpi.data||[])[0]||{},st=staff.data||null,risks=risk.data||[];
+  const uk=Number(s.uk_plan)>0?Number(s.uk_execution||0)/Number(s.uk_plan)*100:NaN,det=Number(s.detail_plan)>0?Number(s.detail_execution||0)/Number(s.detail_plan)*100:NaN;
+  let detForecast=NaN;
+  if(Number(s.detail_plan)>0&&Number(s.detail_execution)>=0){
+    const day=now.getDate(),daysInMonth=new Date(year,month,0).getDate();
+    if(day>0)detForecast=(Number(s.detail_execution)/day*daysInMonth)/Number(s.detail_plan)*100;
+  }
+  $('stateResult').textContent=[Number.isFinite(uk)?`UK ${uk.toFixed(0)}%`:null,Number.isFinite(det)?`Detal ${det.toFixed(0)}%`:null,Number.isFinite(detForecast)?`prognoza Detal ${detForecast.toFixed(0)}%`:null].filter(Boolean).join(' • ')||'—';
+  $('stateKpi').textContent=k.voip==null?'—':`${Number(k.voip).toFixed(1)}%`;
+  $('stateStaff').textContent=st?`${st.staff_count||0} os. • ${st.vacancies||0} wak.`:'—';
+  const high=risks.filter(x=>x.level==='high').length,med=risks.filter(x=>x.level==='medium').length;
+  $('stateRisk').textContent=high?`${high} wysokie`:med?`${med} średnie`:'brak wysokich';
+  const dates=[(logs.data||[])[0]?.contact_date,(visits.data||[])[0]?.visit_date,(meetings.data||[])[0]?.meeting_date].filter(Boolean).sort().reverse();
+  $('stateContact').textContent=dates[0]?fd(dates[0]):'—';
 }
 
 async function loadCard(){let id=$('cardBranch')?.value;if(!id)return;$('cardContent').innerHTML='<div class="empty">Ładowanie...</div>';let [c,l,m,t,v,s,k,n]=await Promise.all(['contacts','contact_logs','meeting_notes','tasks','visits','sales_results','monthly_kpis','branch_notes'].map(z=>sb.from(z).select('*').eq('region_id',rid()).eq('branch_id',id)));let contacts=c.data||[],logs=(l.data||[]).sort((a,b)=>b.contact_date.localeCompare(a.contact_date)),meet=(m.data||[]).sort((a,b)=>b.meeting_date.localeCompare(a.meeting_date)),tasks=(t.data||[]).filter(x=>x.status!=='done'),vis=(v.data||[]).sort((a,b)=>b.visit_date.localeCompare(a.visit_date)),sales=(s.data||[]).sort((a,b)=>b.result_date.localeCompare(a.result_date)),kpis=(k.data||[]).sort((a,b)=>(b.year*100+b.month)-(a.year*100+a.month)),notes=(n.data||[]).sort((a,b)=>b.note_date.localeCompare(a.note_date));let ss=sales[0],kk=kpis[0];$('cardContent').innerHTML=`<div class="g4"><div class="card"><h4>Ostatni kontakt</h4><div class="kpi" style="font-size:18px">${logs[0]?fd(logs[0].contact_date):'—'}</div><div class="muted">${logs[0]?esc(logs[0].channel):''}</div></div><div class="card"><h4>Otwarte zadania</h4><div class="kpi">${tasks.length}</div></div><div class="card"><h4>UK realizacja</h4><div class="kpi">${ss&&ss.uk_plan?Math.round(num(ss.uk_execution)/num(ss.uk_plan)*100):0}%</div></div><div class="card"><h4>Detal realizacja</h4><div class="kpi">${ss&&ss.detail_plan?Math.round(num(ss.detail_execution)/num(ss.detail_plan)*100):0}%</div></div></div><div class="g2" style="margin-top:12px"><div class="panel"><h3>Kontakty</h3>${contacts.map(x=>`<div class="item"><b>${esc((x.first_name||'')+' '+(x.last_name||''))}</b><div class="meta">${esc(x.position||'')} • ${esc(x.phone||'')} • ${esc(x.email||'')}</div></div>`).join('')||'<div class="empty">Brak</div>'}<h3 style="margin-top:14px">Ostatnie 1:1</h3>${meet[0]?`<div class="item"><b>${fd(meet[0].meeting_date)} • ${att(meet[0].attendance)}</b><div class="text">${esc(meet[0].urgent_topics||'')}</div></div>`:'<div class="empty">Brak</div>'}</div><div class="panel"><h3>KPI</h3>${kk?`<div class="g3"><div class="card"><h4>Okres</h4><b>${kk.month}/${kk.year}</b></div><div class="card"><h4>VoIP UK</h4><b>${kk.voip_uk==null?"—":num(kk.voip_uk)+"%"}</b></div><div class="card"><h4>VoIP Detal</h4><b>${kk.voip_detail==null?"—":num(kk.voip_detail)+"%"}</b></div><div class="card"><h4>Średni VoIP</h4><b>${kk.voip==null?"—":num(kk.voip)+"%"}</b></div><div class="card"><h4>Controlling</h4><b>${kk.controlling==null?"—":num(kk.controlling)+"%"}</b></div></div>`:'<div class="empty">Brak KPI</div>'}<h3 style="margin-top:14px">Ostatnia wizyta</h3>${vis[0]?`<div class="item"><b>${fd(vis[0].visit_date)}</b><div class="text">${esc(vis[0].topics||'')}</div></div>`:'<div class="empty">Brak</div>'}<h3 style="margin-top:14px">Ostatnia notatka</h3>${notes[0]?`<div class="item"><b>${fd(notes[0].note_date)}</b><div class="text">${esc(notes[0].note)}</div></div>`:'<div class="empty">Brak</div>'}</div></div>`}
@@ -2862,10 +3061,10 @@ async function showApp(session,modeResolved=false){
     $('controlKpiMonth').value=`${cd.getFullYear()}-${String(cd.getMonth()+1).padStart(2,'0')}`;
   }$('comparisonYear').value=d.getFullYear();$('comparisonMonth').value=d.getMonth()+1;
   ['analysisFromM','analysisToM','bcFrom','bcTo','bcCompareFrom','bcCompareTo'].forEach(fillMonthSelect);$('analysisYear').value=d.getFullYear();$('analysisFromM').value=1;$('analysisToM').value=d.getMonth()+1;$('bcYear').value=d.getFullYear();$('bcPrevYear').value=d.getFullYear()-1;$('bcFrom').value=1;$('bcTo').value=d.getMonth()+1;$('bcCompareFrom').value=1;$('bcCompareTo').value=d.getMonth()+1;
-  $('bonusYear').value=d.getFullYear();$('bonusQuarter').value=Math.floor(d.getMonth()/3)+1;$('bonusMonthYear').value=d.getFullYear();fillMonthSelect('bonusMonthSelect');$('bonusMonthSelect').value=d.getMonth()+1;$('archiveMonth').value=d.toISOString().slice(0,7);
+  $('bonusYear').value=d.getFullYear();$('bonusQuarter').value=Math.floor(d.getMonth()/3)+1;$('bonusMonthYear').value=d.getFullYear();fillMonthSelect('bonusMonthSelect');$('bonusMonthSelect').value=d.getMonth()+1;$('archiveMonth').value=d.toISOString().slice(0,7);$('personnelDate').value=today();$('visitPlanDate').value=today();$('monthlyCommentMonth').value=d.toISOString().slice(0,7);
 }
 function showLogin(){$('appView').classList.add('hidden');$('modeView').classList.add('hidden');$('loginView').classList.remove('hidden');workMode=null;workModeRegion=null}
-document.querySelectorAll('.tab').forEach(b=>b.onclick=()=>{document.querySelectorAll('.tab').forEach(x=>x.classList.toggle('active',x===b));document.querySelectorAll('.view').forEach(x=>x.classList.toggle('active',x.id===b.dataset.v));if(b.dataset.v==='dashboard')loadDashboard();if(b.dataset.v==='analysis')loadAnalysis();if(b.dataset.v==='comparison')loadComparison();if(b.dataset.v==='branchCompare')loadBranchCompare();if(b.dataset.v==='regionMap')loadRegionMap();if(b.dataset.v==='branchCard')loadCard();if(b.dataset.v==='history')loadHistory()});
+document.querySelectorAll('.tab').forEach(b=>b.onclick=()=>{document.querySelectorAll('.tab').forEach(x=>x.classList.toggle('active',x===b));document.querySelectorAll('.view').forEach(x=>x.classList.toggle('active',x.id===b.dataset.v));if(b.dataset.v==='dashboard')loadDashboard();if(b.dataset.v==='analysis')loadAnalysis();if(b.dataset.v==='comparison')loadComparison();if(b.dataset.v==='branchCompare')loadBranchCompare();if(b.dataset.v==='regionMap')loadRegionMap();if(b.dataset.v==='branchCard'){loadCard();loadBranchState();}if(b.dataset.v==='history')loadHistory()});
 $('loginForm').onsubmit=async e=>{e.preventDefault();let{data,error}=await sb.auth.signInWithPassword({email:$('loginEmail').value.trim(),password:$('loginPassword').value});if(error)return msg('loginMsg',error.message,'error');showApp(data.session)};
 $('tabOrderBtn').onclick=openTabOrder;
 $('cancelTabOrderBtn').onclick=closeTabOrder;
@@ -2910,6 +3109,10 @@ $('bcSearch').oninput=loadBranchCompare;
 $('bcClearFilters').onclick=()=>{$('bcSearch').value='';$('bcStatus').value='';$('bcGroup').value='';$('bcSort').value='score';loadBranchCompare()};
 $('bcDataBranch').onchange=bcRenderData;
 $('refreshToday').onclick=loadDashboard;
+
+$('manageBranch').onchange=loadManagement;
+$('saveGoalBtn').onclick=saveGoal;$('saveStaffBtn').onclick=saveStaff;$('saveRiskBtn').onclick=saveRisk;
+$('saveVisitPlanBtn').onclick=saveVisitPlan;$('savePersonnelBtn').onclick=savePersonnel;$('saveMonthlyCommentBtn').onclick=saveMonthlyComment;
 $('logoutBtn').onclick=async()=>{await sb.auth.signOut();showLogin()};
 $('loadComparisonBtn').onclick=loadComparison;$('regionSelect').onchange=loadBranches;$('addBranchBtn').onclick=addBranch;
 $('saveContact').onclick=saveContact;$('clearContact').onclick=clearContact;$('contactFilter').onchange=loadContacts;$('contactSearch').oninput=loadContacts;
@@ -2921,6 +3124,6 @@ $('saveMeeting').onclick=saveMeeting;$('clearMeeting').onclick=clearMeeting;$('m
 $('saveTask').onclick=saveTask;$('clearTask').onclick=clearTask;$('taskFilter').onchange=loadTasks;$('taskStatusFilter').onchange=loadTasks;
 $('saveVisit').onclick=saveVisit;$('clearVisit').onclick=clearVisit;$('addVisitRecommendation').onclick=()=>addVisitRecommendationRow();$('generateVisitForm').onclick=generateVisitSignatureForm;$('printVisitReport').onclick=printVisitSignatureForm;
 $('salesEntryDate').onchange=renderSalesEntry;$('saveSalesEntry').onclick=()=>saveSalesEntry(true);$('saveMonthlyKpi').onclick=()=>saveMonthlyKpi(true);$('voipMonth').onchange=renderMonthlyKpi;$('controlKpiMonth').onchange=renderMonthlyKpi;
-$('saveNote').onclick=saveNote;$('clearNote').onclick=clearNote;$('noteFilter').onchange=loadNotes;$('cardBranch').onchange=loadCard;$('historyBranch').onchange=loadHistory;
+$('saveNote').onclick=saveNote;$('clearNote').onclick=clearNote;$('noteFilter').onchange=loadNotes;$('cardBranch').onchange=()=>{loadCard();loadBranchState()};$('historyBranch').onchange=loadHistory;
 (async()=>{let{data}=await sb.auth.getSession();if(data.session)showModeChooser(data.session,false);else showLogin()})();
 </script></body></html>
