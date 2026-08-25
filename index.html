@@ -2,7 +2,7 @@
 <html lang="pl">
 <head>
 <meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
-<title>Eltrox RKS – Supabase v13</title>
+<title>Eltrox RKS – Supabase v14</title><meta name="theme-color" content="#ef6c00"><meta name="apple-mobile-web-app-capable" content="yes"><meta name="apple-mobile-web-app-status-bar-style" content="default"><meta name="apple-mobile-web-app-title" content="Eltrox RKS"><link rel="manifest" href="./manifest.webmanifest"><link rel="apple-touch-icon" href="./icon-192.png">
 <style>
 :root{--o:#f36f21;--od:#d85d12;--bg:#eef1f4;--w:#fff;--line:#d9dde3;--t:#242424;--m:#6b7280;--r:#c9372c;--g:#25894b;--b:#2f71c8;--sh:0 8px 24px rgba(0,0,0,.08)}
 *{box-sizing:border-box}html,body{margin:0;min-height:100%;font-family:Arial,Helvetica,sans-serif;background:var(--bg);color:var(--t)}button,input,select,textarea{font:inherit}button{cursor:pointer}.hidden{display:none!important}
@@ -396,6 +396,18 @@ input,select,textarea{width:100%;padding:9px 10px;border:1px solid var(--line);b
 @media(max-width:1100px){.history-toolbar{grid-template-columns:1fr 1fr}.history-summary{grid-template-columns:repeat(3,1fr)}}
 @media(max-width:650px){.history-toolbar,.history-summary{grid-template-columns:1fr}}
 
+
+/* v14 — decyzje, powiązania, efekty, walidacja, PWA */
+.decision-grid{display:grid;grid-template-columns:390px minmax(0,1fr);gap:12px}
+.decision-item{border:1px solid var(--line);border-left:5px solid #7b61a8;border-radius:11px;padding:11px;background:#fff;margin-bottom:8px}
+.decision-item.escalated{border-left-color:#c93d37}.decision-item.closed{border-left-color:#168451;opacity:.82}
+.decision-item .meta,.link-item .meta,.outcome-item .meta{font-size:10px;color:var(--m);margin-top:4px}
+.link-item,.outcome-item{border:1px solid var(--line);border-radius:9px;padding:9px;background:#fafafa;margin-top:7px}
+.dq-warning{border:1px solid #f0c36d;background:#fff7df;color:#795a00;padding:8px 10px;border-radius:9px;font-size:11px;margin-top:7px}
+.pwa-install{white-space:nowrap}.pwa-help{font-size:11px;line-height:1.5;color:var(--m)}
+.pin-note{border:1px solid var(--line);border-left:5px solid #ef6c00;border-radius:10px;padding:10px;background:#fffaf5;margin-bottom:8px}
+@media(max-width:950px){.decision-grid{grid-template-columns:1fr}}
+
 @media(max-width:950px){
   .dashboard-v45 .grid2{grid-template-columns:1fr}
 }
@@ -419,7 +431,7 @@ input,select,textarea{width:100%;padding:9px 10px;border:1px solid var(--line);b
 @media(max-width:950px){.g2,.g3,.g4{grid-template-columns:1fr}.header{align-items:flex-start;flex-direction:column}.nav{top:108px}}
 </style></head>
 <body>
-<div id="loginView" class="login-shell"><div class="login-card"><div class="brand"><h1>Eltrox RKS</h1><p>Wersja online v13</p></div><form id="loginForm" class="form"><label>E-mail<input id="loginEmail" type="email" required></label><label>Hasło<input id="loginPassword" type="password" required></label><button class="btn primary">Zaloguj</button><div id="loginMsg" class="msg"></div></form></div></div>
+<div id="loginView" class="login-shell"><div class="login-card"><div class="brand"><h1>Eltrox RKS</h1><p>Wersja online v14</p></div><form id="loginForm" class="form"><label>E-mail<input id="loginEmail" type="email" required></label><label>Hasło<input id="loginPassword" type="password" required></label><button class="btn primary">Zaloguj</button><div id="loginMsg" class="msg"></div></form></div></div>
 
 <div id="modeView" class="mode-shell hidden">
   <div class="mode-card">
@@ -442,12 +454,12 @@ input,select,textarea{width:100%;padding:9px 10px;border:1px solid var(--line);b
 <div class="searchbox"><input id="globalSearch" type="search" placeholder="Szukaj w aplikacji..."><div id="globalSearchResults" class="search-results hidden"></div></div>
 <label style="min-width:210px">Region<select id="regionSelect"></select></label>
 <span id="roleBadge" class="badge"></span><span id="workModeBadge" class="mode-badge"></span><button id="changeModeBtn" class="btn">Zmień tryb</button>
-<div class="global-period"><label>Okres globalny<input id="globalPeriod" type="month"></label><button id="applyGlobalPeriod" class="btn">Ustaw okres</button></div><button id="tabOrderBtn" class="btn">Kolejność zakładek</button>
+<div class="global-period"><label>Okres globalny<input id="globalPeriod" type="month"></label><button id="applyGlobalPeriod" class="btn">Ustaw okres</button></div><button id="installPwaBtn" class="btn pwa-install">Zainstaluj aplikację</button><button id="tabOrderBtn" class="btn">Kolejność zakładek</button>
 <button id="exportBackupBtn" class="btn">Kopia regionu</button>
 <button id="importBackupBtn" class="btn">Przywróć kopię</button><input id="importBackupFile" type="file" accept=".json,application/json" hidden>
 <button id="logoutBtn" class="btn">Wyloguj</button></div></header>
 <nav class="nav">
-<button class="tab active" data-v="dashboard">Na dziś</button><button class="tab" data-v="analysis">Analiza regionu</button><button class="tab" data-v="comparison">Porównanie regionów</button><button class="tab" data-v="branchCompare">Porównanie oddziałów</button><button class="tab" data-v="regionMap">Mapa regionu</button><button class="tab" data-v="branches">Oddziały</button><button class="tab" data-v="contacts">Kontakty</button><button class="tab" data-v="contactLogs">Rejestr kontaktów</button><button class="tab" data-v="meetings">1:1</button><button class="tab" data-v="tasks">Terminarz</button><button class="tab" data-v="visits">Wizyty</button><button class="tab" data-v="sales">UK / Detal</button><button class="tab" data-v="kpis">KPI / Controlling</button><button class="tab" data-v="notes">Notatki</button><button class="tab" data-v="management">Zarządzanie oddziałem</button><button class="tab" data-v="checklist">Checklista RKS</button><button class="tab" data-v="weekPlan">Plan tygodnia</button><button class="tab" data-v="adminCenter">Centrum admin</button><button class="tab" data-v="trash">Kosz</button><button class="tab" data-v="branchCard">Karta oddziału</button><button class="tab" data-v="history">Historia</button><button class="tab" data-v="attachments">Załączniki</button><button class="tab" data-v="dataIO">Import / eksport</button><button class="tab" data-v="reportsBonus">Raporty / premia</button>
+<button class="tab active" data-v="dashboard">Na dziś</button><button class="tab" data-v="analysis">Analiza regionu</button><button class="tab" data-v="comparison">Porównanie regionów</button><button class="tab" data-v="branchCompare">Porównanie oddziałów</button><button class="tab" data-v="regionMap">Mapa regionu</button><button class="tab" data-v="branches">Oddziały</button><button class="tab" data-v="contacts">Kontakty</button><button class="tab" data-v="contactLogs">Rejestr kontaktów</button><button class="tab" data-v="meetings">1:1</button><button class="tab" data-v="tasks">Terminarz</button><button class="tab" data-v="visits">Wizyty</button><button class="tab" data-v="sales">UK / Detal</button><button class="tab" data-v="kpis">KPI / Controlling</button><button class="tab" data-v="notes">Notatki</button><button class="tab" data-v="management">Zarządzanie oddziałem</button><button class="tab" data-v="decisions">Decyzje / Eskalacje</button><button class="tab" data-v="checklist">Checklista RKS</button><button class="tab" data-v="weekPlan">Plan tygodnia</button><button class="tab" data-v="adminCenter">Centrum admin</button><button class="tab" data-v="trash">Kosz</button><button class="tab" data-v="branchCard">Karta oddziału</button><button class="tab" data-v="history">Historia</button><button class="tab" data-v="attachments">Załączniki</button><button class="tab" data-v="dataIO">Import / eksport</button><button class="tab" data-v="reportsBonus">Raporty / premia</button>
 </nav>
 
 <div id="tabOrderBackdrop" class="tab-order-backdrop hidden">
@@ -915,6 +927,29 @@ input,select,textarea{width:100%;padding:9px 10px;border:1px solid var(--line);b
 </section>
 
 
+
+<section id="decisions" class="view">
+  <div class="head"><div><h2>Decyzje / Eskalacje</h2><p>Sprawy wymagające decyzji RKS, przełożonego albo innej osoby. Decyzję można powiązać z zadaniem, ryzykiem lub celem.</p></div>
+  <div class="controls"><label>Oddział<select id="decisionFilterBranch"></select></label><label>Status<select id="decisionFilterStatus"><option value="open">Otwarte</option><option value="all">Wszystkie</option><option value="closed">Zamknięte</option></select></label></div></div>
+  <div class="decision-grid">
+    <section class="panel">
+      <h3>Nowa decyzja / eskalacja</h3>
+      <div class="form">
+        <label>Oddział<select id="decisionBranch"></select></label>
+        <label>Temat<input id="decisionTitle" placeholder="np. zgoda na rekrutację drugiego KUK"></label>
+        <label>Opis<textarea id="decisionDescription"></textarea></label>
+        <div class="g2"><label>Typ<select id="decisionType"><option value="decision">Decyzja</option><option value="escalation">Eskalacja</option></select></label><label>Priorytet<select id="decisionPriority"><option value="high">Wysoki</option><option value="normal" selected>Normalny</option><option value="low">Niski</option></select></label></div>
+        <div class="g2"><label>Decydent / osoba odpowiedzialna<input id="decisionOwner"></label><label>Termin<input id="decisionDeadline" type="date"></label></div>
+        <button id="saveDecisionBtn" class="btn primary">Dodaj</button>
+      </div>
+      <div id="decisionMsg" class="msg"></div>
+    </section>
+    <section class="panel">
+      <h3>Lista decyzji</h3>
+      <div id="decisionList"></div>
+    </section>
+  </div>
+</section>
 <section id="checklist" class="view">
   <div class="head"><div><h2>Checklista miesięczna RKS</h2><p>Automatyczna kontrola, czy wszystkie kluczowe działania dla oddziałów są wykonane.</p></div>
   <div class="controls"><label>Miesiąc<input id="checklistMonth" type="month"></label><button id="refreshChecklistBtn" class="btn primary">Odśwież</button></div></div>
@@ -962,7 +997,7 @@ input,select,textarea{width:100%;padding:9px 10px;border:1px solid var(--line);b
     <div class="branch-state"><span>Ryzyko</span><strong id="stateRisk">—</strong></div>
     <div class="branch-state"><span>Ostatni kontakt</span><strong id="stateContact">—</strong></div>
   </div>
-  <div id="cardContent"></div>
+  <section class="panel" style="margin-bottom:12px"><div class="head"><div><h3 style="margin:0">Przypięte informacje</h3><p>Najważniejsze informacje widoczne od razu na Karcie oddziału.</p></div><button id="addPinnedNoteBtn" class="btn">Przypnij informację</button></div><div id="pinnedNotes"></div></section><div id="cardContent"></div>
 </section>
 <section id="history" class="view">
   <div class="head">
@@ -988,7 +1023,7 @@ input,select,textarea{width:100%;padding:9px 10px;border:1px solid var(--line);b
     <label><input type="checkbox" class="historyType" value="risk" checked> Ryzyka</label>
     <label><input type="checkbox" class="historyType" value="goal" checked> Cele</label>
     <label><input type="checkbox" class="historyType" value="task" checked> Zadania</label>
-    <label><input type="checkbox" class="historyType" value="comment" checked> Komentarze RKS</label>
+    <label><input type="checkbox" class="historyType" value="comment" checked> Komentarze RKS</label><label><input type="checkbox" class="historyType" value="decision" checked> Decyzje</label><label><input type="checkbox" class="historyType" value="outcome" checked> Efekty</label>
   </div>
 
   <div id="historySummary" class="history-summary"></div>
@@ -1199,7 +1234,7 @@ const sb=window.supabase.createClient(SUPABASE_URL,SUPABASE_PUBLISHABLE_KEY),$=i
 let workMode=null,workModeRegion=null;
 let user=null,profile=null,branches=[],edit={contact:null,log:null,meeting:null,task:null,visit:null,note:null};
 
-const DEFAULT_TAB_ORDER=['dashboard','analysis','comparison','branchCompare','regionMap','branches','contacts','contactLogs','meetings','tasks','visits','sales','kpis','notes','management','checklist','weekPlan','adminCenter','trash','branchCard','history','attachments','dataIO','reportsBonus'];
+const DEFAULT_TAB_ORDER=['dashboard','analysis','comparison','branchCompare','regionMap','branches','contacts','contactLogs','meetings','tasks','visits','sales','kpis','notes','management','decisions','checklist','weekPlan','adminCenter','trash','branchCard','history','attachments','dataIO','reportsBonus'];
 let tabOrderDraft=[];
 
 function currentTabOrder(){
@@ -1294,7 +1329,9 @@ window.deleteBranch=async id=>{let b=branches.find(x=>x.id===id);if(!confirm(`Us
 
 async function loadContacts(){let x=await q('contacts');if(x.error)return;window._contacts=x.data||[];let f=$('contactFilter').value,s=$('contactSearch').value.toLowerCase(),a=window._contacts.filter(c=>(f==='all'||c.branch_id===f)&&(!s||[c.first_name,c.last_name,c.position,c.phone,c.gg,c.email,bn(c.branch_id)].join(' ').toLowerCase().includes(s)));$('contactsTable').innerHTML=a.length?`<table><tr><th>Oddział</th><th>Imię i nazwisko</th><th>Stanowisko</th><th>Telefon</th><th>GG</th><th>E-mail</th><th></th></tr>${a.map(c=>`<tr><td>${esc(bn(c.branch_id))}</td><td>${esc((c.first_name||'')+' '+(c.last_name||''))}</td><td>${esc(c.position||'')}</td><td>${esc(c.phone||'')}</td><td>${esc(c.gg||'')}</td><td>${esc(c.email||'')}</td><td><button class="btn small" onclick="editContact('${c.id}')">Edytuj</button> <button class="btn small danger" onclick="delContact('${c.id}')">Usuń</button></td></tr>`).join('')}</table>`:'<div class="empty">Brak kontaktów.</div>'}
 function clearContact(){edit.contact=null;$('contactTitle').textContent='Dodaj kontakt';['contactFirst','contactLast','contactPos','contactPhone','contactGG','contactEmail'].forEach(i=>$(i).value='')}
-async function saveContact(){let r={region_id:rid(),branch_id:$('contactBranch').value,first_name:$('contactFirst').value.trim(),last_name:$('contactLast').value.trim(),position:$('contactPos').value.trim(),phone:$('contactPhone').value.trim(),gg:$('contactGG').value.trim(),email:$('contactEmail').value.trim()};let z=edit.contact?await sb.from('contacts').update(r).eq('id',edit.contact):await sb.from('contacts').insert(r);if(z.error)return msg('contactMsg',z.error.message,'error');clearContact();loadContacts();loadCard()}
+async function saveContact(){let r={region_id:rid(),branch_id:$('contactBranch').value,first_name:$('contactFirst').value.trim(),last_name:$('contactLast').value.trim(),position:$('contactPos').value.trim(),phone:$('contactPhone').value.trim(),gg:$('contactGG').value.trim(),email:$('contactEmail').value.trim()};
+  if(!edit.contact && (r.email||r.phone) && await duplicateExists('contacts',{region_id:r.region_id,branch_id:r.branch_id,...(r.email?{email:r.email}:{phone:r.phone})})){if(!confirm('Podobny kontakt już istnieje w tym oddziale. Zapisać mimo to?'))return}
+  let z=edit.contact?await sb.from('contacts').update(r).eq('id',edit.contact):await sb.from('contacts').insert(r);if(z.error)return msg('contactMsg',z.error.message,'error');clearContact();loadContacts();loadCard()}
 window.editContact=id=>{let c=window._contacts.find(x=>x.id===id);edit.contact=id;$('contactTitle').textContent='Edytuj kontakt';$('contactBranch').value=c.branch_id;$('contactFirst').value=c.first_name||'';$('contactLast').value=c.last_name||'';$('contactPos').value=c.position||'';$('contactPhone').value=c.phone||'';$('contactGG').value=c.gg||'';$('contactEmail').value=c.email||''};
 window.delContact=async id=>{if(confirm('Usunąć kontakt?')){await sb.from('contacts').delete().eq('id',id);loadContacts();loadCard()}};
 
@@ -1422,7 +1459,9 @@ window.delMeeting=async id=>{if(confirm('Usunąć notatkę?')){await sb.from('me
 
 async function loadTasks(){let x=await q('tasks');if(x.error)return;window._tasks=x.data||[];let f=$('taskFilter').value,s=$('taskStatusFilter').value,a=window._tasks.filter(v=>(f==='all'||v.branch_id===f)&&(s==='all'||v.status===s)).sort((a,b)=>(a.deadline||'9999').localeCompare(b.deadline||'9999'));$('taskList').innerHTML=a.length?a.map(v=>`<div class="item"><div class="top"><div><b>${esc(v.title)}</b><div class="meta">${esc(bn(v.branch_id))} • ${fd(v.deadline)} • <span class="${v.priority}">${v.priority}</span> • <span class="status ${v.status}">${sl(v.status)}</span></div></div><div class="actions"><button class="btn small" onclick="editTask('${v.id}')">Edytuj</button>${v.status!=='done'?`<button class="btn small" onclick="doneTask('${v.id}')">Wykonane</button>`:''}<button class="btn small danger" onclick="delTask('${v.id}')">Usuń</button></div></div><div class="text">${esc(v.description||'')}</div></div>`).join(''):'<div class="empty">Brak zadań.</div>'}
 function clearTask(){edit.task=null;$('taskTitleHead').textContent='Dodaj zadanie';['taskTitle','taskDesc','taskOwner','taskDeadline','taskSource'].forEach(i=>$(i).value='');$('taskPriority').value='normal';$('taskStatus').value='todo'}
-async function saveTask(){let r={region_id:rid(),branch_id:$('taskBranch').value,title:$('taskTitle').value.trim(),description:$('taskDesc').value.trim(),owner:$('taskOwner').value.trim(),deadline:$('taskDeadline').value||null,priority:$('taskPriority').value,source:$('taskSource').value.trim(),status:$('taskStatus').value,created_by:user.id};if(!r.title)return msg('taskMsg','Wpisz tytuł.','error');let z=edit.task?await sb.from('tasks').update(r).eq('id',edit.task):await sb.from('tasks').insert(r);if(z.error)return msg('taskMsg',z.error.message,'error');clearTask();loadTasks();loadDashboard();loadCard()}
+async function saveTask(){let r={region_id:rid(),branch_id:$('taskBranch').value,title:$('taskTitle').value.trim(),description:$('taskDesc').value.trim(),owner:$('taskOwner').value.trim(),deadline:$('taskDeadline').value||null,priority:$('taskPriority').value,source:$('taskSource').value.trim(),status:$('taskStatus').value,created_by:user.id};if(!r.title)return msg('taskMsg','Wpisz tytuł.','error');
+  if(!edit.task && await duplicateExists('tasks',{region_id:r.region_id,branch_id:r.branch_id,title:r.title,status:r.status})){if(!confirm('Podobne zadanie już istnieje. Dodać kolejne?'))return}
+  let z=edit.task?await sb.from('tasks').update(r).eq('id',edit.task):await sb.from('tasks').insert(r);if(z.error)return msg('taskMsg',z.error.message,'error');clearTask();loadTasks();loadDashboard();loadCard()}
 window.editTask=id=>{let v=window._tasks.find(x=>x.id===id);edit.task=id;$('taskTitleHead').textContent='Edytuj zadanie';$('taskBranch').value=v.branch_id;$('taskTitle').value=v.title;$('taskDesc').value=v.description||'';$('taskOwner').value=v.owner||'';$('taskDeadline').value=v.deadline||'';$('taskPriority').value=v.priority;$('taskSource').value=v.source||'';$('taskStatus').value=v.status};
 window.doneTask=async id=>{await sb.from('tasks').update({status:'done'}).eq('id',id);loadTasks();loadDashboard();loadCard()};
 window.delTask=async id=>{if(confirm('Usunąć zadanie?')){await sb.from('tasks').delete().eq('id',id);loadTasks();loadDashboard();loadCard()}};
@@ -1755,7 +1794,7 @@ async function saveMonthlyKpi(showAlert=true){
     if(vp){
       const ukEl=document.querySelector(`.voip-uk-month-input[data-branch-id="${b.id}"]`);
       const detEl=document.querySelector(`.voip-detail-month-input[data-branch-id="${b.id}"]`);
-      const ukRaw=ukEl?.value.trim()||'',detRaw=detEl?.value.trim()||'';
+      const ukRaw=ukEl?.value.trim()||'',detRaw=detEl?.value.trim()||'';if(!validatePct(ukRaw,'VoIP UK')||!validatePct(detRaw,'VoIP Detal'))return;
       const uk=ukRaw===''?null:Number(ukRaw),det=detRaw===''?null:Number(detRaw);
       const vals=[uk,det].filter(Number.isFinite),avg=vals.length?vals.reduce((a,z)=>a+z,0)/vals.length:null;
       const {data:existing,error:findErr}=await sb.from('monthly_kpis').select('*').eq('branch_id',b.id).eq('year',vp.year).eq('month',vp.month).maybeSingle();
@@ -1773,7 +1812,7 @@ async function saveMonthlyKpi(showAlert=true){
     if(cp){
       const ctrlEl=document.querySelector(`.ctrl-month-input[data-branch-id="${b.id}"]`);
       const commEl=document.querySelector(`.ctrl-comment-input[data-branch-id="${b.id}"]`);
-      const raw=ctrlEl?.value.trim()||'',comment=commEl?.value.trim()||'';
+      const raw=ctrlEl?.value.trim()||'',comment=commEl?.value.trim()||'';if(!validatePct(raw,'Controlling'))return;
       const ctrl=raw===''?null:Number(raw);
       const {data:existing,error:findErr}=await sb.from('monthly_kpis').select('*').eq('branch_id',b.id).eq('year',cp.year).eq('month',cp.month).maybeSingle();
       if(findErr)throw findErr;
@@ -2996,15 +3035,15 @@ async function mgmtRows(table,branchId){
   const z=await qy;if(z.error)throw z.error;return z.data||[];
 }
 async function loadManagement(){
-  const bid=$('manageBranch','weekActionBranch').value;if(!bid)return;
+  const bid=$('manageBranch','weekActionBranch','decisionBranch','decisionFilterBranch').value;if(!bid)return;
   const [goals,staff,risks,plans,personnel,comments]=await Promise.all([
     mgmtRows('branch_goals',bid),mgmtRows('branch_staffing',bid),mgmtRows('branch_risks',bid),
     mgmtRows('visit_plans',bid),mgmtRows('personnel_history',bid),mgmtRows('monthly_rks_comments',bid)
   ]);
-  $('goalList').innerHTML=goals.sort((a,b)=>(a.deadline||'').localeCompare(b.deadline||'')).map(g=>`<div class="manage-item"><div class="top"><div><b>${esc(g.title)}</b><div class="meta">${g.period_type==='quarter'?'kwartalny':'miesięczny'} • ${fd(g.deadline)} • ${esc(g.status)}</div></div><button class="btn small danger" onclick="deleteMgmt('branch_goals','${g.id}')">Usuń</button></div><div class="goal-progress"><i style="width:${Math.max(0,Math.min(100,Number(g.progress)||0))}%"></i></div><div class="meta">${Number(g.progress)||0}% • ${esc(g.note||'')}</div></div>`).join('')||'<div class="muted">Brak celów.</div>';
+  $('goalList').innerHTML=goals.sort((a,b)=>(a.deadline||'').localeCompare(b.deadline||'')).map(g=>`<div class="manage-item"><div class="top"><div><b>${esc(g.title)}</b><div class="meta">${g.period_type==='quarter'?'kwartalny':'miesięczny'} • ${fd(g.deadline)} • ${esc(g.status)}</div></div><div class="controls"><button class="btn small" onclick="createLinkedTask('branch_goals','${g.id}','${g.branch_id}',${JSON.stringify('Realizacja celu: '+g.title)},${JSON.stringify(g.note||'')})">Zadanie</button><button class="btn small" onclick="addOutcome('branch_goals','${g.id}','${g.branch_id}')">Efekt</button><button class="btn small danger" onclick="deleteMgmt('branch_goals','${g.id}')">Usuń</button></div></div><div class="goal-progress"><i style="width:${Math.max(0,Math.min(100,Number(g.progress)||0))}%"></i></div><div class="meta">${Number(g.progress)||0}% • ${esc(g.note||'')}</div></div>`).join('')||'<div class="muted">Brak celów.</div>';
   const s=staff.sort((a,b)=>(b.updated_at||'').localeCompare(a.updated_at||''))[0];
   $('staffCurrent').innerHTML=s?`<div class="manage-item"><b>${s.staff_count||0} osób • ${s.vacancies||0} wakatów • ${s.onboarding||0} we wdrożeniu</b><div class="meta">${esc(s.comment||'')}</div></div>`:'<div class="muted">Brak statusu kadrowego.</div>';
-  $('riskList').innerHTML=risks.filter(r=>r.status!=='closed').map(r=>`<div class="manage-item risk-${r.level}"><div class="top"><div><b>${esc(r.title)}</b><div class="meta">${r.level==='high'?'wysokie':r.level==='medium'?'średnie':'niskie'} • ${esc(r.status)}</div></div><button class="btn small danger" onclick="deleteMgmt('branch_risks','${r.id}')">Usuń</button></div><div class="meta">${esc(r.action_plan||'')}</div></div>`).join('')||'<div class="muted">Brak otwartych ryzyk.</div>';
+  $('riskList').innerHTML=risks.filter(r=>r.status!=='closed').map(r=>`<div class="manage-item risk-${r.level}"><div class="top"><div><b>${esc(r.title)}</b><div class="meta">${r.level==='high'?'wysokie':r.level==='medium'?'średnie':'niskie'} • ${esc(r.status)}</div></div><div class="controls"><button class="btn small" onclick="createLinkedTask('branch_risks','${r.id}','${r.branch_id}',${JSON.stringify('Działanie do ryzyka: '+r.title)},${JSON.stringify(r.action_plan||'')})">Zadanie</button><button class="btn small" onclick="addOutcome('branch_risks','${r.id}','${r.branch_id}')">Efekt</button><button class="btn small danger" onclick="deleteMgmt('branch_risks','${r.id}')">Usuń</button></div></div><div class="meta">${esc(r.action_plan||'')}</div></div>`).join('')||'<div class="muted">Brak otwartych ryzyk.</div>';
   $('visitPlanList').innerHTML=plans.sort((a,b)=>(a.planned_date||'').localeCompare(b.planned_date||'')).map(v=>`<div class="manage-item"><div class="top"><div><b>${fd(v.planned_date)}</b><div class="meta">${esc(v.purpose||'')}</div></div><button class="btn small danger" onclick="deleteMgmt('visit_plans','${v.id}')">Usuń</button></div></div>`).join('')||'<div class="muted">Brak zaplanowanych wizyt.</div>';
   $('personnelList').innerHTML=personnel.sort((a,b)=>(b.event_date||'').localeCompare(a.event_date||'')).map(v=>`<div class="manage-item"><div class="top"><div><b>${fd(v.event_date)}</b><div class="meta">${esc(v.description)}</div></div><button class="btn small danger" onclick="deleteMgmt('personnel_history','${v.id}')">Usuń</button></div></div>`).join('')||'<div class="muted">Brak historii zmian.</div>';
   $('monthlyCommentList').innerHTML=comments.sort((a,b)=>(b.month_key||'').localeCompare(a.month_key||'')).map(v=>`<div class="manage-item"><div class="top"><div><b>${esc(v.month_key)}</b><div class="meta">${esc(v.comment)}</div></div><button class="btn small danger" onclick="deleteMgmt('monthly_rks_comments','${v.id}')">Usuń</button></div></div>`).join('')||'<div class="muted">Brak komentarzy miesięcznych.</div>';
@@ -3339,7 +3378,7 @@ async function loadCloseMonthCompleteness(){
 }
 async function createCloseSnapshot(monthKey){
   const {y,m,from,to}=monthBounds(monthKey);
-  const tables=['branches','contacts','contact_logs','meeting_notes','tasks','visits','branch_notes','monthly_kpis','sales_results','branch_goals','branch_staffing','branch_risks','visit_plans','personnel_history','monthly_rks_comments'];
+  const tables=['branches','contacts','contact_logs','meeting_notes','tasks','visits','branch_notes','monthly_kpis','sales_results','branch_goals','branch_staffing','branch_risks','visit_plans','personnel_history','monthly_rks_comments','decisions_escalations','entity_links','action_outcomes','pinned_branch_notes'];
   const snap={month_key:monthKey,region_id:rid(),created_at:new Date().toISOString(),tables:{}};
   for(const t of tables){
     let qy=sb.from(t).select('*').eq('region_id',rid());
@@ -3376,7 +3415,7 @@ async function loadAdminCenter(){
   const regs=regionsRes.data||[],br=branchesRes.data||[],sn=snapRes.data||[];
   $('adminMetrics').innerHTML=`<div class="admin-box"><span>Regiony</span><strong>${regs.length}</strong></div><div class="admin-box"><span>Oddziały</span><strong>${br.length}</strong></div><div class="admin-box"><span>Rekordy w koszu</span><strong>${trashRes.count||0}</strong></div><div class="admin-box"><span>Logi zmian</span><strong>${auditRes.count||0}</strong></div>`;
   $('adminRegions').innerHTML=`<table><tr><th>Region</th><th>Oddziały</th></tr>${regs.map(r=>`<tr><td>${esc(r.name)}</td><td>${br.filter(b=>b.region_id===r.id).length}</td></tr>`).join('')}</table>`;
-  $('adminSnapshots').innerHTML=sn.length?`<table><tr><th>Region</th><th>Miesiąc</th><th>Data snapshotu</th></tr>${sn.map(s=>`<tr><td>${esc(regs.find(r=>r.id===s.region_id)?.name||'—')}</td><td>${esc(s.month_key)}</td><td>${new Date(s.created_at).toLocaleString('pl-PL')}</td></tr>`).join('')}</table>`:'<div class="empty">Brak snapshotów.</div>';
+  $('adminSnapshots').innerHTML=sn.length?`<table><tr><th>Region</th><th>Miesiąc</th><th>Data snapshotu</th><th></th></tr>${sn.map(s=>`<tr><td>${esc(regs.find(r=>r.id===s.region_id)?.name||'—')}</td><td>${esc(s.month_key)}</td><td>${new Date(s.created_at).toLocaleString('pl-PL')}</td><td><button class="btn small danger" onclick="restoreSnapshot('${s.id}','${esc(s.month_key)}')">Przywróć</button></td></tr>`).join('')}</table>`:'<div class="empty">Brak snapshotów.</div>';
 }
 async function exportFullMonthlyReport(){
   const key=$('closeMonthKey').value;if(!key)return;const {y,m,from,to}=monthBounds(key);
@@ -3396,6 +3435,107 @@ async function exportFullMonthlyReport(){
   });
   const wb=XLSX.utils.book_new(),ws=XLSX.utils.json_to_sheet(rows);XLSX.utils.book_append_sheet(wb,ws,'Raport miesięczny');XLSX.writeFile(wb,`Raport-regionu-${key}.xlsx`);
 }
+
+
+async function duplicateExists(table, filters, excludeId=null){
+  let qy=sb.from(table).select('id').limit(1);
+  for(const [k,v] of Object.entries(filters)){if(v!==null&&v!==undefined&&v!=='')qy=qy.eq(k,v)}
+  if(excludeId)qy=qy.neq('id',excludeId);
+  const {data,error}=await qy;if(error)throw error;return !!(data||[]).length;
+}
+function validatePct(v,label){
+  if(v===null||v===undefined||String(v).trim()==='')return true;
+  const n=Number(v);if(!Number.isFinite(n)||n<0||n>200){alert(`${label}: wpisz wartość od 0 do 200%.`);return false}return true;
+}
+function validateNonNegative(v,label){
+  if(v===null||v===undefined||String(v).trim()==='')return true;
+  const n=Number(v);if(!Number.isFinite(n)||n<0){alert(`${label}: wartość nie może być ujemna.`);return false}return true;
+}
+async function createEntityLink(sourceTable,sourceId,targetTable,targetId,branchId,label=''){
+  if(!sourceId||!targetId)return;
+  const {error}=await sb.from('entity_links').insert({region_id:rid(),branch_id:branchId||null,source_table:sourceTable,source_id:String(sourceId),target_table:targetTable,target_id:String(targetId),label,created_by:user.id});
+  if(error && !String(error.message).includes('duplicate'))throw error;
+}
+async function createLinkedTask(sourceTable,sourceId,branchId,title,description=''){
+  const task={region_id:rid(),branch_id:branchId,title,description,owner:'',deadline:null,priority:'normal',source:`${sourceTable}:${sourceId}`,status:'todo',created_by:user.id};
+  const {data,error}=await sb.from('tasks').insert(task).select().single();if(error)return alert(error.message);
+  await createEntityLink(sourceTable,sourceId,'tasks',data.id,branchId,'zadanie wdrożeniowe');
+  alert('Utworzono powiązane zadanie.');await loadTasks();await loadDashboard();
+}
+window.createLinkedTask=createLinkedTask;
+async function addOutcome(entityTable,entityId,branchId){
+  const result=prompt('Opisz rezultat działania / decyzji:');if(result===null)return;
+  const effective=confirm('Czy działanie było skuteczne?\nOK = TAK, Anuluj = NIE');
+  const impact=prompt('Jaki był wpływ na wynik / oddział? (opcjonalnie)')||'';
+  const {error}=await sb.from('action_outcomes').insert({region_id:rid(),branch_id:branchId||null,entity_table:entityTable,entity_id:String(entityId),effective,result,impact,created_by:user.id});
+  if(error)return alert(error.message);
+  alert('Efekt działania zapisany.');
+}
+window.addOutcome=addOutcome;
+
+async function saveDecision(){
+  const r={region_id:rid(),branch_id:$('decisionBranch').value,title:$('decisionTitle').value.trim(),description:$('decisionDescription').value.trim(),decision_type:$('decisionType').value,priority:$('decisionPriority').value,decision_owner:$('decisionOwner').value.trim(),deadline:$('decisionDeadline').value||null,status:'open',created_by:user.id};
+  if(!r.title)return msg('decisionMsg','Wpisz temat.','error');
+  if(await duplicateExists('decisions_escalations',{region_id:r.region_id,branch_id:r.branch_id,title:r.title,status:'open'})){
+    if(!confirm('Istnieje już otwarta decyzja o takim samym tytule w tym oddziale. Dodać mimo to?'))return;
+  }
+  const {error}=await sb.from('decisions_escalations').insert(r);if(error)return msg('decisionMsg',error.message,'error');
+  $('decisionTitle').value='';$('decisionDescription').value='';$('decisionOwner').value='';$('decisionDeadline').value='';
+  msg('decisionMsg','Dodano.','ok');await loadDecisions();await loadDashboard();await loadHistory();
+}
+async function loadDecisions(){
+  if(!$('decisionList'))return;
+  let qy=sb.from('decisions_escalations').select('*').eq('region_id',rid()).order('created_at',{ascending:false});
+  const b=$('decisionFilterBranch').value,s=$('decisionFilterStatus').value;
+  if(b&&b!=='all')qy=qy.eq('branch_id',b);if(s!=='all')qy=qy.eq('status',s);
+  const {data,error}=await qy;if(error)return $('decisionList').innerHTML=`<div class="empty">${esc(error.message)}</div>`;
+  $('decisionList').innerHTML=(data||[]).length?(data||[]).map(d=>`<div class="decision-item ${d.decision_type==='escalation'?'escalated':''} ${d.status==='closed'?'closed':''}">
+    <div class="top"><div><b>${esc(d.title)}</b><div class="meta">${esc(bn(d.branch_id))} • ${d.decision_type==='escalation'?'eskalacja':'decyzja'} • ${esc(d.priority)}${d.deadline?' • termin '+fd(d.deadline):''}</div></div></div>
+    <div style="font-size:11px;margin-top:6px;white-space:pre-wrap">${esc(d.description||'')}</div>
+    <div class="meta">Decydent: ${esc(d.decision_owner||'—')}${d.resolution?` • Wynik: ${esc(d.resolution)}`:''}</div>
+    <div class="controls" style="margin-top:8px">
+      ${d.status!=='closed'?`<button class="btn small primary" onclick="closeDecision('${d.id}','${d.branch_id}')">Zamknij decyzję</button>`:''}
+      <button class="btn small" onclick="createLinkedTask('decisions_escalations','${d.id}','${d.branch_id}',${JSON.stringify('Wdrożenie decyzji: '+d.title)},${JSON.stringify(d.description||'')})">Utwórz zadanie</button>
+      <button class="btn small" onclick="addOutcome('decisions_escalations','${d.id}','${d.branch_id}')">Efekt</button>
+    </div></div>`).join(''):'<div class="empty">Brak decyzji.</div>';
+}
+window.closeDecision=async(id,branchId)=>{
+  const resolution=prompt('Jaka została podjęta decyzja?');if(resolution===null)return;
+  const {error}=await sb.from('decisions_escalations').update({status:'closed',resolution,closed_at:new Date().toISOString()}).eq('id',id);
+  if(error)return alert(error.message);await addOutcome('decisions_escalations',id,branchId);await loadDecisions();await loadDashboard();await loadHistory();
+};
+
+async function loadPinnedNotes(){
+  if(!$('pinnedNotes')||!$('cardBranch'))return;const bid=$('cardBranch').value;if(!bid)return;
+  const {data,error}=await sb.from('pinned_branch_notes').select('*').eq('region_id',rid()).eq('branch_id',bid).order('created_at',{ascending:false});
+  if(error)return;$('pinnedNotes').innerHTML=(data||[]).length?(data||[]).map(n=>`<div class="pin-note"><div class="top"><b>${esc(n.note)}</b><button class="btn small danger" onclick="deletePinnedNote('${n.id}')">Usuń</button></div></div>`).join(''):'<div class="muted">Brak przypiętych informacji.</div>';
+}
+window.deletePinnedNote=async id=>{await sb.from('pinned_branch_notes').delete().eq('id',id);await loadPinnedNotes()};
+async function addPinnedNote(){const bid=$('cardBranch').value,note=prompt('Treść informacji do przypięcia:');if(!note)return;const{error}=await sb.from('pinned_branch_notes').insert({region_id:rid(),branch_id:bid,note,created_by:user.id});if(error)return alert(error.message);await loadPinnedNotes()}
+
+let deferredPwaPrompt=null;
+window.addEventListener('beforeinstallprompt',e=>{e.preventDefault();deferredPwaPrompt=e;$('installPwaBtn')?.classList.remove('hidden')});
+async function installPwa(){
+  if(deferredPwaPrompt){deferredPwaPrompt.prompt();await deferredPwaPrompt.userChoice;deferredPwaPrompt=null;return}
+  const ios=/iphone|ipad|ipod/i.test(navigator.userAgent);
+  $('pwaHelpText').innerHTML=ios
+    ?'<b>iPhone / iPad:</b><br>1. Otwórz tę stronę w Safari.<br>2. Naciśnij ikonę Udostępnij.<br>3. Wybierz „Dodaj do ekranu początkowego”.<br>4. Potwierdź „Dodaj”.'
+    :'<b>Instalacja:</b><br>Jeżeli przeglądarka nie pokazuje automatycznego przycisku instalacji, otwórz jej menu i wybierz „Zainstaluj aplikację” lub „Dodaj do ekranu głównego”.';
+  $('pwaHelpModal').classList.remove('hidden');
+}
+if('serviceWorker' in navigator){
+  window.addEventListener('load',()=>navigator.serviceWorker.register('./sw.js').catch(()=>{}));
+}
+
+
+window.restoreSnapshot=async(id,monthKey)=>{
+  const phrase=prompt(`UWAGA: przywrócenie snapshotu zastąpi aktualne dane regionu stanem zapisanym przy zamknięciu ${monthKey}.\n\nWpisz PRZYWRÓĆ aby kontynuować:`);
+  if(phrase!=='PRZYWRÓĆ')return;
+  const {data,error}=await sb.rpc('restore_region_close_snapshot',{p_snapshot_id:id});
+  if(error)return alert(error.message);
+  alert('Snapshot został przywrócony. Aplikacja odświeży dane regionu.');
+  await loadRegion();await loadDashboard();await loadAdminCenter();
+};
 
 async function loadDashboard(){
   if(!rid()||!branches.length)return;
@@ -3505,7 +3645,7 @@ async function loadHistory(){
   const from=$('historyFrom').value||'',to=$('historyTo').value||'',search=($('historySearch').value||'').trim().toLowerCase();
   const selected=new Set([...document.querySelectorAll('.historyType:checked')].map(x=>x.value));
 
-  const [logs,meetings,visits,notes,sales,kpis,staffing,personnel,risks,goals,tasks,comments]=await Promise.all([
+  const [logs,meetings,visits,notes,sales,kpis,staffing,personnel,risks,goals,tasks,comments,decisions,outcomes]=await Promise.all([
     sb.from('contact_logs').select('*').eq('region_id',rid()).eq('branch_id',id),
     sb.from('meeting_notes').select('*').eq('region_id',rid()).eq('branch_id',id),
     sb.from('visits').select('*').eq('region_id',rid()).eq('branch_id',id),
@@ -3517,7 +3657,9 @@ async function loadHistory(){
     sb.from('branch_risks').select('*').eq('region_id',rid()).eq('branch_id',id),
     sb.from('branch_goals').select('*').eq('region_id',rid()).eq('branch_id',id),
     sb.from('tasks').select('*').eq('region_id',rid()).eq('branch_id',id),
-    sb.from('monthly_rks_comments').select('*').eq('region_id',rid()).eq('branch_id',id)
+    sb.from('monthly_rks_comments').select('*').eq('region_id',rid()).eq('branch_id',id),
+    sb.from('decisions_escalations').select('*').eq('region_id',rid()).eq('branch_id',id),
+    sb.from('action_outcomes').select('*').eq('region_id',rid()).eq('branch_id',id)
   ]);
 
   const ev=[];
@@ -3547,6 +3689,8 @@ async function loadHistory(){
   (goals.data||[]).forEach(x=>push({d:(x.created_at||x.deadline||today()).slice(0,10),type:'goal',title:`Cel: ${x.title}`,text:x.note||'',meta:`Postęp: ${x.progress||0}% • status: ${x.status}${x.deadline?' • termin '+fd(x.deadline):''}`}));
   (tasks.data||[]).forEach(x=>push({d:(x.updated_at||x.created_at||x.deadline||today()).slice(0,10),type:'task',title:`Zadanie: ${x.title}`,text:x.description||'',meta:`Status: ${x.status} • priorytet: ${x.priority}${x.deadline?' • termin '+fd(x.deadline):''}`}));
   (comments.data||[]).forEach(x=>push({d:`${x.month_key}-01`,type:'comment',title:`Komentarz RKS — ${x.month_key}`,text:x.comment||'',meta:''}));
+  (decisions.data||[]).forEach(x=>push({d:(x.closed_at||x.created_at||today()).slice(0,10),type:'decision',title:`${x.decision_type==='escalation'?'Eskalacja':'Decyzja'}: ${x.title}`,text:[x.description,x.resolution?`Decyzja: ${x.resolution}`:''].filter(Boolean).join('\n'),meta:`Status: ${x.status} • decydent: ${x.decision_owner||'—'}`}));
+  (outcomes.data||[]).forEach(x=>push({d:(x.created_at||today()).slice(0,10),type:'outcome',title:'Efekt działania',text:`${x.effective?'Skuteczne':'Nieskuteczne'}: ${x.result||''}`,meta:x.impact||''}));
 
   const filtered=ev.filter(e=>{
     if(!selected.has(e.type))return false;
@@ -3569,7 +3713,7 @@ async function loadHistory(){
     <div class="brief-box"><span>Kontakty</span><strong>${counts.contact}</strong></div>
     <div class="brief-box"><span>Ryzyka</span><strong>${counts.risk}</strong></div>`;
 
-  const labels={sales:'Wyniki',kpi:'KPI',meeting:'1:1',visit:'Wizyta',contact:'Kontakt',note:'Notatka',staff:'Kadry',risk:'Ryzyko',goal:'Cel',task:'Zadanie',comment:'Komentarz RKS'};
+  const labels={sales:'Wyniki',kpi:'KPI',meeting:'1:1',visit:'Wizyta',contact:'Kontakt',note:'Notatka',staff:'Kadry',risk:'Ryzyko',goal:'Cel',task:'Zadanie',comment:'Komentarz RKS',decision:'Decyzja',outcome:'Efekt'};
   $('historyList').innerHTML=filtered.length?filtered.map(e=>`<article class="history-event ${e.type}">
     <div class="he-head"><div><span class="history-chip">${labels[e.type]||e.type}</span><span class="he-title">${esc(e.title)}</span></div><span class="he-date">${fd(e.d)}</span></div>
     ${e.text?`<div class="he-text">${esc(e.text)}</div>`:''}
@@ -3661,7 +3805,7 @@ async function showApp(session,modeResolved=false){
   $('bonusYear').value=d.getFullYear();$('bonusQuarter').value=Math.floor(d.getMonth()/3)+1;$('bonusMonthYear').value=d.getFullYear();fillMonthSelect('bonusMonthSelect');$('bonusMonthSelect').value=d.getMonth()+1;$('archiveMonth').value=d.toISOString().slice(0,7);$('personnelDate').value=today();$('visitPlanDate').value=today();$('monthlyCommentMonth').value=d.toISOString().slice(0,7);$('globalPeriod').value=d.toISOString().slice(0,7);$('autoSummaryMonth').value=d.toISOString().slice(0,7);$('closeMonthKey').value=d.toISOString().slice(0,7);$('checklistMonth').value=d.toISOString().slice(0,7);{const ws=startOfWeek(d);$('weekStart').value=ws.toISOString().slice(0,10);$('weekActionDate').value=ws.toISOString().slice(0,10);}
 }
 function showLogin(){$('appView').classList.add('hidden');$('modeView').classList.add('hidden');$('loginView').classList.remove('hidden');workMode=null;workModeRegion=null}
-document.querySelectorAll('.tab').forEach(b=>b.onclick=()=>{document.querySelectorAll('.tab').forEach(x=>x.classList.toggle('active',x===b));document.querySelectorAll('.view').forEach(x=>x.classList.toggle('active',x.id===b.dataset.v));if(b.dataset.v==='dashboard')loadDashboard();if(b.dataset.v==='analysis')loadAnalysis();if(b.dataset.v==='comparison')loadComparison();if(b.dataset.v==='branchCompare')loadBranchCompare();if(b.dataset.v==='regionMap')loadRegionMap();if(b.dataset.v==='branchCard'){loadCard();loadBranchState();}if(b.dataset.v==='history')loadHistory()});
+document.querySelectorAll('.tab').forEach(b=>b.onclick=()=>{document.querySelectorAll('.tab').forEach(x=>x.classList.toggle('active',x===b));document.querySelectorAll('.view').forEach(x=>x.classList.toggle('active',x.id===b.dataset.v));if(b.dataset.v==='dashboard')loadDashboard();if(b.dataset.v==='analysis')loadAnalysis();if(b.dataset.v==='comparison')loadComparison();if(b.dataset.v==='branchCompare')loadBranchCompare();if(b.dataset.v==='regionMap')loadRegionMap();if(b.dataset.v==='branchCard'){loadCard();loadBranchState();loadPinnedNotes();}if(b.dataset.v==='history')loadHistory()});
 $('loginForm').onsubmit=async e=>{e.preventDefault();let{data,error}=await sb.auth.signInWithPassword({email:$('loginEmail').value.trim(),password:$('loginPassword').value});if(error)return msg('loginMsg',error.message,'error');showApp(data.session)};
 $('tabOrderBtn').onclick=openTabOrder;
 $('cancelTabOrderBtn').onclick=closeTabOrder;
@@ -3724,6 +3868,9 @@ $('refreshTrashBtn').onclick=loadTrash;$('emptyExpiredTrashBtn').onclick=emptyEx
 $('markChangesSeenBtn').onclick=markChangesSeen;$('openWeekPlanBtn').onclick=()=>document.querySelector('.tab[data-v="weekPlan"]')?.click();
 $('refreshWeekPlanBtn').onclick=loadWeekPlan;$('weekStart').onchange=loadWeekPlan;$('saveWeekActionBtn').onclick=saveWeekAction;
 $('refreshAdminCenterBtn').onclick=loadAdminCenter;$('exportFullMonthlyReportBtn').onclick=exportFullMonthlyReport;
+
+$('saveDecisionBtn').onclick=saveDecision;$('decisionFilterBranch').onchange=loadDecisions;$('decisionFilterStatus').onchange=loadDecisions;
+$('addPinnedNoteBtn').onclick=addPinnedNote;$('installPwaBtn').onclick=installPwa;$('closePwaHelp').onclick=()=>$('pwaHelpModal').classList.add('hidden');
 $('logoutBtn').onclick=async()=>{await sb.auth.signOut();showLogin()};
 $('loadComparisonBtn').onclick=loadComparison;$('regionSelect').onchange=loadBranches;$('addBranchBtn').onclick=addBranch;
 $('saveContact').onclick=saveContact;$('clearContact').onclick=clearContact;$('contactFilter').onchange=loadContacts;$('contactSearch').oninput=loadContacts;
@@ -3735,6 +3882,13 @@ $('saveMeeting').onclick=saveMeeting;$('clearMeeting').onclick=clearMeeting;$('m
 $('saveTask').onclick=saveTask;$('clearTask').onclick=clearTask;$('taskFilter').onchange=loadTasks;$('taskStatusFilter').onchange=loadTasks;
 $('saveVisit').onclick=saveVisit;$('clearVisit').onclick=clearVisit;$('addVisitRecommendation').onclick=()=>addVisitRecommendationRow();$('generateVisitForm').onclick=generateVisitSignatureForm;$('printVisitReport').onclick=printVisitSignatureForm;
 $('salesEntryDate').onchange=renderSalesEntry;$('saveSalesEntry').onclick=()=>saveSalesEntry(true);$('saveMonthlyKpi').onclick=()=>saveMonthlyKpi(true);$('voipMonth').onchange=renderMonthlyKpi;$('controlKpiMonth').onchange=renderMonthlyKpi;
-$('saveNote').onclick=saveNote;$('clearNote').onclick=clearNote;$('noteFilter').onchange=loadNotes;$('cardBranch').onchange=()=>{loadCard();loadBranchState()};$('historyBranch').onchange=loadHistory;$('historyFrom').onchange=loadHistory;$('historyTo').onchange=loadHistory;$('historySearch').oninput=loadHistory;document.querySelectorAll('.historyType').forEach(x=>x.onchange=loadHistory);$('clearHistoryFilters').onclick=()=>{$('historyFrom').value='';$('historyTo').value='';$('historySearch').value='';document.querySelectorAll('.historyType').forEach(x=>x.checked=true);loadHistory()};
+$('saveNote').onclick=saveNote;$('clearNote').onclick=clearNote;$('noteFilter').onchange=loadNotes;$('cardBranch').onchange=()=>{loadCard();loadBranchState();loadPinnedNotes()};$('historyBranch').onchange=loadHistory;$('historyFrom').onchange=loadHistory;$('historyTo').onchange=loadHistory;$('historySearch').oninput=loadHistory;document.querySelectorAll('.historyType').forEach(x=>x.onchange=loadHistory);$('clearHistoryFilters').onclick=()=>{$('historyFrom').value='';$('historyTo').value='';$('historySearch').value='';document.querySelectorAll('.historyType').forEach(x=>x.checked=true);loadHistory()};
 (async()=>{let{data}=await sb.auth.getSession();if(data.session)showModeChooser(data.session,false);else showLogin()})();
-</script></body></html>
+</script>
+<div id="pwaHelpModal" class="quick-modal hidden">
+  <div class="quick-card">
+    <div class="head"><div><h3 style="margin:0">Instalacja Eltrox RKS</h3></div><button id="closePwaHelp" class="btn">Zamknij</button></div>
+    <div id="pwaHelpText" class="pwa-help"></div>
+  </div>
+</div>
+</body></html>
