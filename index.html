@@ -2,7 +2,7 @@
 <html lang="pl">
 <head>
 <meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
-<title>Eltrox RKS – Supabase v8.7</title>
+<title>Eltrox RKS – Supabase v8.8</title>
 <style>
 :root{--o:#f36f21;--od:#d85d12;--bg:#eef1f4;--w:#fff;--line:#d9dde3;--t:#242424;--m:#6b7280;--r:#c9372c;--g:#25894b;--b:#2f71c8;--sh:0 8px 24px rgba(0,0,0,.08)}
 *{box-sizing:border-box}html,body{margin:0;min-height:100%;font-family:Arial,Helvetica,sans-serif;background:var(--bg);color:var(--t)}button,input,select,textarea{font:inherit}button{cursor:pointer}.hidden{display:none!important}
@@ -195,6 +195,14 @@ input,select,textarea{width:100%;padding:9px 10px;border:1px solid var(--line);b
 @media(max-width:1250px){.bc-toolbar{grid-template-columns:repeat(4,1fr)}.bc-health-grid{grid-template-columns:repeat(2,1fr)}}
 @media(max-width:850px){.bc-toolbar{grid-template-columns:repeat(2,1fr)}.bc-health-grid,.bc-grid2,.bc-sw-grid{grid-template-columns:1fr}.bc-metric-grid{grid-template-columns:repeat(2,1fr)}}
 
+
+/* Na dziś – układ i zachowanie v45 */
+.today-list{display:grid;gap:7px}
+.today-item{border:1px solid var(--line);border-radius:10px;padding:10px;background:#fff;display:flex;justify-content:space-between;gap:10px;align-items:flex-start}
+.today-item.bad{border-left:5px solid #c93d37}.today-item.warn{border-left:5px solid #d39118}.today-item.good{border-left:5px solid #168451}
+.today-item .main{font-size:12px;line-height:1.4}.today-item .main b{display:block}.today-item .sub{font-size:10px;color:var(--m);margin-top:3px}.today-item .go{white-space:nowrap}
+.today-region-badge{display:inline-block;padding:4px 9px;border-radius:999px;background:#fff0e5;color:var(--od);font-size:11px;font-weight:900;vertical-align:middle}
+
 @media(max-width:950px){.sales-entry-grid{grid-template-columns:repeat(2,1fr)}}@media(max-width:650px){.sales-entry-grid{grid-template-columns:1fr}}
 
 @media(max-width:950px){.io-grid{grid-template-columns:1fr}.io-actions{grid-template-columns:1fr}}
@@ -205,7 +213,7 @@ input,select,textarea{width:100%;padding:9px 10px;border:1px solid var(--line);b
 @media(max-width:950px){.g2,.g3,.g4{grid-template-columns:1fr}.header{align-items:flex-start;flex-direction:column}.nav{top:108px}}
 </style></head>
 <body>
-<div id="loginView" class="login-shell"><div class="login-card"><div class="brand"><h1>Eltrox RKS</h1><p>Wersja online v8.7</p></div><form id="loginForm" class="form"><label>E-mail<input id="loginEmail" type="email" required></label><label>Hasło<input id="loginPassword" type="password" required></label><button class="btn primary">Zaloguj</button><div id="loginMsg" class="msg"></div></form></div></div>
+<div id="loginView" class="login-shell"><div class="login-card"><div class="brand"><h1>Eltrox RKS</h1><p>Wersja online v8.8</p></div><form id="loginForm" class="form"><label>E-mail<input id="loginEmail" type="email" required></label><label>Hasło<input id="loginPassword" type="password" required></label><button class="btn primary">Zaloguj</button><div id="loginMsg" class="msg"></div></form></div></div>
 
 <div id="modeView" class="mode-shell hidden">
   <div class="mode-card">
@@ -254,7 +262,29 @@ input,select,textarea{width:100%;padding:9px 10px;border:1px solid var(--line);b
 
 <main class="main">
 
-<section id="dashboard" class="view active"><div class="head"><div><h2>Na dziś</h2><p>Szybki podgląd spraw wymagających uwagi.</p></div><button class="btn" onclick="loadDashboard()">Odśwież</button></div><div id="dashCards" class="g4"></div><div class="g2" style="margin-top:12px"><div class="panel"><h3>Zadania pilne / zaległe</h3><div id="dashTasks" class="list"></div></div><div class="panel"><h3>Ostatni kontakt z oddziałami</h3><div id="dashContacts" class="list"></div></div></div></section>
+<section id="dashboard" class="view active"><div class="inner">
+  <div class="head">
+    <div><h2>Na dziś <span id="todayRegionBadge" class="today-region-badge"></span></h2>
+    <p>Najważniejsze sprawy RKS w jednym miejscu – bez przeglądania wszystkich zakładek.</p></div>
+    <div class="controls"><button class="btn primary" id="refreshToday">Odśwież</button></div>
+  </div>
+  <div class="metrics">
+    <div class="metric"><span>Zaległe zadania</span><strong id="todayOverdue">0</strong></div>
+    <div class="metric"><span>Termin ≤ 7 dni</span><strong id="todayWeek">0</strong></div>
+    <div class="metric"><span>Oddziały wymagające uwagi</span><strong id="todayAttention">0</strong></div>
+    <div class="metric"><span>Bez kontaktu > 14 dni</span><strong id="todayNoContact">0</strong></div>
+    <div class="metric"><span>Otwarte zadania</span><strong id="todayOpen">0</strong></div>
+    <div class="metric"><span>Wykonane w tym miesiącu</span><strong id="todayDoneMonth">0</strong></div>
+  </div>
+  <div class="grid2">
+    <section class="panel"><h3>Priorytety na dziś</h3><div id="todayPriorities" class="today-list"></div></section>
+    <section class="panel"><h3>Najbliższe 7 dni</h3><div id="todayNext7" class="today-list"></div></section>
+  </div>
+  <div class="grid2">
+    <section class="panel"><h3>Oddziały wymagające uwagi</h3><div id="todayBranches" class="today-list"></div></section>
+    <section class="panel"><h3>Ostatni kontakt z oddziałami</h3><div id="todayContacts" class="today-list"></div></section>
+  </div>
+</div></section>
 
 
 <section id="analysis" class="view analysis-v45"><div class="inner">
@@ -2244,7 +2274,106 @@ async function restoreFullDatabase(file){if(!checkImportExportDependencies())ret
   }catch(e){alert('Błąd przywracania: '+e.message)}
 }
 
-async function loadDashboard(){if(!rid()||!branches.length)return;let [t,l]=await Promise.all([q('tasks'),q('contact_logs')]);let tasks=t.data||[],logs=l.data||[],td=today(),open=tasks.filter(x=>x.status!=='done'),late=open.filter(x=>x.deadline&&x.deadline<td),due=open.filter(x=>x.deadline===td);$('dashCards').innerHTML=`<div class="card"><h4>Oddziały</h4><div class="kpi">${branches.length}</div></div><div class="card"><h4>Otwarte zadania</h4><div class="kpi">${open.length}</div></div><div class="card"><h4>Zaległe</h4><div class="kpi">${late.length}</div></div><div class="card"><h4>Na dziś</h4><div class="kpi">${due.length}</div></div>`;$('dashTasks').innerHTML=[...late,...due].slice(0,12).map(v=>`<div class="item"><b>${esc(v.title)}</b><div class="meta">${esc(bn(v.branch_id))} • ${fd(v.deadline)} • ${v.priority}</div></div>`).join('')||'<div class="empty">Brak pilnych zadań.</div>';let rows=branches.map(b=>{let a=logs.filter(x=>x.branch_id===b.id).sort((x,y)=>y.contact_date.localeCompare(x.contact_date));return {b,last:a[0]}}).sort((x,y)=>(x.last?.contact_date||'').localeCompare(y.last?.contact_date||''));$('dashContacts').innerHTML=rows.map(x=>`<div class="item"><b>${esc(x.b.name)}</b><div class="meta">${x.last?fd(x.last.contact_date)+' • '+esc(x.last.channel):'Brak zarejestrowanego kontaktu'}</div></div>`).join('')}
+
+function todayDaysFrom(dateStr){
+  if(!dateStr)return null;
+  const d=new Date(dateStr+'T12:00:00'),t=new Date();
+  t.setHours(12,0,0,0);
+  return Math.round((d-t)/86400000);
+}
+function todayStatus(score){
+  if(!Number.isFinite(score))return {cls:'warn',label:'brak pełnych danych',score:NaN};
+  if(score>=80)return {cls:'good',label:'dobra kondycja',score};
+  if(score>=60)return {cls:'warn',label:'wymaga uwagi',score};
+  return {cls:'bad',label:'pilne działania',score};
+}
+async function todayBranchMetrics(){
+  const now=new Date(),year=now.getFullYear(),month=now.getMonth()+1;
+  const from=`${year}-${String(month).padStart(2,'0')}-01`,to=new Date(year,month,1).toISOString().slice(0,10);
+  const [salesRes,kpiRes]=await Promise.all([
+    sb.from('sales_results').select('*').eq('region_id',rid()).gte('result_date',from).lt('result_date',to).order('result_date',{ascending:false}),
+    sb.from('monthly_kpis').select('*').eq('region_id',rid()).order('year',{ascending:false}).order('month',{ascending:false})
+  ]);
+  if(salesRes.error)throw salesRes.error;if(kpiRes.error)throw kpiRes.error;
+  const salesMap=new Map();
+  (salesRes.data||[]).forEach(x=>{if(!salesMap.has(x.branch_id))salesMap.set(x.branch_id,x)});
+  const ctrlMap=new Map(),voipMap=new Map();
+  (kpiRes.data||[]).forEach(x=>{
+    if(!ctrlMap.has(x.branch_id)&&x.controlling!==null&&x.controlling!==undefined&&x.controlling!=='')ctrlMap.set(x.branch_id,Number(x.controlling));
+    if(!voipMap.has(x.branch_id)&&x.voip!==null&&x.voip!==undefined&&x.voip!=='')voipMap.set(x.branch_id,Number(x.voip));
+  });
+  return new Map(branches.map(b=>{
+    const s=salesMap.get(b.id)||{};
+    const ukPct=Number(s.uk_plan)>0?Number(s.uk_execution||0)/Number(s.uk_plan)*100:NaN;
+    const detailPct=Number(s.detail_plan)>0?Number(s.detail_execution||0)/Number(s.detail_plan)*100:NaN;
+    const ctrl=ctrlMap.get(b.id),voip=voipMap.get(b.id);
+    const parts=[ukPct,detailPct,ctrl,voip].filter(Number.isFinite).map(v=>Math.max(0,Math.min(100,v)));
+    const score=parts.length?parts.reduce((a,b)=>a+b,0)/parts.length:NaN;
+    return [b.id,{score,ukPct,detailPct,ctrl,voip}];
+  }));
+}
+function todayGoToTab(view,branchId){
+  const btn=document.querySelector(`.tab[data-v="${view}"]`);
+  if(btn)btn.click();
+  setTimeout(()=>{
+    const ids={tasks:'taskBranch',branchCard:'cardBranch',meetings:'meetingBranch',visits:'visitBranch',contacts:'contactBranch',contactLogs:'logBranch',history:'historyBranch'};
+    const el=$(ids[view]);
+    if(el&&branchId){el.value=branchId;el.dispatchEvent(new Event('change'))}
+  },60);
+}
+window.todayGoToTab=todayGoToTab;
+
+async function loadDashboard(){
+  if(!rid()||!branches.length)return;
+  $('todayRegionBadge').textContent=$('regionSelect').selectedOptions[0]?.textContent||'';
+
+  const [taskRes,logRes,visitRes,meetingRes,metricMap]=await Promise.all([
+    q('tasks'),
+    q('contact_logs'),
+    q('visits'),
+    q('meeting_notes'),
+    todayBranchMetrics()
+  ]);
+  for(const r of [taskRes,logRes,visitRes,meetingRes])if(r.error)throw r.error;
+
+  const tasks=taskRes.data||[],logs=logRes.data||[],visits=visitRes.data||[],meetings=meetingRes.data||[];
+  const open=tasks.filter(t=>t.status!=='done');
+  const overdue=open.filter(t=>{const d=todayDaysFrom(t.deadline);return d!==null&&d<0}).sort((a,b)=>(a.deadline||'').localeCompare(b.deadline||''));
+  const week=open.filter(t=>{const d=todayDaysFrom(t.deadline);return d!==null&&d>=0&&d<=7}).sort((a,b)=>(a.deadline||'').localeCompare(b.deadline||''));
+
+  function lastContact(branchId){
+    const all=[];
+    logs.filter(x=>x.branch_id===branchId&&x.contact_date).forEach(x=>all.push({date:x.contact_date,type:x.channel==='phone'?'Telefon':x.channel==='email'?'E-mail':x.channel==='gg'?'GG':x.channel}));
+    visits.filter(x=>x.branch_id===branchId&&x.visit_date).forEach(x=>all.push({date:x.visit_date,type:'Wizyta'}));
+    meetings.filter(x=>x.branch_id===branchId&&x.meeting_date).forEach(x=>all.push({date:x.meeting_date,type:'1:1'}));
+    return all.sort((a,b)=>b.date.localeCompare(a.date))[0]||null;
+  }
+
+  const branchRows=branches.map(b=>{
+    const m=metricMap.get(b.id)||{score:NaN};
+    return {b,status:todayStatus(m.score),last:lastContact(b.id)};
+  });
+  const attention=branchRows.filter(x=>x.status.cls!=='good');
+  const stale=branchRows.filter(x=>!x.last||todayDaysFrom(x.last.date)<-14);
+  const ym=new Date().toISOString().slice(0,7);
+  const doneMonth=tasks.filter(t=>t.status==='done'&&String(t.updated_at||t.created_at||'').startsWith(ym)).length;
+
+  $('todayOverdue').textContent=overdue.length;
+  $('todayWeek').textContent=week.length;
+  $('todayAttention').textContent=attention.length;
+  $('todayNoContact').textContent=stale.length;
+  $('todayOpen').textContent=open.length;
+  $('todayDoneMonth').textContent=doneMonth;
+
+  const priority=[...overdue,...open.filter(t=>t.priority==='high'&&!overdue.some(o=>o.id===t.id))].slice(0,10);
+  $('todayPriorities').innerHTML=priority.length?priority.map(t=>`<div class="today-item bad"><div class="main"><b>${esc(t.title)}</b><div class="sub">${esc(bn(t.branch_id))} • ${esc(t.owner||'bez odpowiedzialnego')} • termin ${fd(t.deadline)}</div></div><button class="btn small go" onclick="todayGoToTab('tasks','${t.branch_id}')">Otwórz</button></div>`).join(''):'<div class="muted">Brak pilnych spraw.</div>';
+
+  $('todayNext7').innerHTML=week.length?week.slice(0,12).map(t=>`<div class="today-item warn"><div class="main"><b>${esc(t.title)}</b><div class="sub">${esc(bn(t.branch_id))} • ${fd(t.deadline)}</div></div><button class="btn small go" onclick="todayGoToTab('tasks','${t.branch_id}')">Otwórz</button></div>`).join(''):'<div class="muted">Brak terminów w najbliższych 7 dniach.</div>';
+
+  $('todayBranches').innerHTML=attention.length?attention.sort((a,b)=>(Number.isFinite(a.status.score)?a.status.score:0)-(Number.isFinite(b.status.score)?b.status.score:0)).map(x=>`<div class="today-item ${x.status.cls}"><div class="main"><b>${esc(x.b.name)}</b><div class="sub">${x.status.label}${Number.isFinite(x.status.score)?' • '+Math.round(x.status.score)+'/100':''}</div></div><button class="btn small go" onclick="todayGoToTab('branchCard','${x.b.id}')">Karta</button></div>`).join(''):'<div class="muted">Wszystkie oddziały w dobrej kondycji.</div>';
+
+  $('todayContacts').innerHTML=branchRows.sort((a,b)=>(a.last?.date||'').localeCompare(b.last?.date||'')).map(x=>`<div class="today-item ${(!x.last||todayDaysFrom(x.last.date)<-14)?'warn':'good'}"><div class="main"><b>${esc(x.b.name)}</b><div class="sub">${x.last?`${esc(x.last.type)}: ${fd(x.last.date)}`:'brak zapisanej wizyty / 1:1'}</div></div><button class="btn small go" onclick="todayGoToTab('history','${x.b.id}')">Historia</button></div>`).join('');
+}
 
 async function loadCard(){let id=$('cardBranch')?.value;if(!id)return;$('cardContent').innerHTML='<div class="empty">Ładowanie...</div>';let [c,l,m,t,v,s,k,n]=await Promise.all(['contacts','contact_logs','meeting_notes','tasks','visits','sales_results','monthly_kpis','branch_notes'].map(z=>sb.from(z).select('*').eq('region_id',rid()).eq('branch_id',id)));let contacts=c.data||[],logs=(l.data||[]).sort((a,b)=>b.contact_date.localeCompare(a.contact_date)),meet=(m.data||[]).sort((a,b)=>b.meeting_date.localeCompare(a.meeting_date)),tasks=(t.data||[]).filter(x=>x.status!=='done'),vis=(v.data||[]).sort((a,b)=>b.visit_date.localeCompare(a.visit_date)),sales=(s.data||[]).sort((a,b)=>b.result_date.localeCompare(a.result_date)),kpis=(k.data||[]).sort((a,b)=>(b.year*100+b.month)-(a.year*100+a.month)),notes=(n.data||[]).sort((a,b)=>b.note_date.localeCompare(a.note_date));let ss=sales[0],kk=kpis[0];$('cardContent').innerHTML=`<div class="g4"><div class="card"><h4>Ostatni kontakt</h4><div class="kpi" style="font-size:18px">${logs[0]?fd(logs[0].contact_date):'—'}</div><div class="muted">${logs[0]?esc(logs[0].channel):''}</div></div><div class="card"><h4>Otwarte zadania</h4><div class="kpi">${tasks.length}</div></div><div class="card"><h4>UK realizacja</h4><div class="kpi">${ss&&ss.uk_plan?Math.round(num(ss.uk_execution)/num(ss.uk_plan)*100):0}%</div></div><div class="card"><h4>Detal realizacja</h4><div class="kpi">${ss&&ss.detail_plan?Math.round(num(ss.detail_execution)/num(ss.detail_plan)*100):0}%</div></div></div><div class="g2" style="margin-top:12px"><div class="panel"><h3>Kontakty</h3>${contacts.map(x=>`<div class="item"><b>${esc((x.first_name||'')+' '+(x.last_name||''))}</b><div class="meta">${esc(x.position||'')} • ${esc(x.phone||'')} • ${esc(x.email||'')}</div></div>`).join('')||'<div class="empty">Brak</div>'}<h3 style="margin-top:14px">Ostatnie 1:1</h3>${meet[0]?`<div class="item"><b>${fd(meet[0].meeting_date)} • ${att(meet[0].attendance)}</b><div class="text">${esc(meet[0].urgent_topics||'')}</div></div>`:'<div class="empty">Brak</div>'}</div><div class="panel"><h3>KPI</h3>${kk?`<div class="g3"><div class="card"><h4>Okres</h4><b>${kk.month}/${kk.year}</b></div><div class="card"><h4>VoIP</h4><b>${num(kk.voip)}%</b></div><div class="card"><h4>Controlling</h4><b>${num(kk.controlling)}%</b></div></div>`:'<div class="empty">Brak KPI</div>'}<h3 style="margin-top:14px">Ostatnia wizyta</h3>${vis[0]?`<div class="item"><b>${fd(vis[0].visit_date)}</b><div class="text">${esc(vis[0].topics||'')}</div></div>`:'<div class="empty">Brak</div>'}<h3 style="margin-top:14px">Ostatnia notatka</h3>${notes[0]?`<div class="item"><b>${fd(notes[0].note_date)}</b><div class="text">${esc(notes[0].note)}</div></div>`:'<div class="empty">Brak</div>'}</div></div>`}
 
@@ -2382,6 +2511,7 @@ document.querySelectorAll('[data-bctab]').forEach(btn=>btn.onclick=()=>{
 $('bcSearch').oninput=loadBranchCompare;
 $('bcClearFilters').onclick=()=>{$('bcSearch').value='';$('bcStatus').value='';$('bcGroup').value='';$('bcSort').value='score';loadBranchCompare()};
 $('bcDataBranch').onchange=bcRenderData;
+$('refreshToday').onclick=loadDashboard;
 $('logoutBtn').onclick=async()=>{await sb.auth.signOut();showLogin()};
 $('loadComparisonBtn').onclick=loadComparison;$('regionSelect').onchange=loadBranches;$('addBranchBtn').onclick=addBranch;
 $('saveContact').onclick=saveContact;$('clearContact').onclick=clearContact;$('contactFilter').onchange=loadContacts;$('contactSearch').oninput=loadContacts;
