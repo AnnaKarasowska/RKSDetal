@@ -2,7 +2,7 @@
 <html lang="pl">
 <head>
 <meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
-<title>Eltrox RKS – Supabase v14.5</title><meta name="theme-color" content="#ef6c00"><meta name="apple-mobile-web-app-capable" content="yes"><meta name="apple-mobile-web-app-status-bar-style" content="default"><meta name="apple-mobile-web-app-title" content="Eltrox RKS"><link rel="manifest" href="./manifest.webmanifest"><link rel="apple-touch-icon" href="./icon-192.png">
+<title>Eltrox RKS – Supabase v14.6</title><meta name="theme-color" content="#ef6c00"><meta name="apple-mobile-web-app-capable" content="yes"><meta name="apple-mobile-web-app-status-bar-style" content="default"><meta name="apple-mobile-web-app-title" content="Eltrox RKS"><link rel="manifest" href="./manifest.webmanifest"><link rel="apple-touch-icon" href="./icon-192.png">
 <style>
 :root{--o:#f36f21;--od:#d85d12;--bg:#eef1f4;--w:#fff;--line:#d9dde3;--t:#242424;--m:#6b7280;--r:#c9372c;--g:#25894b;--b:#2f71c8;--sh:0 8px 24px rgba(0,0,0,.08)}
 *{box-sizing:border-box}html,body{margin:0;min-height:100%;font-family:Arial,Helvetica,sans-serif;background:var(--bg);color:var(--t)}button,input,select,textarea{font:inherit}button{cursor:pointer}.hidden{display:none!important}
@@ -431,7 +431,7 @@ input,select,textarea{width:100%;padding:9px 10px;border:1px solid var(--line);b
 @media(max-width:950px){.g2,.g3,.g4{grid-template-columns:1fr}.header{align-items:flex-start;flex-direction:column}.nav{top:108px}}
 </style></head>
 <body>
-<div id="loginView" class="login-shell"><div class="login-card"><div class="brand"><h1>Eltrox RKS</h1><p>Wersja online v14.5</p></div><form id="loginForm" class="form"><label>E-mail<input id="loginEmail" type="email" required></label><label>Hasło<input id="loginPassword" type="password" required></label><button class="btn primary">Zaloguj</button><div id="loginMsg" class="msg"></div></form></div></div>
+<div id="loginView" class="login-shell"><div class="login-card"><div class="brand"><h1>Eltrox RKS</h1><p>Wersja online v14.6</p></div><form id="loginForm" class="form"><label>E-mail<input id="loginEmail" type="email" required></label><label>Hasło<input id="loginPassword" type="password" required></label><button class="btn primary">Zaloguj</button><div id="loginMsg" class="msg"></div></form></div></div>
 
 <div id="modeView" class="mode-shell hidden">
   <div class="mode-card">
@@ -613,7 +613,7 @@ input,select,textarea{width:100%;padding:9px 10px;border:1px solid var(--line);b
 
   <section id="bcData" class="bc-subview">
     <div class="panel">
-      <div class="bc-section-title"><div><h3>Dane miesięczne</h3><p>Podgląd danych bazowych. Edycję wykonuj w zakładce „UK / Detal”.</p></div><label>Oddział<select id="bcDataBranch"></select></label></div>
+      <div class="bc-section-title"><div><h3>Dane miesięczne</h3><p>Podgląd danych bazowych. Edycję wykonuj w zakładce „UK / Detal”.</p></div><label>Oddział<select id="bcDataBranch" onchange="window.refreshBcMonthlyNow && window.refreshBcMonthlyNow(this.value)" oninput="window.refreshBcMonthlyNow && window.refreshBcMonthlyNow(this.value)"></select></label></div>
       <div id="bcDataTable" class="table"></div>
     </div>
   </section>
@@ -1340,7 +1340,10 @@ const msg=(id,t,cl='')=>{$(id).textContent=t||'';$(id).className='msg '+cl};
 const today=()=>new Date().toISOString().slice(0,10),rid=()=>$('regionSelect').value,bn=id=>branches.find(b=>b.id===id)?.name||'—';
 const fd=v=>v?new Intl.DateTimeFormat('pl-PL').format(new Date(v+'T12:00:00')):'—',num=v=>Number(v||0),money=v=>num(v).toLocaleString('pl-PL',{maximumFractionDigits:2})+' zł';
 const allOpts=(all=true)=> (all?'<option value="all">Wszystkie oddziały</option>':'')+branches.map(b=>`<option value="${b.id}">${esc(b.name)}</option>`).join('');
-function fill(){['contactBranch','logBranch','meetingBranch','taskBranch','visitBranch','salesBranch','noteBranch','cardBranch','historyBranch','attachmentBranch'].forEach(id=>{if($(id))$(id).innerHTML=allOpts(false)});['contactFilter','logFilter','meetingFilter','taskFilter','salesFilter','noteFilter','attachmentFilter'].forEach(id=>{if($(id))$(id).innerHTML=allOpts(true)})}
+function fill(){
+  ['contactBranch','logBranch','meetingBranch','taskBranch','visitBranch','salesBranch','noteBranch','cardBranch','historyBranch','attachmentBranch','bcDataBranch','manageBranch','weekActionBranch','decisionBranch'].forEach(id=>{if($(id))$(id).innerHTML=allOpts(false)});
+  ['contactFilter','logFilter','meetingFilter','taskFilter','salesFilter','noteFilter','attachmentFilter','decisionFilterBranch'].forEach(id=>{if($(id))$(id).innerHTML=allOpts(true)});
+}
 async function q(table,select='*'){return sb.from(table).select(select).eq('region_id',rid())}
 function att(v){return v==='present_manager'?'Obecny – kierownik':v==='present_sales'?'Obecny – handlowiec':v==='present_two'?'Obecne – 2 osoby':v==='absent_excused'?'Nieobecny – usprawiedliwione':'Nieobecny – nieusprawiedliwione'}
 function sl(v){return v==='todo'?'Do zrobienia':v==='progress'?'W trakcie':'Wykonane'}
@@ -2213,10 +2216,21 @@ function bcRenderPeriod(items){
   $('bcPeriodSummary').textContent=`Okres bazowy: ${BCMONTHS[f-1]}–${BCMONTHS[t-1]} ${y} • okres porównawczy: ${BCMONTHS[cf-1]}–${BCMONTHS[ct-1]} ${source==='previous'?py:y}.`;
   $('bcPeriodTable').innerHTML=`<table><thead><tr><th>Oddział</th><th>UK – okres bazowy</th><th>UK – porównanie</th><th>Zmiana UK</th><th>Detal – okres bazowy</th><th>Detal – porównanie</th><th>Zmiana Detal</th></tr></thead><tbody>${items.map(a=>{const base=bcAggregatePeriod(a,f-1,t-1,'current'),comp=bcAggregatePeriod(a,cf-1,ct-1,source),uy=bcYoy(base.uk,comp.uk),dy=bcYoy(base.detail,comp.detail);return `<tr><td><b>${esc(a.branch.name)}</b></td><td>${money(base.uk)}</td><td>${money(comp.uk)}</td><td class="${bcYoyCls(uy)}">${bcFmtPct(uy)}</td><td>${money(base.detail)}</td><td>${money(comp.detail)}</td><td class="${bcYoyCls(dy)}">${bcFmtPct(dy)}</td></tr>`}).join('')}</tbody></table>`;
 }
-function bcRenderData(){
-  const id=$('bcDataBranch').value,a=bcCache.find(x=>x.branch.id===id);if(!a)return $('bcDataTable').innerHTML='<div class="empty">Wybierz oddział.</div>';
-  $('bcDataTable').innerHTML=`<table><thead><tr><th>Miesiąc</th><th>Plan UK</th><th>Wykonanie UK</th><th>UK poprzedni rok</th><th>Plan Detal</th><th>Wykonanie Detal</th><th>Detal poprzedni rok</th></tr></thead><tbody>${a.months.map((r,i)=>`<tr><td>${BCMONTHS[i]}</td><td>${money(r.ukPlan)}</td><td>${money(r.ukActual)}</td><td>${money(r.ukPrev)}</td><td>${money(r.detailPlan)}</td><td>${money(r.detailActual)}</td><td>${money(r.detailPrev)}</td></tr>`).join('')}</tbody></table>`;
+function bcRenderData(explicitId=null){
+  const select=$('bcDataBranch');
+  if(!select)return;
+  if(!select.options.length && branches.length)select.innerHTML=allOpts(false);
+  let id=explicitId||select.value;
+  if(!id && branches.length){id=branches[0].id;select.value=id}
+  const a=bcCache.find(x=>x.branch.id===id);
+  if(!a){
+    $('bcDataTable').innerHTML='<div class="empty">Brak danych dla wybranego oddziału. Wybierz inny oddział lub odśwież porównanie.</div>';
+    return;
+  }
+  if(select.value!==id)select.value=id;
+  $('bcDataTable').innerHTML=`<div class="muted" style="margin-bottom:8px"><b>Oddział:</b> ${esc(a.branch.name)}</div><table><thead><tr><th>Miesiąc</th><th>Plan UK</th><th>Wykonanie UK</th><th>UK poprzedni rok</th><th>Plan Detal</th><th>Wykonanie Detal</th><th>Detal poprzedni rok</th></tr></thead><tbody>${a.months.map((r,i)=>`<tr><td>${BCMONTHS[i]}</td><td>${money(r.ukPlan)}</td><td>${money(r.ukActual)}</td><td>${money(r.ukPrev)}</td><td>${money(r.detailPlan)}</td><td>${money(r.detailActual)}</td><td>${money(r.detailPrev)}</td></tr>`).join('')}</tbody></table>`;
 }
+window.refreshBcMonthlyNow=bcRenderData;
 function bcRenderInsights(items){
   const alerts=[];items.filter(a=>a.monthsWithAny).forEach(a=>{if(a.status.key==='bad')alerts.push({t:'bad',h:`${a.branch.name}: słaba kondycja`,p:`Wynik punktowy ${a.score?.toFixed(0)}/100. Oddział wymaga analizy i działań.`});if(a.ukPct!==null&&a.ukPct<.8)alerts.push({t:'bad',h:`${a.branch.name}: bardzo niska realizacja UK`,p:`UK wynosi ${bcFmtPct(a.ukPct)} planu.`});if(a.detailPct!==null&&a.detailPct<.8)alerts.push({t:'bad',h:`${a.branch.name}: bardzo niska realizacja Detalu`,p:`Detal wynosi ${bcFmtPct(a.detailPct)} planu.`});if(a.trend.dir==='down')alerts.push({t:'warn',h:`${a.branch.name}: trend spadkowy`,p:'Ostatni dostępny miesiąc jest słabszy od poprzedniego.'})});
   $('bcAlertList').innerHTML=alerts.length?alerts.map(x=>`<div class="bc-alert ${x.t}"><h4>${esc(x.h)}</h4><p>${esc(x.p)}</p></div>`).join(''):'<div class="empty">Brak istotnych alertów.</div>';
@@ -2226,6 +2240,13 @@ function bcRenderInsights(items){
   $('bcInsightList').innerHTML=ins.map(x=>`<div class="bc-insight good"><h4>${esc(x.h)}</h4><p>${esc(x.p)}</p></div>`).join('')||'<div class="empty">Brak danych.</div>';
 }
 async function loadBranchCompare(){
+  const sel=$('bcDataBranch');
+  if(sel){
+    const oldVal=sel.value;
+    sel.innerHTML=allOpts(false);
+    if(oldVal && branches.some(b=>b.id===oldVal))sel.value=oldVal;
+    else if(branches.length)sel.value=branches[0].id;
+  }
   const year=Number($('bcYear').value)||new Date().getFullYear(),prev=Number($('bcPrevYear').value)||year-1,from=Number($('bcFrom').value)-1,to=Number($('bcTo').value)-1;
   if(from>to){$('bcTo').value=from+1;return loadBranchCompare()}
   const [cur,old]=await Promise.all([bcLoadYearRows(year),bcLoadYearRows(prev)]);
@@ -4007,12 +4028,12 @@ document.querySelectorAll('[data-bctab]').forEach(btn=>btn.onclick=()=>{
   $('bcDashboard').classList.toggle('active',tab==='dashboard');
   $('bcData').classList.toggle('active',tab==='data');
   $('bcInsights').classList.toggle('active',tab==='insights');
-  if(tab==='data')bcRenderData();
+  if(tab==='data'){if(!$('bcDataBranch').options.length)$('bcDataBranch').innerHTML=allOpts(false);if(!$('bcDataBranch').value&&branches.length)$('bcDataBranch').value=branches[0].id;bcRenderData($('bcDataBranch').value)};
 });
 ['bcYear','bcPrevYear','bcFrom','bcTo','bcStatus','bcGroup','bcSort','bcHeatMetric','bcCompareSource','bcCompareFrom','bcCompareTo'].forEach(id=>$(id).onchange=loadBranchCompare);
 $('bcSearch').oninput=loadBranchCompare;
 $('bcClearFilters').onclick=()=>{$('bcSearch').value='';$('bcStatus').value='';$('bcGroup').value='';$('bcSort').value='score';loadBranchCompare()};
-$('bcDataBranch').onchange=bcRenderData;
+$('bcDataBranch').onchange=()=>bcRenderData($('bcDataBranch').value);$('bcDataBranch').addEventListener('input',()=>bcRenderData($('bcDataBranch').value));
 $('refreshToday').onclick=loadDashboard;
 
 $('manageBranch').onchange=loadManagement;
