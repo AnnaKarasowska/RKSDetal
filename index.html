@@ -2,7 +2,7 @@
 <html lang="pl">
 <head>
 <meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
-<title>Eltrox RKS – Supabase v8.8</title>
+<title>Eltrox RKS – Supabase v8.9</title>
 <style>
 :root{--o:#f36f21;--od:#d85d12;--bg:#eef1f4;--w:#fff;--line:#d9dde3;--t:#242424;--m:#6b7280;--r:#c9372c;--g:#25894b;--b:#2f71c8;--sh:0 8px 24px rgba(0,0,0,.08)}
 *{box-sizing:border-box}html,body{margin:0;min-height:100%;font-family:Arial,Helvetica,sans-serif;background:var(--bg);color:var(--t)}button,input,select,textarea{font:inherit}button{cursor:pointer}.hidden{display:none!important}
@@ -213,7 +213,7 @@ input,select,textarea{width:100%;padding:9px 10px;border:1px solid var(--line);b
 @media(max-width:950px){.g2,.g3,.g4{grid-template-columns:1fr}.header{align-items:flex-start;flex-direction:column}.nav{top:108px}}
 </style></head>
 <body>
-<div id="loginView" class="login-shell"><div class="login-card"><div class="brand"><h1>Eltrox RKS</h1><p>Wersja online v8.8</p></div><form id="loginForm" class="form"><label>E-mail<input id="loginEmail" type="email" required></label><label>Hasło<input id="loginPassword" type="password" required></label><button class="btn primary">Zaloguj</button><div id="loginMsg" class="msg"></div></form></div></div>
+<div id="loginView" class="login-shell"><div class="login-card"><div class="brand"><h1>Eltrox RKS</h1><p>Wersja online v8.9</p></div><form id="loginForm" class="form"><label>E-mail<input id="loginEmail" type="email" required></label><label>Hasło<input id="loginPassword" type="password" required></label><button class="btn primary">Zaloguj</button><div id="loginMsg" class="msg"></div></form></div></div>
 
 <div id="modeView" class="mode-shell hidden">
   <div class="mode-card">
@@ -633,6 +633,13 @@ input,select,textarea{width:100%;padding:9px 10px;border:1px solid var(--line);b
         <label style="margin-top:9px">Plik / pliki z v45
           <input id="v45ImportFiles" type="file" accept=".json,application/json" multiple>
         </label>
+        <div id="v45SingleRegionTargetBox" class="hidden" style="margin-top:9px;padding:10px;border:1px solid var(--line);border-radius:10px;background:#fff">
+          <div class="io-note"><b>Region w pliku:</b> <span id="v45SourceRegionName">—</span></div>
+          <label style="margin-top:7px">Do którego regionu w aplikacji zaimportować te dane?
+            <select id="v45TargetRegion"></select>
+          </label>
+          <div class="io-note" style="margin-top:5px">Import nastąpi wyłącznie do regionu wybranego powyżej. Aplikacja nie użyje automatycznie aktualnie otwartego regionu.</div>
+        </div>
         <div class="controls" style="margin-top:9px">
           <button id="analyzeV45Btn" class="btn">Sprawdź pliki v45</button>
           <button id="importV45Btn" class="btn primary">Importuj dane z v45</button>
@@ -1926,7 +1933,7 @@ function recognizeV45(d){
   if(d?.application==='Eltrox Region Database'&&Array.isArray(d?.regions))
     return {kind:'database',label:'Eksport wszystkich regionów v45',regions:d.regions};
   if(d?.application==='Eltrox Centrum zarządzania regionem'&&d?.center)
-    return {kind:'region',label:'Eksport aktywnego regionu v45',name:d.regionName||'',snapshot:{
+    return {kind:'region',label:'Eksport aktywnego regionu v45',name:d.regionName||'',branchScope:Array.isArray(d.branchScope)?d.branchScope:[],snapshot:{
       center:d.center||{},comparator:d.comparator||null,contacts:Array.isArray(d.contacts)?d.contacts:[],
       meetingTopics:d.meetingTopics||{},savedMeetingNotes:Array.isArray(d.savedMeetingNotes)?d.savedMeetingNotes:[],
       tasks:Array.isArray(d.tasks)?d.tasks:[],attachments:Array.isArray(d.attachments)?d.attachments:[],
@@ -2128,12 +2135,39 @@ async function getOrCreateRegionForV45(name){
   if(found)return found;
   let ins=await sb.from('regions').insert({name:clean}).select('id,name').single();if(ins.error)throw ins.error;return ins.data;
 }
-async function analyzeV45Files(){
-  const files=[...$('v45ImportFiles').files];if(!files.length)return msg('v45ImportMsg','Wybierz plik lub pliki JSON z v45.','error');
-  let rows=[];
-  for(const file of files){try{const d=JSON.parse(await file.text()),r=recognizeV45(d);rows.push(`<div><b>${esc(file.name)}</b>: ${r?esc(r.label):'<span class="comp-bad">nierozpoznany format</span>'}${r?.kind==='database'?` • regionów: ${r.regions.length}`:''}</div>`)}catch{rows.push(`<div><b>${esc(file.name)}</b>: <span class="comp-bad">nieprawidłowy JSON</span></div>`)}}
-  $('v45ImportPreview').innerHTML=rows.join('');msg('v45ImportMsg','Pliki sprawdzone.','ok');
+
+async function populateV45TargetRegions(selectedName=''){
+  const {data,error}=await sb.from('regions').select('id,name').order('name');
+  if(error)throw error;
+  $('v45TargetRegion').innerHTML=(data||[]).map(r=>`<option value="${r.id}">${esc(r.name)}</option>`).join('');
+  const match=(data||[]).find(r=>v45Norm(r.name)===v45Norm(selectedName));
+  if(match)$('v45TargetRegion').value=match.id;
 }
+async function analyzeV45Files(){
+  const files=[...$('v45ImportFiles').files];
+  $('v45SingleRegionTargetBox').classList.add('hidden');
+  if(!files.length)return msg('v45ImportMsg','Wybierz plik lub pliki JSON z v45.','error');
+  let rows=[],recognized=[];
+  for(const file of files){
+    try{
+      const d=JSON.parse(await file.text()),r=recognizeV45(d);
+      recognized.push({file,r});
+      rows.push(`<div><b>${esc(file.name)}</b>: ${r?esc(r.label):'<span class="comp-bad">nierozpoznany format</span>'}${r?.name?` • region: <b>${esc(r.name)}</b>`:''}${r?.kind==='database'?` • regionów: ${r.regions.length}`:''}</div>`);
+    }catch{
+      rows.push(`<div><b>${esc(file.name)}</b>: <span class="comp-bad">nieprawidłowy JSON</span></div>`);
+    }
+  }
+  // Dla pojedynczego eksportu aktywnego regionu wymagamy jawnego wyboru celu.
+  if(recognized.length===1 && recognized[0].r?.kind==='region'){
+    const r=recognized[0].r;
+    $('v45SourceRegionName').textContent=r.name||'(bez nazwy)';
+    await populateV45TargetRegions(r.name||'');
+    $('v45SingleRegionTargetBox').classList.remove('hidden');
+  }
+  $('v45ImportPreview').innerHTML=rows.join('');
+  msg('v45ImportMsg','Pliki sprawdzone. Przed importem zweryfikuj region źródłowy i docelowy.','ok');
+}
+
 async function importV45Files(){
   const files=[...$('v45ImportFiles').files];if(!files.length)return msg('v45ImportMsg','Wybierz plik lub pliki JSON z v45.','error');
   if(!confirm('Import doda lub zaktualizuje dane z v45 w bazie nowej aplikacji. Przed importem zalecana jest pełna kopia bezpieczeństwa. Kontynuować?'))return;
@@ -2144,17 +2178,40 @@ async function importV45Files(){
       const raw=JSON.parse(await file.text()),rec=recognizeV45(raw);if(!rec){summary.push(`${file.name}: nierozpoznany`);continue}
       if(rec.kind==='database'){
         if(profile?.role!=='admin')throw new Error('Import wielu regionów z v45 jest dostępny tylko dla administratora.');
+        const seenFingerprints=new Map();
         for(const oldRegion of rec.regions){
-          const region=await getOrCreateRegionForV45(oldRegion.name||'Region v45');
+          const sourceName=oldRegion.name||'Region v45';
           const snap=oldRegion.data||oldRegion.sourceData||{};
           if(!snap.branchScope&&Array.isArray(oldRegion.branchScope))snap.branchScope=oldRegion.branchScope;
+          const scope=v45BranchNames(snap,oldRegion.branchScope||[]).map(v45Norm).sort();
+          const fp=JSON.stringify(scope);
+          if(fp!=='[]'&&seenFingerprints.has(fp)&&seenFingerprints.get(fp)!==sourceName){
+            const ok=confirm(`Plik v45 zawiera dwa regiony z identyczną listą oddziałów:\n„${seenFingerprints.get(fp)}” oraz „${sourceName}”.\n\nTo może oznaczać pomieszanie danych w starej bazie. Czy mimo to importować region „${sourceName}”?`);
+            if(!ok){summary.push(`${sourceName}: pominięty po ostrzeżeniu o możliwym pomieszaniu danych`);continue}
+          }
+          if(fp!=='[]')seenFingerprints.set(fp,sourceName);
+          const region=await getOrCreateRegionForV45(sourceName);
           const st=await importV45Snapshot(region.id,snap,{branchScope:oldRegion.branchScope||[]});
           summary.push(`${region.name}: ${st.branches} oddz., ${st.sales} wyników, ${st.kpi} KPI, ${st.meetings} notatek 1:1, ${st.tasks} zadań${st.visits?`, ${st.visits} wizyt`:''}`);
           imported++;
         }
       }else if(rec.kind==='region'){
-        const target=rid();if(!target)throw new Error('Brak aktywnego regionu.');
-        const st=await importV45Snapshot(target,rec.snapshot,{branchScope:rec.branchScope||[]});summary.push(`${rec.label}: ${st.branches} oddz., ${st.sales} wyników, ${st.kpi} KPI, ${st.meetings} notatek 1:1, ${st.tasks} zadań${st.visits?`, ${st.visits} wizyt`:''}`);imported++;
+        // Nigdy nie importujemy pojedynczego regionu "do aktualnie otwartego" w ciemno.
+        // Cel musi być jawnie wybrany przez użytkownika.
+        await populateV45TargetRegions(rec.name||'');
+        $('v45SourceRegionName').textContent=rec.name||'(bez nazwy)';
+        $('v45SingleRegionTargetBox').classList.remove('hidden');
+        const target=$('v45TargetRegion').value;
+        if(!target)throw new Error('Wybierz region docelowy dla importu.');
+        const targetName=$('v45TargetRegion').selectedOptions[0]?.textContent||'';
+        const sourceName=rec.name||'';
+        if(sourceName && v45Norm(sourceName)!==v45Norm(targetName)){
+          const ok=confirm(`UWAGA: plik zawiera region „${sourceName}”, a wybrany region docelowy to „${targetName}”.\n\nCzy na pewno chcesz zaimportować te dane do innego regionu?`);
+          if(!ok)throw new Error('Import anulowany — region źródłowy i docelowy są różne.');
+        }
+        const st=await importV45Snapshot(target,rec.snapshot,{branchScope:rec.branchScope||[]});
+        summary.push(`${rec.label} → ${targetName}: ${st.branches} oddz., ${st.sales} wyników, ${st.kpi} KPI, ${st.meetings} notatek 1:1, ${st.tasks} zadań${st.visits?`, ${st.visits} wizyt`:''}`);
+        imported++;
       }else if(rec.kind==='comparator'){
         const snap={center:{},comparator:rec.state,contacts:[],savedMeetingNotes:[],tasks:[],attachments:[],contactLog:[],branchNotes:{}};
         const st=await importV45Snapshot(rid(),snap);summary.push(`Porównywarka: ${st.sales} rekordów sprzedaży`);imported++;
@@ -2488,7 +2545,7 @@ $('globalSearch').oninput=globalSearchRun;document.addEventListener('click',e=>{
 $('refreshIoPreviewBtn').onclick=previewIo;$('exportModuleExcelBtn').onclick=exportModuleExcel;$('exportModuleJsonBtn').onclick=exportModuleJson;$('downloadTemplateBtn').onclick=downloadModuleTemplate;$('importModuleBtn').onclick=importModule;$('ioModule').onchange=previewIo;
 $('backupRegionBtn').onclick=exportRegionBackupV7;$('restoreRegionBtn').onclick=()=>$('restoreRegionFile').click();$('restoreRegionFile').onchange=e=>{restoreRegionV7(e.target.files[0]);e.target.value=''};
 $('backupDatabaseBtn').onclick=fullDatabaseBackup;$('restoreDatabaseBtn').onclick=()=>$('restoreDatabaseFile').click();$('restoreDatabaseFile').onchange=e=>{restoreFullDatabase(e.target.files[0]);e.target.value=''};
-$('analyzeV45Btn').onclick=analyzeV45Files;$('importV45Btn').onclick=importV45Files;
+$('analyzeV45Btn').onclick=analyzeV45Files;$('importV45Btn').onclick=importV45Files;$('v45ImportFiles').onchange=analyzeV45Files;
 $('renameRegionBtn2')&&($('renameRegionBtn2').onclick=renameActiveRegionAdmin);
 $('regionSelect').addEventListener('change',refreshAdminRegionName);
 
