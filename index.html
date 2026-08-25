@@ -2,7 +2,7 @@
 <html lang="pl">
 <head>
 <meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
-<title>Eltrox RKS – Supabase v14.2</title><meta name="theme-color" content="#ef6c00"><meta name="apple-mobile-web-app-capable" content="yes"><meta name="apple-mobile-web-app-status-bar-style" content="default"><meta name="apple-mobile-web-app-title" content="Eltrox RKS"><link rel="manifest" href="./manifest.webmanifest"><link rel="apple-touch-icon" href="./icon-192.png">
+<title>Eltrox RKS – Supabase v14.3</title><meta name="theme-color" content="#ef6c00"><meta name="apple-mobile-web-app-capable" content="yes"><meta name="apple-mobile-web-app-status-bar-style" content="default"><meta name="apple-mobile-web-app-title" content="Eltrox RKS"><link rel="manifest" href="./manifest.webmanifest"><link rel="apple-touch-icon" href="./icon-192.png">
 <style>
 :root{--o:#f36f21;--od:#d85d12;--bg:#eef1f4;--w:#fff;--line:#d9dde3;--t:#242424;--m:#6b7280;--r:#c9372c;--g:#25894b;--b:#2f71c8;--sh:0 8px 24px rgba(0,0,0,.08)}
 *{box-sizing:border-box}html,body{margin:0;min-height:100%;font-family:Arial,Helvetica,sans-serif;background:var(--bg);color:var(--t)}button,input,select,textarea{font:inherit}button{cursor:pointer}.hidden{display:none!important}
@@ -431,7 +431,7 @@ input,select,textarea{width:100%;padding:9px 10px;border:1px solid var(--line);b
 @media(max-width:950px){.g2,.g3,.g4{grid-template-columns:1fr}.header{align-items:flex-start;flex-direction:column}.nav{top:108px}}
 </style></head>
 <body>
-<div id="loginView" class="login-shell"><div class="login-card"><div class="brand"><h1>Eltrox RKS</h1><p>Wersja online v14.2</p></div><form id="loginForm" class="form"><label>E-mail<input id="loginEmail" type="email" required></label><label>Hasło<input id="loginPassword" type="password" required></label><button class="btn primary">Zaloguj</button><div id="loginMsg" class="msg"></div></form></div></div>
+<div id="loginView" class="login-shell"><div class="login-card"><div class="brand"><h1>Eltrox RKS</h1><p>Wersja online v14.3</p></div><form id="loginForm" class="form"><label>E-mail<input id="loginEmail" type="email" required></label><label>Hasło<input id="loginPassword" type="password" required></label><button class="btn primary">Zaloguj</button><div id="loginMsg" class="msg"></div></form></div></div>
 
 <div id="modeView" class="mode-shell hidden">
   <div class="mode-card">
@@ -986,8 +986,8 @@ input,select,textarea{width:100%;padding:9px 10px;border:1px solid var(--line);b
   <div id="trashList" class="manage-list"></div>
 </section>
 <section id="branchCard" class="view">
-  <div class="head"><div><h2>Karta oddziału</h2><p>Zbiorczy obraz wybranego oddziału.</p></div><label style="min-width:260px">Oddział<select id="cardBranch"></select></label></div>
-  <div class="branch-state-grid" id="branchStateGrid">
+  <div class="head"><div><h2>Karta oddziału</h2><p>Zbiorczy obraz wybranego oddziału.</p></div><label style="min-width:260px">Oddział<select id="cardBranch" onchange="window.refreshBranchCardNow && window.refreshBranchCardNow(this.value)" oninput="window.refreshBranchCardNow && window.refreshBranchCardNow(this.value)"></select></label></div>
+  <div id="cardRefreshInfo" class="muted" style="margin:-4px 0 10px"></div><div class="branch-state-grid" id="branchStateGrid">
     <div class="branch-state"><span>Status automatyczny</span><strong id="stateAutoStatus">—</strong></div>
     <div class="branch-state"><span>Priorytet RKS</span><strong id="statePriority">—</strong></div>
     <div class="branch-state"><span>Trend 3M</span><strong id="stateTrend3m">—</strong></div>
@@ -3640,7 +3640,13 @@ async function loadBranchState(expectedBid=null, seq=null){
   $('stateRisk').textContent=(high?`${high} wysokie`:med?`${med} średnie`:'brak wysokich')+` • ${(goals.data||[]).length} cel. otw.`;
   const dates=[(logs.data||[])[0]?.contact_date,(visits.data||[])[0]?.visit_date,(meetings.data||[])[0]?.meeting_date].filter(Boolean).sort().reverse();
   $('stateContact').textContent=dates[0]?fd(dates[0]):'—';
-  const auto=await branchAutoStatusData(bid);$('stateAutoStatus').innerHTML=`<span class="auto-status ${auto.key}">${auto.label}</span>`;const pr=priorityFromAuto(auto);$('statePriority').innerHTML=`<span class="auto-status ${pr.cls}">${pr.label}</span>`;const tr=await threeMonthTrend(bid);$('stateTrend3m').innerHTML=`<span class="trend-chip ${tr.cls}">${tr.label}</span>`;
+  const auto=await branchAutoStatusData(bid);
+  if((seq!==null&&seq!==_cardLoadSeq)||$('cardBranch').value!==bid)return;
+  $('stateAutoStatus').innerHTML=`<span class="auto-status ${auto.key}">${auto.label}</span>`;
+  const pr=priorityFromAuto(auto);$('statePriority').innerHTML=`<span class="auto-status ${pr.cls}">${pr.label}</span>`;
+  const tr=await threeMonthTrend(bid);
+  if((seq!==null&&seq!==_cardLoadSeq)||$('cardBranch').value!==bid)return;
+  $('stateTrend3m').innerHTML=`<span class="trend-chip ${tr.cls}">${tr.label}</span>`;
 }
 
 async function loadCard(expectedId=null, seq=null){
@@ -3662,7 +3668,7 @@ async function loadCard(expectedId=null, seq=null){
         meet=(m.data||[]).sort((a,b)=>b.meeting_date.localeCompare(a.meeting_date)),
         tasks=(t.data||[]).filter(x=>x.status!=='done'),
         vis=(v.data||[]).sort((a,b)=>b.visit_date.localeCompare(a.visit_date)),
-        sales=(s.data||[]).sort((a,b)=>b.result_date.localeCompare(a.result_date)),
+        sales=(s.data||[]).sort((a,b)=>String(b.result_date||'').localeCompare(String(a.result_date||''))),
         kpis=(k.data||[]).sort((a,b)=>(b.year*100+b.month)-(a.year*100+a.month)),
         notes=(n.data||[]).sort((a,b)=>b.note_date.localeCompare(a.note_date));
 
@@ -3690,20 +3696,33 @@ async function loadCard(expectedId=null, seq=null){
   </div>`;
 }
 
-async function refreshBranchCard(){
-  const bid=$('cardBranch')?.value;
+async function refreshBranchCard(explicitBid=null){
+  const bid=explicitBid||$('cardBranch')?.value;
   if(!bid)return;
+  // Upewnij się, że select i żądanie zawsze wskazują ten sam oddział.
+  if($('cardBranch').value!==bid)$('cardBranch').value=bid;
   const seq=++_cardLoadSeq;
+  const branchName=branches.find(b=>b.id===bid)?.name||$('cardBranch').selectedOptions[0]?.textContent||bid;
+  if($('cardRefreshInfo'))$('cardRefreshInfo').textContent=`Ładowanie danych: ${branchName}…`;
   // Czyścimy poprzednie dane od razu, aby było widać, że karta przełącza oddział.
   ['stateAutoStatus','statePriority','stateTrend3m','stateResult','stateKpi','stateStaff','stateRisk','stateContact']
     .forEach(id=>{if($(id))$(id).textContent='…'});
   if($('pinnedNotes'))$('pinnedNotes').innerHTML='<div class="muted">Ładowanie...</div>';
-  await Promise.all([
-    loadCard(bid,seq),
-    loadBranchState(bid,seq),
-    loadPinnedNotes(bid)
-  ]);
+  try{
+    await Promise.all([
+      loadCard(bid,seq),
+      loadBranchState(bid,seq),
+      loadPinnedNotes(bid)
+    ]);
+    if(seq===_cardLoadSeq && $('cardBranch').value===bid && $('cardRefreshInfo')){
+      $('cardRefreshInfo').textContent=`Wyświetlane dane: ${branchName} • odświeżono ${new Date().toLocaleTimeString('pl-PL')}`;
+    }
+  }catch(e){
+    console.error('Błąd odświeżania Karty oddziału',e);
+    if(seq===_cardLoadSeq && $('cardRefreshInfo'))$('cardRefreshInfo').textContent=`Błąd ładowania danych dla ${branchName}: ${e.message}`;
+  }
 }
+window.refreshBranchCardNow=refreshBranchCard;
 
 async function loadHistory(){
   const id=$('historyBranch')?.value;if(!id)return;
@@ -3967,7 +3986,7 @@ $('saveMeeting').onclick=saveMeeting;$('clearMeeting').onclick=clearMeeting;$('m
 $('saveTask').onclick=saveTask;$('clearTask').onclick=clearTask;$('taskFilter').onchange=loadTasks;$('taskStatusFilter').onchange=loadTasks;
 $('saveVisit').onclick=saveVisit;$('clearVisit').onclick=clearVisit;$('addVisitRecommendation').onclick=()=>addVisitRecommendationRow();$('generateVisitForm').onclick=generateVisitSignatureForm;$('printVisitReport').onclick=printVisitSignatureForm;
 $('salesEntryDate').onchange=renderSalesEntry;$('saveSalesEntry').onclick=()=>saveSalesEntry(true);$('saveMonthlyKpi').onclick=()=>saveMonthlyKpi(true);$('voipMonth').onchange=renderMonthlyKpi;$('controlKpiMonth').onchange=renderMonthlyKpi;
-$('saveNote').onclick=saveNote;$('clearNote').onclick=clearNote;$('noteFilter').onchange=loadNotes;$('cardBranch').onchange=refreshBranchCard;$('historyBranch').onchange=loadHistory;$('historyFrom').onchange=loadHistory;$('historyTo').onchange=loadHistory;$('historySearch').oninput=loadHistory;document.querySelectorAll('.historyType').forEach(x=>x.onchange=loadHistory);$('clearHistoryFilters').onclick=()=>{$('historyFrom').value='';$('historyTo').value='';$('historySearch').value='';document.querySelectorAll('.historyType').forEach(x=>x.checked=true);loadHistory()};
+$('saveNote').onclick=saveNote;$('clearNote').onclick=clearNote;$('noteFilter').onchange=loadNotes;$('cardBranch').onchange=()=>refreshBranchCard($('cardBranch').value);$('cardBranch').addEventListener('input',()=>refreshBranchCard($('cardBranch').value));$('historyBranch').onchange=loadHistory;$('historyFrom').onchange=loadHistory;$('historyTo').onchange=loadHistory;$('historySearch').oninput=loadHistory;document.querySelectorAll('.historyType').forEach(x=>x.onchange=loadHistory);$('clearHistoryFilters').onclick=()=>{$('historyFrom').value='';$('historyTo').value='';$('historySearch').value='';document.querySelectorAll('.historyType').forEach(x=>x.checked=true);loadHistory()};
 (async()=>{let{data}=await sb.auth.getSession();if(data.session)showModeChooser(data.session,false);else showLogin()})();
 </script>
 <div id="pwaHelpModal" class="quick-modal hidden">
