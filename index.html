@@ -2,7 +2,7 @@
 <html lang="pl">
 <head>
 <meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
-<title>Eltrox RKS – Supabase v14.7</title><meta name="theme-color" content="#ef6c00"><meta name="apple-mobile-web-app-capable" content="yes"><meta name="apple-mobile-web-app-status-bar-style" content="default"><meta name="apple-mobile-web-app-title" content="Eltrox RKS"><link rel="manifest" href="./manifest.webmanifest"><link rel="apple-touch-icon" href="./icon-192.png">
+<title>Eltrox RKS – Supabase v14.8</title><meta name="theme-color" content="#ef6c00"><meta name="apple-mobile-web-app-capable" content="yes"><meta name="apple-mobile-web-app-status-bar-style" content="default"><meta name="apple-mobile-web-app-title" content="Eltrox RKS"><link rel="manifest" href="./manifest.webmanifest"><link rel="apple-touch-icon" href="./icon-192.png">
 <style>
 :root{--o:#f36f21;--od:#d85d12;--bg:#eef1f4;--w:#fff;--line:#d9dde3;--t:#242424;--m:#6b7280;--r:#c9372c;--g:#25894b;--b:#2f71c8;--sh:0 8px 24px rgba(0,0,0,.08)}
 *{box-sizing:border-box}html,body{margin:0;min-height:100%;font-family:Arial,Helvetica,sans-serif;background:var(--bg);color:var(--t)}button,input,select,textarea{font:inherit}button{cursor:pointer}.hidden{display:none!important}
@@ -470,12 +470,40 @@ input,select,textarea{width:100%;padding:9px 10px;border:1px solid var(--line);b
 @media(max-width:950px){.io-grid{grid-template-columns:1fr}.io-actions{grid-template-columns:1fr}}
 
 @media(max-width:950px){.meeting-grid,.bonus-grid{grid-template-columns:1fr}.rec-row{grid-template-columns:1fr}.searchbox{min-width:180px}}
+
+/* v14.8 — mobilne zapisywanie raportu wizyty */
+.visit-save-btn{touch-action:manipulation;-webkit-tap-highlight-color:transparent}
+.visit-save-top-msg{margin-top:8px}
+@media(max-width:800px){
+  #visits .head{display:block}
+  #visits .visit-toolbar{
+    display:grid;
+    grid-template-columns:1fr 1fr;
+    gap:8px;
+    width:100%;
+    margin-top:12px;
+  }
+  #visits .visit-toolbar label{min-width:0;width:100%}
+  #visits .visit-toolbar label select,
+  #visits .visit-toolbar label input{width:100%;min-width:0}
+  #visits .visit-toolbar .btn{width:100%;min-height:46px}
+  #visits .visit-save-btn{
+    grid-column:1/-1;
+    position:sticky;
+    bottom:8px;
+    z-index:45;
+    min-height:52px;
+    font-size:16px;
+    box-shadow:0 7px 20px rgba(0,0,0,.16);
+  }
+}
+
 @media print{.header,.nav,.btn,.controls,.no-print{display:none!important}.view{display:none!important}.view.active{display:block!important}.main{width:100%;padding:0}.panel,.card{box-shadow:none}.print-only{display:block}}
 
 @media(max-width:950px){.g2,.g3,.g4{grid-template-columns:1fr}.header{align-items:flex-start;flex-direction:column}.nav{top:108px}}
 </style></head>
 <body>
-<div id="loginView" class="login-shell"><div class="login-card"><div class="brand"><h1>Eltrox RKS</h1><p>Wersja online v14.7</p></div><form id="loginForm" class="form"><label>E-mail<input id="loginEmail" type="email" required></label><label>Hasło<input id="loginPassword" type="password" required></label><button class="btn primary">Zaloguj</button><div id="loginMsg" class="msg"></div></form></div></div>
+<div id="loginView" class="login-shell"><div class="login-card"><div class="brand"><h1>Eltrox RKS</h1><p>Wersja online v14.8</p></div><form id="loginForm" class="form"><label>E-mail<input id="loginEmail" type="email" required></label><label>Hasło<input id="loginPassword" type="password" required></label><button class="btn primary">Zaloguj</button><div id="loginMsg" class="msg"></div></form></div></div>
 
 <div id="modeView" class="mode-shell hidden">
   <div class="mode-card">
@@ -787,11 +815,11 @@ input,select,textarea{width:100%;padding:9px 10px;border:1px solid var(--line);b
     <div class="visit-toolbar controls">
       <label>Oddział<select id="visitBranch"></select></label>
       <label>Data wizyty<input id="visitDate" type="date"></label>
-      <button class="btn primary" id="saveVisit">Zapisz raport</button>
-      <button class="btn" id="printVisitReport">Drukuj raport</button>
-      <button class="btn" id="generateVisitForm">Generuj formularz do podpisu</button>
-      <button class="btn" id="clearVisit">Nowy raport</button>
-    </div>
+      <button type="button" class="btn primary visit-save-btn" id="saveVisit" onclick="window.saveVisitNow && window.saveVisitNow(event)">Zapisz raport</button>
+      <button type="button" class="btn" id="printVisitReport">Drukuj raport</button>
+      <button type="button" class="btn" id="generateVisitForm">Generuj formularz do podpisu</button>
+      <button type="button" class="btn" id="clearVisit">Nowy raport</button>
+    </div><div id="visitSaveTopMsg" class="msg visit-save-top-msg"></div>
   </div>
   <div class="visit-grid">
     <section class="visit-card"><h3>Uczestnicy</h3><textarea id="visitParticipants" placeholder="Wpisz uczestników wizyty"></textarea></section>
@@ -803,7 +831,7 @@ input,select,textarea{width:100%;padding:9px 10px;border:1px solid var(--line);b
         <thead><tr><th>Zalecenie</th><th>Osoba odpowiedzialna</th><th>Termin</th><th></th></tr></thead>
         <tbody id="visitRecommendations"></tbody>
       </table></div>
-      <button class="btn add-recommendation" id="addVisitRecommendation">+ Dodaj zalecenie</button>
+      <button type="button" class="btn add-recommendation" id="addVisitRecommendation">+ Dodaj zalecenie</button>
     </section>
 
     <section class="visit-card visit-full"><h3>Dodatkowe uwagi / podsumowanie</h3><textarea id="visitNotes" placeholder="Dodatkowe obserwacje i ustalenia"></textarea></section>
@@ -1595,22 +1623,87 @@ async function syncVisitRecommendationsToTasksOnline(visit){
     if(existing?.id)await sb.from('tasks').update(row).eq('id',existing.id);else await sb.from('tasks').insert(row);
   }
 }
-async function saveVisit(){
-  const r={region_id:rid(),branch_id:$('visitBranch').value,visit_date:$('visitDate').value,
-    participants:$('visitParticipants').value.trim(),topics:$('visitTopics').value.trim(),
-    recommendations:currentVisitRecommendations(),notes:$('visitNotes').value.trim(),created_by:user.id};
-  if(!r.branch_id||!r.visit_date)return msg('visitMsg','Wybierz oddział i datę wizyty.','error');
-  let z;
-  if(edit.visit)z=await sb.from('visits').update(r).eq('id',edit.visit).select().single();
-  else z=await sb.from('visits').insert(r).select().single();
-  if(z.error)return msg('visitMsg',z.error.message,'error');
-  await syncVisitRecommendationsToTasksOnline(z.data);
-  edit.visit=z.data.id;
-  $('saveVisit').textContent='Zapisz zmiany';
-  if($('visitSignatureForm'))$('visitSignatureForm').classList.remove('ready');
-  await loadVisits();await loadTasks();await loadCard();await loadHistory();
-  msg('visitMsg','Raport został zapisany.','ok');
+async function saveVisit(evt=null){
+  if(evt){evt.preventDefault();evt.stopPropagation()}
+  const btn=$('saveVisit');
+  const topMsg=$('visitSaveTopMsg');
+  const setTop=(text,kind='')=>{
+    if(!topMsg)return;
+    topMsg.textContent=text||'';
+    topMsg.className='msg visit-save-top-msg'+(kind?' '+kind:'');
+  };
+
+  const r={
+    region_id:rid(),
+    branch_id:$('visitBranch').value,
+    visit_date:$('visitDate').value,
+    participants:$('visitParticipants').value.trim(),
+    topics:$('visitTopics').value.trim(),
+    recommendations:currentVisitRecommendations(),
+    notes:$('visitNotes').value.trim(),
+    created_by:user.id
+  };
+
+  if(!r.branch_id||!r.visit_date){
+    msg('visitMsg','Wybierz oddział i datę wizyty.','error');
+    setTop('Wybierz oddział i datę wizyty.','error');
+    return;
+  }
+
+  if(btn?.disabled)return;
+  const oldText=btn?.textContent||'Zapisz raport';
+  if(btn){btn.disabled=true;btn.textContent='Zapisywanie…'}
+  setTop('Zapisywanie raportu…');
+
+  try{
+    let z;
+    if(edit.visit) z=await sb.from('visits').update(r).eq('id',edit.visit).select().single();
+    else z=await sb.from('visits').insert(r).select().single();
+
+    if(z.error)throw z.error;
+
+    edit.visit=z.data.id;
+    if($('visitSignatureForm'))$('visitSignatureForm').classList.remove('ready');
+
+    // Zalecenia → zadania. Błąd synchronizacji nie może zgubić informacji,
+    // że sam raport został już zapisany.
+    try{
+      await syncVisitRecommendationsToTasksOnline(z.data);
+    }catch(syncErr){
+      console.error('Synchronizacja zaleceń do zadań:',syncErr);
+    }
+
+    // Odświeżamy tylko moduły pomocnicze i każde osobno,
+    // aby błąd któregoś widoku nie przerwał potwierdzenia zapisu.
+    const refreshes=[
+      ()=>loadVisits(),
+      ()=>loadTasks(),
+      ()=>window.refreshBranchCardNow?.(),
+      ()=>window.refreshHistoryNow?.()
+    ];
+    for(const fn of refreshes){
+      try{await fn()}catch(refreshErr){console.error('Odświeżanie po zapisie wizyty:',refreshErr)}
+    }
+
+    if(btn)btn.textContent='Zapisz zmiany';
+    msg('visitMsg','Raport został zapisany.','ok');
+    setTop('✓ Raport został zapisany.','ok');
+
+    // Na telefonie komunikat zostaje w widocznym miejscu.
+    if(window.innerWidth<=800){
+      topMsg?.scrollIntoView({behavior:'smooth',block:'nearest'});
+    }
+  }catch(e){
+    console.error('Zapis raportu wizyty:',e);
+    const text=e?.message||'Nie udało się zapisać raportu.';
+    msg('visitMsg',text,'error');
+    setTop('Błąd zapisu: '+text,'error');
+    if(btn)btn.textContent=oldText;
+  }finally{
+    if(btn)btn.disabled=false;
+  }
 }
+window.saveVisitNow=saveVisit;
 window.editVisit=id=>{
   const v=(window._visits||[]).find(x=>x.id===id);if(!v)return;
   edit.visit=id;
@@ -4109,7 +4202,7 @@ $('meetingAttendance').onchange=toggleComment;$('refreshMeetingPreviewBtn').oncl
 ['meetingTopics','meetingComment'].forEach(id=>$(id).addEventListener('input',renderMeetingNoteV45));
 $('saveMeeting').onclick=saveMeeting;$('clearMeeting').onclick=clearMeeting;$('meetingFilter').onchange=loadMeetings;
 $('saveTask').onclick=saveTask;$('clearTask').onclick=clearTask;$('taskFilter').onchange=loadTasks;$('taskStatusFilter').onchange=loadTasks;
-$('saveVisit').onclick=saveVisit;$('clearVisit').onclick=clearVisit;$('addVisitRecommendation').onclick=()=>addVisitRecommendationRow();$('generateVisitForm').onclick=generateVisitSignatureForm;$('printVisitReport').onclick=printVisitSignatureForm;
+$('saveVisit').onclick=(e)=>saveVisit(e);$('clearVisit').onclick=clearVisit;$('addVisitRecommendation').onclick=()=>addVisitRecommendationRow();$('generateVisitForm').onclick=generateVisitSignatureForm;$('printVisitReport').onclick=printVisitSignatureForm;
 $('salesEntryDate').onchange=renderSalesEntry;$('saveSalesEntry').onclick=()=>saveSalesEntry(true);$('saveMonthlyKpi').onclick=()=>saveMonthlyKpi(true);$('voipMonth').onchange=renderMonthlyKpi;$('controlKpiMonth').onchange=renderMonthlyKpi;
 $('saveNote').onclick=saveNote;$('clearNote').onclick=clearNote;$('noteFilter').onchange=loadNotes;$('cardBranch').onchange=()=>refreshBranchCard($('cardBranch').value);$('cardBranch').addEventListener('input',()=>refreshBranchCard($('cardBranch').value));$('historyBranch').onchange=()=>refreshHistory($('historyBranch').value);$('historyBranch').addEventListener('input',()=>refreshHistory($('historyBranch').value));$('historyFrom').onchange=()=>refreshHistory();$('historyTo').onchange=()=>refreshHistory();$('historySearch').oninput=()=>refreshHistory();document.querySelectorAll('.historyType').forEach(x=>x.onchange=()=>refreshHistory());$('clearHistoryFilters').onclick=()=>{$('historyFrom').value='';$('historyTo').value='';$('historySearch').value='';document.querySelectorAll('.historyType').forEach(x=>x.checked=true);refreshHistory()};
 (async()=>{let{data}=await sb.auth.getSession();if(data.session)showModeChooser(data.session,false);else showLogin()})();
