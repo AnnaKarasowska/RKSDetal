@@ -2,7 +2,7 @@
 <html lang="pl">
 <head>
 <meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
-<title>Eltrox RKS – Supabase v15.6</title><meta name="theme-color" content="#ef6c00"><meta name="apple-mobile-web-app-capable" content="yes"><meta name="apple-mobile-web-app-status-bar-style" content="default"><meta name="apple-mobile-web-app-title" content="Eltrox RKS"><link rel="manifest" href="./manifest.webmanifest"><link rel="apple-touch-icon" href="./icon-192.png">
+<title>Eltrox RKS – Supabase v15.7</title><meta name="theme-color" content="#ef6c00"><meta name="apple-mobile-web-app-capable" content="yes"><meta name="apple-mobile-web-app-status-bar-style" content="default"><meta name="apple-mobile-web-app-title" content="Eltrox RKS"><link rel="manifest" href="./manifest.webmanifest"><link rel="apple-touch-icon" href="./icon-192.png">
 <style>
 :root{--o:#f36f21;--od:#d85d12;--bg:#eef1f4;--w:#fff;--line:#d9dde3;--t:#242424;--m:#6b7280;--r:#c9372c;--g:#25894b;--b:#2f71c8;--sh:0 8px 24px rgba(0,0,0,.08)}
 *{box-sizing:border-box}html,body{margin:0;min-height:100%;font-family:Arial,Helvetica,sans-serif;background:var(--bg);color:var(--t)}button,input,select,textarea{font:inherit}button{cursor:pointer}.hidden{display:none!important}
@@ -691,6 +691,11 @@ button:disabled,.btn:disabled{opacity:.6;cursor:not-allowed}
 @media(max-width:800px){
   #regionSelect{min-height:48px!important;font-size:16px!important}
 }
+
+@media(max-width:800px){
+  #reportsBonus .head .controls{display:grid;grid-template-columns:1fr;gap:8px;width:100%}
+  #bonusMonthYear,#bonusMonthSelect,#bonusAsOfDate,#calcMonthlyBonusBtn{width:100%!important;min-height:46px;font-size:16px}
+}
 </style></head>
 <body>
 <div id="pwaUpdateBanner" class="pwa-update-banner hidden">
@@ -699,7 +704,7 @@ button:disabled,.btn:disabled{opacity:.6;cursor:not-allowed}
   <button type="button" id="dismissPwaUpdateBtn" class="btn">Później</button>
 </div>
 
-<div id="loginView" class="login-shell"><div class="login-card"><div class="brand"><h1>Eltrox RKS</h1><p>Wersja online v15.6</p></div><form id="loginForm" class="form"><label>E-mail<input id="loginEmail" type="email" required></label><label>Hasło<input id="loginPassword" type="password" required></label><button id="loginBtn" type="submit" class="btn primary" onclick="window.loginNow && window.loginNow(event)">Zaloguj</button><div id="loginMsg" class="msg"></div></form></div></div>
+<div id="loginView" class="login-shell"><div class="login-card"><div class="brand"><h1>Eltrox RKS</h1><p>Wersja online v15.7</p></div><form id="loginForm" class="form"><label>E-mail<input id="loginEmail" type="email" required></label><label>Hasło<input id="loginPassword" type="password" required></label><button id="loginBtn" type="submit" class="btn primary" onclick="window.loginNow && window.loginNow(event)">Zaloguj</button><div id="loginMsg" class="msg"></div></form></div></div>
 
 <div id="modeView" class="mode-shell hidden">
   <div class="mode-card">
@@ -718,7 +723,7 @@ button:disabled,.btn:disabled{opacity:.6;cursor:not-allowed}
   </div>
 </div>
 <div id="mobileActionStatus" class="mobile-action-status hidden"></div><div id="appView" class="hidden">
-<header class="header"><div><h1>Eltrox RKS – v15.6</h1><small id="headerUser"></small><div id="contextBar" class="context-bar">Region: — • Oddział: — • Okres: —</div><div id="regionSwitchStatus" class="muted" style="font-size:12px;margin-top:3px"></div></div><div class="ha">
+<header class="header"><div><h1>Eltrox RKS – v15.7</h1><small id="headerUser"></small><div id="contextBar" class="context-bar">Region: — • Oddział: — • Okres: —</div><div id="regionSwitchStatus" class="muted" style="font-size:12px;margin-top:3px"></div></div><div class="ha">
 <div class="searchbox"><input id="globalSearch" type="search" placeholder="Szukaj w aplikacji..."><div id="globalSearchResults" class="search-results hidden"></div></div>
 <label style="min-width:210px">Region<select id="regionSelect" onchange="window.switchRegionNow && window.switchRegionNow(this.value)" oninput="window.switchRegionNow && window.switchRegionNow(this.value)"></select></label>
 <span id="roleBadge" class="badge"></span><span id="workModeBadge" class="mode-badge"></span><button type="button" id="changeModeBtn" class="btn" onclick="window.mobileButtonAction && window.mobileButtonAction('changeModeBtn',event)">Zmień tryb</button>
@@ -1401,6 +1406,7 @@ button:disabled,.btn:disabled{opacity:.6;cursor:not-allowed}
       <div class="controls">
         <label>Rok<input id="bonusMonthYear" type="number" min="2020" max="2100" step="1" style="width:100px"></label>
         <label>Miesiąc<select id="bonusMonthSelect" style="width:150px"></select></label>
+        <label>Stan na dzień<input id="bonusAsOfDate" type="date" style="width:150px"></label>
         <button type="button" id="calcMonthlyBonusBtn" class="btn primary" onclick="window.mobileButtonAction && window.mobileButtonAction('calcMonthlyBonusBtn',event)">Przelicz miesiąc</button>
       </div>
     </div>
@@ -1421,7 +1427,7 @@ button:disabled,.btn:disabled{opacity:.6;cursor:not-allowed}
       </tr></thead>
       <tbody id="monthlyBonusRows"></tbody>
     </table></div>
-    <div class="bonus-note-v45">Ta sekcja pokazuje premię tylko za jeden wybrany miesiąc. Nie sumuje trzech miesięcy.</div>
+    <div class="bonus-note-v45">Ta sekcja pokazuje premię tylko za jeden wybrany miesiąc. Dla UK i Detalu pobiera <b>najnowszy zapisany wynik na wskazany dzień</b>, dzięki czemu w trakcie miesiąca widzisz aktualny stan premii. <span id="bonusDataFreshness"></span></div>
   </div>
 
   <div class="panel" style="margin-top:14px">
@@ -3321,13 +3327,56 @@ async function saveBonusKpiOverride(month,branchId,value){
   const {error}=await sb.from('bonus_kpi_overrides').upsert({region_id:rid(),branch_id:branchId,month_key:month,value:v,updated_by:user.id},{onConflict:'region_id,branch_id,month_key'});
   if(error)throw error;
 }
-async function latestSalesForBonus(month){
+async function latestSalesForBonus(month,cutoffDate=null){
   const [year,mon]=month.split('-').map(Number);
-  const from=`${month}-01`,to=new Date(year,mon,1).toISOString().slice(0,10);
-  const {data,error}=await sb.from('sales_results').select('*').eq('region_id',rid()).gte('result_date',from).lt('result_date',to).order('result_date',{ascending:false});
+  const from=`${month}-01`;
+  const monthEnd=new Date(year,mon,0);
+  const endExclusive=new Date(year,mon,1).toISOString().slice(0,10);
+
+  // Dla bieżącego miesiąca nie patrzymy w przyszłość.
+  let cutoff=cutoffDate||monthEnd.toISOString().slice(0,10);
+  if(cutoff<from)cutoff=from;
+  if(cutoff>=endExclusive)cutoff=monthEnd.toISOString().slice(0,10);
+
+  const {data,error}=await sb.from('sales_results')
+    .select('*')
+    .eq('region_id',rid())
+    .gte('result_date',from)
+    .lte('result_date',cutoff)
+    .order('result_date',{ascending:false});
   if(error)throw error;
+
+  const grouped=new Map();
+  for(const r of (data||[])){
+    const arr=grouped.get(r.branch_id)||[];
+    arr.push(r);
+    grouped.set(r.branch_id,arr);
+  }
+
   const map=new Map();
-  (data||[]).forEach(x=>{if(!map.has(x.branch_id))map.set(x.branch_id,x)});
+  for(const branch of branches){
+    const rows=grouped.get(branch.id)||[];
+    if(!rows.length)continue;
+
+    // Plan jest miesięczny: bierzemy najnowszą dostępną wartość planu.
+    const planRow=rows.find(r=>Number(r.uk_plan)>0 || Number(r.detail_plan)>0) || rows[0];
+
+    // Wykonanie: bierzemy najnowszy faktycznie zapisany wynik.
+    // Nie pozwalamy, aby późniejszy techniczny/pusty rekord z samymi zerami wyzerował premię.
+    const execRow=rows.find(r=>
+      Number(r.uk_execution)>0 ||
+      Number(r.detail_execution)>0 ||
+      (r.uk_execution!==null && r.uk_execution!==undefined && r.uk_execution!=='' &&
+       r.detail_execution!==null && r.detail_execution!==undefined && r.detail_execution!=='')
+    ) || rows[0];
+
+    map.set(branch.id,{
+      ...execRow,
+      uk_plan:Number(planRow.uk_plan)||0,
+      detail_plan:Number(planRow.detail_plan)||0,
+      _bonus_data_date:String(execRow.result_date||'').slice(0,10)
+    });
+  }
   return map;
 }
 async function controllingForBonus(year,month){
@@ -3340,15 +3389,25 @@ async function calculateMonthlyBonus(){
   const year=Number($('bonusMonthYear').value)||new Date().getFullYear();
   const monthNo=Number($('bonusMonthSelect').value)||1;
   const month=`${year}-${String(monthNo).padStart(2,'0')}`;
-  const sales=await latestSalesForBonus(month);
+  const todayKey=today();
+  const monthStart=`${month}-01`;
+  const monthEnd=new Date(year,monthNo,0).toISOString().slice(0,10);
+  let asOf=$('bonusAsOfDate')?.value||todayKey;
+  if(asOf<monthStart)asOf=monthStart;
+  if(asOf>monthEnd)asOf=monthEnd;
+  if(month===todayKey.slice(0,7) && asOf>todayKey)asOf=todayKey;
+  if($('bonusAsOfDate'))$('bonusAsOfDate').value=asOf;
+  const sales=await latestSalesForBonus(month,asOf);
   const controls=await controllingForBonus(year,monthNo);
   const overrides=await bonusOverrideMap([month]);
 
   let totalDetal=0,totalUk=0,totalKpi=0;
   const rows=[];
+  const sourceDates=[];
 
   for(const branch of branches){
     const s=sales.get(branch.id)||{};
+    if(s._bonus_data_date)sourceDates.push(s._bonus_data_date);
     const detailPlan=Number(s.detail_plan)||0;
     const detailExec=Number(s.detail_execution)||0;
     const ukPlan=Number(s.uk_plan)||0;
@@ -3376,7 +3435,7 @@ async function calculateMonthlyBonus(){
     totalKpi+=premKpi;
 
     rows.push(`<tr>
-      <td>${esc(branch.name)}</td>
+      <td>${esc(branch.name)}${s._bonus_data_date?`<div class="muted" style="font-size:10px">wynik z ${fd(s._bonus_data_date)}</div>`:'<div class="muted" style="font-size:10px">brak wyniku</div>'}</td>
       <td>${money(detailPlan)}</td><td>${money(detailExec)}</td><td>${Number.isFinite(detailPct)?pct(detailPct):'—'}</td><td>${money(premDetal)}</td>
       <td>${money(ukPlan)}</td><td>${money(ukExec)}</td><td>${Number.isFinite(ukPct)?pct(ukPct):'—'}</td><td>${money(premUk)}</td>
       <td><input class="monthly-kpi-input" data-month="${month}" data-branch-id="${branch.id}" type="number" min="0" max="150" step="0.1" value="${Number.isFinite(kpi)?kpi:''}" ${kpiLocked?'readonly title="Pobrano z controllingu mailowego"':''}></td>
@@ -3389,6 +3448,13 @@ async function calculateMonthlyBonus(){
   $('monthlyKpiTotal').textContent=money(totalKpi);
   $('monthlyGrandTotal').textContent=money(totalDetal+totalUk+totalKpi);
   $('monthlyBonusRows').innerHTML=rows.join('')||'<tr><td colspan="12">Brak oddziałów.</td></tr>';
+  if($('bonusDataFreshness')){
+    const unique=[...new Set(sourceDates)].sort();
+    const latest=unique.length?unique[unique.length-1]:null;
+    $('bonusDataFreshness').innerHTML=latest
+      ? ` Najnowszy wynik UK/Detal użyty w kalkulacji: <b>${fd(latest)}</b>.`
+      : ' Brak zapisanych wyników UK/Detal do wskazanego dnia.';
+  }
 
   document.querySelectorAll('.monthly-kpi-input:not([readonly])').forEach(input=>{
     input.onchange=async()=>{
@@ -3413,7 +3479,11 @@ async function calculateBonus(){
 
   for(const month of months){
     const [y,m]=month.split('-').map(Number);
-    const sales=await latestSalesForBonus(month);
+    const nowKey=today();
+    const monthEnd=new Date(y,m,0).toISOString().slice(0,10);
+    const monthStart=`${month}-01`;
+    const cutoff=month===nowKey.slice(0,7)?nowKey:(month<nowKey.slice(0,7)?monthEnd:monthStart);
+    const sales=month>nowKey.slice(0,7)?new Map():await latestSalesForBonus(month,cutoff);
     const controls=await controllingForBonus(y,m);
 
     for(const branch of branches){
@@ -4980,10 +5050,10 @@ async function showApp(session,modeResolved=false){
     $('voipMonth').value=`${vd.getFullYear()}-${String(vd.getMonth()+1).padStart(2,'0')}`;
     $('controlKpiMonth').value=`${cd.getFullYear()}-${String(cd.getMonth()+1).padStart(2,'0')}`;
   }$('comparisonYear').value=d.getFullYear();$('comparisonMonth').value=d.getMonth()+1;
-  $('bonusYear').value=d.getFullYear();$('bonusQuarter').value=Math.floor(d.getMonth()/3)+1;$('archiveMonth').value=d.toISOString().slice(0,7);$('personnelDate').value=today();$('visitPlanDate').value=today();$('monthlyCommentMonth').value=d.toISOString().slice(0,7);$('globalPeriod').value=d.toISOString().slice(0,7);$('autoSummaryMonth').value=d.toISOString().slice(0,7);$('closeMonthKey').value=d.toISOString().slice(0,7);$('checklistMonth').value=d.toISOString().slice(0,7);{const ws=startOfWeek(d);$('weekStart').value=ws.toISOString().slice(0,10);$('weekActionDate').value=ws.toISOString().slice(0,10);}
+  $('bonusYear').value=d.getFullYear();$('bonusQuarter').value=Math.floor(d.getMonth()/3)+1;if($('bonusAsOfDate'))$('bonusAsOfDate').value=today();$('archiveMonth').value=d.toISOString().slice(0,7);$('personnelDate').value=today();$('visitPlanDate').value=today();$('monthlyCommentMonth').value=d.toISOString().slice(0,7);$('globalPeriod').value=d.toISOString().slice(0,7);$('autoSummaryMonth').value=d.toISOString().slice(0,7);$('closeMonthKey').value=d.toISOString().slice(0,7);$('checklistMonth').value=d.toISOString().slice(0,7);{const ws=startOfWeek(d);$('weekStart').value=ws.toISOString().slice(0,10);$('weekActionDate').value=ws.toISOString().slice(0,10);}
 }
 function showLogin(){$('appView').classList.add('hidden');$('modeView').classList.add('hidden');$('loginView').classList.remove('hidden');workMode=null;workModeRegion=null}
-document.querySelectorAll('.tab').forEach(b=>b.onclick=()=>{if(!confirmDiscardChanges())return;document.querySelectorAll('.tab').forEach(x=>x.classList.toggle('active',x===b));document.querySelectorAll('.view').forEach(x=>x.classList.toggle('active',x.id===b.dataset.v));if(b.dataset.v==='dashboard')loadDashboard();if(b.dataset.v==='analysis'){initializePeriodControlsIfNeeded();loadAnalysis();}if(b.dataset.v==='comparison')loadComparison();if(b.dataset.v==='branchCompare')loadBranchCompare();if(b.dataset.v==='regionMap')loadRegionMap();if(b.dataset.v==='branchCard'){refreshBranchCard();}if(b.dataset.v==='history')refreshHistory();updateContextBar()});
+document.querySelectorAll('.tab').forEach(b=>b.onclick=()=>{if(!confirmDiscardChanges())return;document.querySelectorAll('.tab').forEach(x=>x.classList.toggle('active',x===b));document.querySelectorAll('.view').forEach(x=>x.classList.toggle('active',x.id===b.dataset.v));if(b.dataset.v==='dashboard')loadDashboard();if(b.dataset.v==='analysis'){initializePeriodControlsIfNeeded();loadAnalysis();}if(b.dataset.v==='comparison')loadComparison();if(b.dataset.v==='branchCompare')loadBranchCompare();if(b.dataset.v==='regionMap')loadRegionMap();if(b.dataset.v==='branchCard'){refreshBranchCard();}if(b.dataset.v==='history')refreshHistory();if(b.dataset.v==='reportsBonus')calculateMonthlyBonus();updateContextBar()});
 $('loginForm').onsubmit=(e)=>loginNow(e);
 
 ['regionSelect','cardBranch','historyBranch','manageBranch','taskBranch','visitBranch','meetingBranch','logBranch','salesBranch','noteBranch','globalPeriod']
@@ -5005,7 +5075,7 @@ $('analysisYear').onchange=loadAnalysis;$('analysisFromM').onchange=loadAnalysis
 $('addRegionBtn')&&($('addRegionBtn').onclick=manageAddRegion);$('renameRegionBtn')&&($('renameRegionBtn').onclick=manageRenameRegion);$('deleteRegionBtn')&&($('deleteRegionBtn').onclick=manageDeleteRegion);
 $('prepareNextMeetingBtn')&&($('prepareNextMeetingBtn').onclick=prepareNextMeeting);$('printMeetingBtn')&&($('printMeetingBtn').onclick=printMeeting);
 $('uploadAttachmentBtn').onclick=uploadAttachment;$('attachmentFilter').onchange=loadAttachments;
-$('calcMonthlyBonusBtn').onclick=calculateMonthlyBonus;$('calcBonusBtn').onclick=calculateBonus;$('createArchiveBtn').onclick=createArchive;
+$('calcMonthlyBonusBtn').onclick=calculateMonthlyBonus;$('bonusMonthYear').onchange=calculateMonthlyBonus;$('bonusMonthSelect').onchange=calculateMonthlyBonus;$('bonusAsOfDate').onchange=calculateMonthlyBonus;$('calcBonusBtn').onclick=calculateBonus;$('createArchiveBtn').onclick=createArchive;
 $('exportBackupBtn').onclick=exportRegionBackup;$('importBackupBtn').onclick=()=>$('importBackupFile').click();$('importBackupFile').onchange=e=>{importRegionBackup(e.target.files[0]);e.target.value=''};
 $('globalSearch').oninput=globalSearchRun;document.addEventListener('click',e=>{if(!e.target.closest('.searchbox'))$('globalSearchResults').classList.add('hidden')});
 
