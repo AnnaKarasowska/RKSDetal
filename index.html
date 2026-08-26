@@ -2,7 +2,7 @@
 <html lang="pl">
 <head>
 <meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
-<title>Eltrox RKS – Supabase v15.10</title><meta name="theme-color" content="#ef6c00"><meta name="apple-mobile-web-app-capable" content="yes"><meta name="apple-mobile-web-app-status-bar-style" content="default"><meta name="apple-mobile-web-app-title" content="Eltrox RKS"><link rel="manifest" href="./manifest.webmanifest"><link rel="apple-touch-icon" href="./icon-192.png">
+<title>Eltrox RKS – Supabase v15.11</title><meta name="theme-color" content="#ef6c00"><meta name="apple-mobile-web-app-capable" content="yes"><meta name="apple-mobile-web-app-status-bar-style" content="default"><meta name="apple-mobile-web-app-title" content="Eltrox RKS"><link rel="manifest" href="./manifest.webmanifest"><link rel="apple-touch-icon" href="./icon-192.png">
 <style>
 :root{--o:#f36f21;--od:#d85d12;--bg:#eef1f4;--w:#fff;--line:#d9dde3;--t:#242424;--m:#6b7280;--r:#c9372c;--g:#25894b;--b:#2f71c8;--sh:0 8px 24px rgba(0,0,0,.08)}
 *{box-sizing:border-box}html,body{margin:0;min-height:100%;font-family:Arial,Helvetica,sans-serif;background:var(--bg);color:var(--t)}button,input,select,textarea{font:inherit}button{cursor:pointer}.hidden{display:none!important}
@@ -727,6 +727,10 @@ button:disabled,.btn:disabled{opacity:.6;cursor:not-allowed}
   #meetings .meeting-note-sheet{min-width:680px;padding:16px}
   #refreshMeetingPreviewBtn,#printMeetingBtn{min-height:48px}
 }
+
+@media(max-width:800px){
+  #salesEntryStatus,#salesDateStatus,#salesHistoricalHint{display:block;width:100%;margin-top:4px}
+}
 </style></head>
 <body>
 <div id="pwaUpdateBanner" class="pwa-update-banner hidden">
@@ -735,7 +739,7 @@ button:disabled,.btn:disabled{opacity:.6;cursor:not-allowed}
   <button type="button" id="dismissPwaUpdateBtn" class="btn">Później</button>
 </div>
 
-<div id="loginView" class="login-shell"><div class="login-card"><div class="brand"><h1>Eltrox RKS</h1><p>Wersja online v15.10</p></div><form id="loginForm" class="form"><label>E-mail<input id="loginEmail" type="email" required></label><label>Hasło<input id="loginPassword" type="password" required></label><button id="loginBtn" type="submit" class="btn primary" onclick="window.loginNow && window.loginNow(event)">Zaloguj</button><div id="loginMsg" class="msg"></div></form></div></div>
+<div id="loginView" class="login-shell"><div class="login-card"><div class="brand"><h1>Eltrox RKS</h1><p>Wersja online v15.11</p></div><form id="loginForm" class="form"><label>E-mail<input id="loginEmail" type="email" required></label><label>Hasło<input id="loginPassword" type="password" required></label><button id="loginBtn" type="submit" class="btn primary" onclick="window.loginNow && window.loginNow(event)">Zaloguj</button><div id="loginMsg" class="msg"></div></form></div></div>
 
 <div id="modeView" class="mode-shell hidden">
   <div class="mode-card">
@@ -754,7 +758,7 @@ button:disabled,.btn:disabled{opacity:.6;cursor:not-allowed}
   </div>
 </div>
 <div id="mobileActionStatus" class="mobile-action-status hidden"></div><div id="appView" class="hidden">
-<header class="header"><div><h1>Eltrox RKS – v15.10</h1><small id="headerUser"></small><div id="contextBar" class="context-bar">Region: — • Oddział: — • Okres: —</div><div id="regionSwitchStatus" class="muted" style="font-size:12px;margin-top:3px"></div></div><div class="ha">
+<header class="header"><div><h1>Eltrox RKS – v15.11</h1><small id="headerUser"></small><div id="contextBar" class="context-bar">Region: — • Oddział: — • Okres: —</div><div id="regionSwitchStatus" class="muted" style="font-size:12px;margin-top:3px"></div></div><div class="ha">
 <div class="searchbox"><input id="globalSearch" type="search" placeholder="Szukaj w aplikacji..."><div id="globalSearchResults" class="search-results hidden"></div></div>
 <label style="min-width:210px">Region<select id="regionSelect" onchange="window.switchRegionNow && window.switchRegionNow(this.value)" oninput="window.switchRegionNow && window.switchRegionNow(this.value)"></select></label>
 <span id="roleBadge" class="badge"></span><span id="workModeBadge" class="mode-badge"></span><button type="button" id="changeModeBtn" class="btn" onclick="window.mobileButtonAction && window.mobileButtonAction('changeModeBtn',event)">Zmień tryb</button>
@@ -1101,7 +1105,7 @@ button:disabled,.btn:disabled{opacity:.6;cursor:not-allowed}
 
 <section id="sales" class="view"><div class="inner">
 <div class="head"><div><h2>Wprowadzanie wyników UK / Detal</h2><p>Jedna tabela dla wszystkich oddziałów. Plan jest miesięczny, wykonanie narastające na wybrany dzień.</p></div>
-<div class="controls"><label>Data wyników<input id="salesEntryDate" type="date" onchange="window.renderSalesEntryNow && window.renderSalesEntryNow(this.value)"></label><button type="button" class="btn primary" id="saveSalesEntry" onclick="window.saveSalesEntryNow && window.saveSalesEntryNow(event,true)">Zapisz wyniki</button><span id="salesEntryStatus" class="sales-save-status"></span><span id="salesDateStatus" class="muted" style="font-size:12px"></span></div></div>
+<div class="controls"><label>Data wyników<input id="salesEntryDate" type="date" onchange="window.renderSalesEntryNow && window.renderSalesEntryNow(this.value)"></label><button type="button" class="btn primary" id="saveSalesEntry" onclick="window.saveSalesEntryNow && window.saveSalesEntryNow(event,true)">Zapisz wyniki</button><span id="salesEntryStatus" class="sales-save-status"></span><span id="salesDateStatus" class="muted" style="font-size:12px"></span><span id="salesHistoricalHint" class="muted" style="font-size:12px"></span></div></div>
 <div class="sales-entry-grid">
 <div class="sales-entry-card"><span>UK – realizacja regionu</span><strong id="salesUkRegion">—</strong></div>
 <div class="sales-entry-card"><span>Detal – realizacja regionu</span><strong id="salesDetailRegion">—</strong></div>
@@ -2862,6 +2866,7 @@ async function renderSalesEntry(){
     $('salesDateStatus').textContent=exactRows.length
       ? `Wyświetlane dane: ${formatted}`
       : `Brak zapisanych wyników dla ${formatted}`;
+    if($('salesHistoricalHint'))$('salesHistoricalHint').textContent=date<today()?' • dane historyczne':'';
   }
 
   document.querySelectorAll('#salesEntryBody input').forEach(x=>{
@@ -2897,6 +2902,35 @@ function currentSalesValue(el){
   return Number.isFinite(n)?n:null;
 }
 
+async function ensureSalesMonthEditable(monthKey){
+  const closed=await isMonthClosed(monthKey);
+  if(!closed)return true;
+
+  const label=new Intl.DateTimeFormat('pl-PL',{month:'long',year:'numeric'})
+    .format(new Date(monthKey+'-01T12:00:00'));
+
+  const ok=confirm(`Miesiąc ${label} jest zamknięty.\n\nAby zapisać dane historyczne, trzeba go ponownie otworzyć. Otworzyć miesiąc teraz?`);
+  if(!ok){
+    msg('salesMsg','Miesiąc jest zamknięty. Wprowadzone wartości pozostają w formularzu, ale nie zostały zapisane.','error');
+    return false;
+  }
+
+  const {error}=await sb.from('closed_months')
+    .delete()
+    .eq('region_id',rid())
+    .eq('month_key',monthKey);
+
+  if(error){
+    msg('salesMsg','Nie udało się otworzyć miesiąca: '+error.message,'error');
+    return false;
+  }
+
+  if($('closeMonthKey'))$('closeMonthKey').value=monthKey;
+  try{await refreshClosedMonthStatus()}catch(e){console.warn(e)}
+  showActionStatus(`Miesiąc ${label} został otwarty do edycji.`,'ok',3000);
+  return true;
+}
+
 async function saveSalesEntry(showAlert=true){
   const date=$('salesEntryDate').value;
   if(!date){
@@ -2909,10 +2943,7 @@ async function saveSalesEntry(showAlert=true){
   const get=(cls,id)=>[...document.querySelectorAll(cls)].find(x=>x.dataset.id===id);
 
   try{
-    if(await isMonthClosed(date.slice(0,7))){
-      msg('salesMsg','Ten miesiąc jest zamknięty. Otwórz go w Raporty / premia, aby edytować wyniki.','error');
-      return;
-    }
+    if(!await ensureSalesMonthEditable(date.slice(0,7)))return;
 
     const month=date.slice(0,7);
     const [y,m]=month.split('-').map(Number);
@@ -3002,18 +3033,23 @@ async function saveSalesEntry(showAlert=true){
       .eq('result_date',date);
 
     if(verifyError)errors.push(`Weryfikacja: ${verifyError.message}`);
+    if(!verifyError && saved>0 && !(verify||[]).length){
+      errors.push('Weryfikacja: po zapisie nie znaleziono danych dla wybranego dnia.');
+    }
 
     if(errors.length){
       console.error('UK / Detal - błędy zapisu:',errors);
-      msg('salesMsg','Nie zapisano wszystkich wyników: '+errors.join(' | '),'error');
-      showActionStatus('Część wyników nie została zapisana. Szczegóły są pod tabelą.','error',7000);
-    }else{
-      $('salesEntryStatus').textContent=`Zapisano: ${saved}`;
-      setTimeout(()=>{if($('salesEntryStatus'))$('salesEntryStatus').textContent=''},2200);
-      msg('salesMsg',`Wyniki zapisano dla ${new Intl.DateTimeFormat('pl-PL').format(new Date(date+'T12:00:00'))}.`,'ok');
-      if(showAlert)showActionStatus('Wyniki UK / Detal zostały zapisane.','ok',3500);
+      msg('salesMsg','Nie zapisano wszystkich wyników: '+errors.join(' | ')+' Wprowadzone wartości pozostają w tabeli.','error');
+      showActionStatus('Zapis nie został zakończony. Wartości pozostają w formularzu.','error',7000);
+      return;
     }
 
+    $('salesEntryStatus').textContent=`Zapisano: ${saved}`;
+    setTimeout(()=>{if($('salesEntryStatus'))$('salesEntryStatus').textContent=''},2200);
+    msg('salesMsg',`Wyniki zapisano dla ${new Intl.DateTimeFormat('pl-PL').format(new Date(date+'T12:00:00'))}.`,'ok');
+    if(showAlert)showActionStatus('Wyniki UK / Detal zostały zapisane.','ok',3500);
+
+    // Tabelę przeładowujemy wyłącznie po pełnym sukcesie.
     await renderSalesEntry();
   }catch(e){
     console.error('UK / Detal - zapis:',e);
@@ -4501,7 +4537,12 @@ async function applyGlobalPeriodValue(){
   if($('analysisYear'))$('analysisYear').value=y;
   if($('analysisFromM'))$('analysisFromM').value=m;
   if($('analysisToM'))$('analysisToM').value=m;
-  if($('salesEntryDate'))$('salesEntryDate').value=`${key}-01`;
+  if($('salesEntryDate')){
+    const now=today();
+    const currentMonth=now.slice(0,7);
+    const lastDay=new Date(y,m,0).toISOString().slice(0,10);
+    $('salesEntryDate').value=key<currentMonth?lastDay:(key===currentMonth?now:`${key}-01`);
+  }
   if($('voipMonth'))$('voipMonth').value=key;
   if($('controlKpiMonth'))$('controlKpiMonth').value=key;
   if($('monthlyCommentMonth'))$('monthlyCommentMonth').value=key;
