@@ -2,7 +2,7 @@
 <html lang="pl">
 <head>
 <meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
-<title>Eltrox RKS – Supabase v14.9</title><meta name="theme-color" content="#ef6c00"><meta name="apple-mobile-web-app-capable" content="yes"><meta name="apple-mobile-web-app-status-bar-style" content="default"><meta name="apple-mobile-web-app-title" content="Eltrox RKS"><link rel="manifest" href="./manifest.webmanifest"><link rel="apple-touch-icon" href="./icon-192.png">
+<title>Eltrox RKS – Supabase v14.11</title><meta name="theme-color" content="#ef6c00"><meta name="apple-mobile-web-app-capable" content="yes"><meta name="apple-mobile-web-app-status-bar-style" content="default"><meta name="apple-mobile-web-app-title" content="Eltrox RKS"><link rel="manifest" href="./manifest.webmanifest"><link rel="apple-touch-icon" href="./icon-192.png">
 <style>
 :root{--o:#f36f21;--od:#d85d12;--bg:#eef1f4;--w:#fff;--line:#d9dde3;--t:#242424;--m:#6b7280;--r:#c9372c;--g:#25894b;--b:#2f71c8;--sh:0 8px 24px rgba(0,0,0,.08)}
 *{box-sizing:border-box}html,body{margin:0;min-height:100%;font-family:Arial,Helvetica,sans-serif;background:var(--bg);color:var(--t)}button,input,select,textarea{font:inherit}button{cursor:pointer}.hidden{display:none!important}
@@ -474,6 +474,44 @@ input,select,textarea{width:100%;padding:9px 10px;border:1px solid var(--line);b
 /* v14.8 — mobilne zapisywanie raportu wizyty */
 
 /* v14.9 — mobilne zapisywanie Rejestru kontaktów */
+
+/* v14.10 — mobilne zapisywanie Terminarza */
+
+/* v14.11 — globalna obsługa przycisków na telefonie */
+button,.btn,.tab,.quick-option{
+  touch-action:manipulation;
+  -webkit-tap-highlight-color:transparent;
+}
+@media(max-width:800px){
+  button,.btn,.tab,.quick-option{min-height:44px}
+  input,select,textarea{font-size:16px}
+  .controls{max-width:100%}
+  .controls>.btn{flex-shrink:0}
+  .mobile-save-action{
+    min-height:50px!important;
+    padding:11px 16px!important;
+    font-size:15px!important;
+  }
+}
+
+.task-save-btn{touch-action:manipulation;-webkit-tap-highlight-color:transparent}
+.task-save-top-msg{margin-top:8px}
+@media(max-width:800px){
+  #tasks .g2{grid-template-columns:1fr!important}
+  #tasks .controls{display:grid;grid-template-columns:1fr 1fr;gap:8px}
+  #tasks .controls .btn{width:100%;min-height:46px}
+  #tasks .task-save-btn{
+    grid-column:1/-1;
+    position:sticky;
+    bottom:8px;
+    z-index:45;
+    min-height:52px;
+    font-size:16px;
+    box-shadow:0 7px 20px rgba(0,0,0,.16);
+  }
+  #tasks input,#tasks select,#tasks textarea{font-size:16px}
+}
+
 .log-save-btn{touch-action:manipulation;-webkit-tap-highlight-color:transparent}
 .log-save-top-msg{margin-top:8px}
 @media(max-width:800px){
@@ -523,19 +561,19 @@ input,select,textarea{width:100%;padding:9px 10px;border:1px solid var(--line);b
 @media(max-width:950px){.g2,.g3,.g4{grid-template-columns:1fr}.header{align-items:flex-start;flex-direction:column}.nav{top:108px}}
 </style></head>
 <body>
-<div id="loginView" class="login-shell"><div class="login-card"><div class="brand"><h1>Eltrox RKS</h1><p>Wersja online v14.9</p></div><form id="loginForm" class="form"><label>E-mail<input id="loginEmail" type="email" required></label><label>Hasło<input id="loginPassword" type="password" required></label><button class="btn primary">Zaloguj</button><div id="loginMsg" class="msg"></div></form></div></div>
+<div id="loginView" class="login-shell"><div class="login-card"><div class="brand"><h1>Eltrox RKS</h1><p>Wersja online v14.11</p></div><form id="loginForm" class="form"><label>E-mail<input id="loginEmail" type="email" required></label><label>Hasło<input id="loginPassword" type="password" required></label><button type="button" class="btn primary">Zaloguj</button><div id="loginMsg" class="msg"></div></form></div></div>
 
 <div id="modeView" class="mode-shell hidden">
   <div class="mode-card">
     <h2>Wybierz tryb pracy</h2>
     <p id="modeWelcome">Po zalogowaniu wybierz, w jakim zakresie chcesz pracować w tej sesji.</p>
     <div class="mode-options">
-      <button id="chooseAdminModeBtn" class="mode-option admin" type="button"><h3>Administrator</h3><p>Pełny dostęp do wszystkich regionów, zarządzania regionami i funkcji administracyjnych.</p></button>
-      <button id="chooseUserModeBtn" class="mode-option user" type="button"><h3>Mój region</h3><p>Pracujesz jak zwykły użytkownik: widzisz i edytujesz wyłącznie własny przypisany region.</p></button>
+      <button id="chooseAdminModeBtn" class="mode-option admin" type="button" onclick="window.mobileButtonAction && window.mobileButtonAction('chooseAdminModeBtn',event)"><h3>Administrator</h3><p>Pełny dostęp do wszystkich regionów, zarządzania regionami i funkcji administracyjnych.</p></button>
+      <button id="chooseUserModeBtn" class="mode-option user" type="button" onclick="window.mobileButtonAction && window.mobileButtonAction('chooseUserModeBtn',event)"><h3>Mój region</h3><p>Pracujesz jak zwykły użytkownik: widzisz i edytujesz wyłącznie własny przypisany region.</p></button>
     </div>
     <div id="modeRegionBox" class="mode-region-box hidden">
       <label>Wybierz swój region<select id="modeRegionSelect"></select></label>
-      <div class="controls" style="margin-top:10px"><button id="confirmUserModeBtn" class="btn primary">Pracuj w tym regionie</button><button id="cancelModeRegionBtn" class="btn">Wstecz</button></div>
+      <div class="controls" style="margin-top:10px"><button type="button" id="confirmUserModeBtn" class="btn primary" onclick="window.mobileButtonAction && window.mobileButtonAction('confirmUserModeBtn',event)">Pracuj w tym regionie</button><button type="button" id="cancelModeRegionBtn" class="btn" onclick="window.mobileButtonAction && window.mobileButtonAction('cancelModeRegionBtn',event)">Wstecz</button></div>
     </div>
     <div id="modeMsg" class="msg"></div>
     <div style="margin-top:12px"><button id="modeLogoutBtn" class="btn" type="button" onclick="forceLogout()">Wyloguj</button></div>
@@ -545,13 +583,13 @@ input,select,textarea{width:100%;padding:9px 10px;border:1px solid var(--line);b
 <header class="header"><div><h1>Eltrox RKS – v6</h1><small id="headerUser"></small></div><div class="ha">
 <div class="searchbox"><input id="globalSearch" type="search" placeholder="Szukaj w aplikacji..."><div id="globalSearchResults" class="search-results hidden"></div></div>
 <label style="min-width:210px">Region<select id="regionSelect"></select></label>
-<span id="roleBadge" class="badge"></span><span id="workModeBadge" class="mode-badge"></span><button id="changeModeBtn" class="btn">Zmień tryb</button>
-<div class="global-period"><label>Okres globalny<input id="globalPeriod" type="month"></label><button id="applyGlobalPeriod" class="btn">Ustaw okres</button></div><button id="installPwaBtn" class="btn pwa-install">Zainstaluj aplikację</button><button id="tabOrderBtn" class="btn">Kolejność zakładek</button>
-<button id="exportBackupBtn" class="btn">Kopia regionu</button>
-<button id="importBackupBtn" class="btn">Przywróć kopię</button><input id="importBackupFile" type="file" accept=".json,application/json" hidden>
+<span id="roleBadge" class="badge"></span><span id="workModeBadge" class="mode-badge"></span><button type="button" id="changeModeBtn" class="btn" onclick="window.mobileButtonAction && window.mobileButtonAction('changeModeBtn',event)">Zmień tryb</button>
+<div class="global-period"><label>Okres globalny<input id="globalPeriod" type="month"></label><button type="button" id="applyGlobalPeriod" class="btn" onclick="window.mobileButtonAction && window.mobileButtonAction('applyGlobalPeriod',event)">Ustaw okres</button></div><button type="button" id="installPwaBtn" class="btn pwa-install" onclick="window.mobileButtonAction && window.mobileButtonAction('installPwaBtn',event)">Zainstaluj aplikację</button><button type="button" id="tabOrderBtn" class="btn" onclick="window.mobileButtonAction && window.mobileButtonAction('tabOrderBtn',event)">Kolejność zakładek</button>
+<button type="button" id="exportBackupBtn" class="btn" onclick="window.mobileButtonAction && window.mobileButtonAction('exportBackupBtn',event)">Kopia regionu</button>
+<button type="button" id="importBackupBtn" class="btn" onclick="window.mobileButtonAction && window.mobileButtonAction('importBackupBtn',event)">Przywróć kopię</button><input id="importBackupFile" type="file" accept=".json,application/json" hidden>
 <button id="logoutBtn" class="btn" type="button" onclick="forceLogout()">Wyloguj</button></div></header>
 <nav class="nav">
-<button class="tab active" data-v="dashboard">Na dziś</button><button class="tab" data-v="analysis">Analiza regionu</button><button class="tab" data-v="comparison">Porównanie regionów</button><button class="tab" data-v="branchCompare">Porównanie oddziałów</button><button class="tab" data-v="regionMap">Mapa regionu</button><button class="tab" data-v="branches">Oddziały</button><button class="tab" data-v="contacts">Kontakty</button><button class="tab" data-v="contactLogs">Rejestr kontaktów</button><button class="tab" data-v="meetings">1:1</button><button class="tab" data-v="tasks">Terminarz</button><button class="tab" data-v="visits">Wizyty</button><button class="tab" data-v="sales">UK / Detal</button><button class="tab" data-v="kpis">KPI / Controlling</button><button class="tab" data-v="notes">Notatki</button><button class="tab" data-v="management">Zarządzanie oddziałem</button><button class="tab" data-v="decisions">Decyzje / Eskalacje</button><button class="tab" data-v="checklist">Checklista RKS</button><button class="tab" data-v="weekPlan">Plan tygodnia</button><button class="tab" data-v="adminCenter">Centrum admin</button><button class="tab" data-v="trash">Kosz</button><button class="tab" data-v="branchCard">Karta oddziału</button><button class="tab" data-v="history">Historia</button><button class="tab" data-v="attachments">Załączniki</button><button class="tab" data-v="dataIO">Import / eksport</button><button class="tab" data-v="reportsBonus">Raporty / premia</button>
+<button type="button" class="tab active" data-v="dashboard">Na dziś</button><button type="button" class="tab" data-v="analysis">Analiza regionu</button><button type="button" class="tab" data-v="comparison">Porównanie regionów</button><button type="button" class="tab" data-v="branchCompare">Porównanie oddziałów</button><button type="button" class="tab" data-v="regionMap">Mapa regionu</button><button type="button" class="tab" data-v="branches">Oddziały</button><button type="button" class="tab" data-v="contacts">Kontakty</button><button type="button" class="tab" data-v="contactLogs">Rejestr kontaktów</button><button type="button" class="tab" data-v="meetings">1:1</button><button type="button" class="tab" data-v="tasks">Terminarz</button><button type="button" class="tab" data-v="visits">Wizyty</button><button type="button" class="tab" data-v="sales">UK / Detal</button><button type="button" class="tab" data-v="kpis">KPI / Controlling</button><button type="button" class="tab" data-v="notes">Notatki</button><button type="button" class="tab" data-v="management">Zarządzanie oddziałem</button><button type="button" class="tab" data-v="decisions">Decyzje / Eskalacje</button><button type="button" class="tab" data-v="checklist">Checklista RKS</button><button type="button" class="tab" data-v="weekPlan">Plan tygodnia</button><button type="button" class="tab" data-v="adminCenter">Centrum admin</button><button type="button" class="tab" data-v="trash">Kosz</button><button type="button" class="tab" data-v="branchCard">Karta oddziału</button><button type="button" class="tab" data-v="history">Historia</button><button type="button" class="tab" data-v="attachments">Załączniki</button><button type="button" class="tab" data-v="dataIO">Import / eksport</button><button type="button" class="tab" data-v="reportsBonus">Raporty / premia</button>
 </nav>
 
 <div id="tabOrderBackdrop" class="tab-order-backdrop hidden">
@@ -561,10 +599,10 @@ input,select,textarea{width:100%;padding:9px 10px;border:1px solid var(--line);b
     <div id="tabOrderList" class="tab-order-list"></div>
     <div id="tabOrderMsg" class="msg"></div>
     <div class="modal-footer">
-      <button id="resetTabOrderBtn" class="btn">Przywróć domyślną</button>
+      <button type="button" id="resetTabOrderBtn" class="btn" onclick="window.mobileButtonAction && window.mobileButtonAction('resetTabOrderBtn',event)">Przywróć domyślną</button>
       <div class="controls">
-        <button id="cancelTabOrderBtn" class="btn">Anuluj</button>
-        <button id="saveTabOrderBtn" class="btn primary">Zapisz kolejność</button>
+        <button type="button" id="cancelTabOrderBtn" class="btn" onclick="window.mobileButtonAction && window.mobileButtonAction('cancelTabOrderBtn',event)">Anuluj</button>
+        <button type="button" id="saveTabOrderBtn" class="btn primary" onclick="window.mobileButtonAction && window.mobileButtonAction('saveTabOrderBtn',event)">Zapisz kolejność</button>
       </div>
     </div>
   </div>
@@ -576,7 +614,7 @@ input,select,textarea{width:100%;padding:9px 10px;border:1px solid var(--line);b
   <div class="head">
     <div><h2>Na dziś <span id="todayRegionBadge" class="today-region-badge"></span></h2>
     <p>Najważniejsze sprawy RKS w jednym miejscu – bez przeglądania wszystkich zakładek.</p></div>
-    <div class="controls"><button class="btn primary" id="refreshToday">Odśwież</button></div>
+    <div class="controls"><button type="button" class="btn primary" id="refreshToday" onclick="window.mobileButtonAction && window.mobileButtonAction('refreshToday',event)">Odśwież</button></div>
   </div>
   <div class="metrics">
     <div class="metric"><span>Zaległe zadania</span><strong id="todayOverdue">0</strong></div>
@@ -593,11 +631,11 @@ input,select,textarea{width:100%;padding:9px 10px;border:1px solid var(--line);b
   
   <div class="grid2">
     <section class="panel">
-      <div class="head"><div><h3 style="margin:0">Co się zmieniło od ostatniej wizyty</h3><p>Najważniejsze zmiany od poprzedniego otwarcia aplikacji.</p></div><button id="markChangesSeenBtn" class="btn">Oznacz jako przejrzane</button></div>
+      <div class="head"><div><h3 style="margin:0">Co się zmieniło od ostatniej wizyty</h3><p>Najważniejsze zmiany od poprzedniego otwarcia aplikacji.</p></div><button type="button" id="markChangesSeenBtn" class="btn" onclick="window.mobileButtonAction && window.mobileButtonAction('markChangesSeenBtn',event)">Oznacz jako przejrzane</button></div>
       <div id="recentChanges" class="change-list"></div>
     </section>
     <section class="panel">
-      <div class="head"><div><h3 style="margin:0">Moje działania na ten tydzień</h3><p>Zadania, wizyty, cele i ryzyka wymagające reakcji.</p></div><button id="openWeekPlanBtn" class="btn">Otwórz plan tygodnia</button></div>
+      <div class="head"><div><h3 style="margin:0">Moje działania na ten tydzień</h3><p>Zadania, wizyty, cele i ryzyka wymagające reakcji.</p></div><button type="button" id="openWeekPlanBtn" class="btn" onclick="window.mobileButtonAction && window.mobileButtonAction('openWeekPlanBtn',event)">Otwórz plan tygodnia</button></div>
       <div id="weekActions" class="today-list"></div>
     </section>
   </div>
@@ -638,7 +676,7 @@ input,select,textarea{width:100%;padding:9px 10px;border:1px solid var(--line);b
     </div>
     
 <section class="panel" style="margin-top:12px">
-  <div class="bc-section-title"><div><h3>Region w skrócie</h3><p>Gotowy briefing do rozmowy z przełożonym.</p></div><div class="controls"><button id="exportRegionBriefExcel" class="btn">Eksport Excel</button><button id="printRegionBrief" class="btn">Drukuj / PDF</button></div></div>
+  <div class="bc-section-title"><div><h3>Region w skrócie</h3><p>Gotowy briefing do rozmowy z przełożonym.</p></div><div class="controls"><button type="button" id="exportRegionBriefExcel" class="btn" onclick="window.mobileButtonAction && window.mobileButtonAction('exportRegionBriefExcel',event)">Eksport Excel</button><button type="button" id="printRegionBrief" class="btn" onclick="window.mobileButtonAction && window.mobileButtonAction('printRegionBrief',event)">Drukuj / PDF</button></div></div>
   <div id="regionBriefMetrics" class="brief-grid"></div>
   <div class="grid2">
     <div><h4>Największe ryzyka</h4><div id="regionBriefRisks" class="alert-board"></div></div>
@@ -652,9 +690,9 @@ input,select,textarea{width:100%;padding:9px 10px;border:1px solid var(--line);b
   <div class="head"><div><h2>Porównanie oddziałów</h2><p>Ranking, kondycja, trendy i porównanie miesięczne oddziałów.</p></div></div>
 
   <div class="bc-tabs">
-    <button class="btn active" data-bctab="dashboard">Porównanie oddziałów</button>
-    <button class="btn" data-bctab="data">Dane miesięczne</button>
-    <button class="btn" data-bctab="insights">Wnioski</button>
+    <button type="button" class="btn active" data-bctab="dashboard">Porównanie oddziałów</button>
+    <button type="button" class="btn" data-bctab="data">Dane miesięczne</button>
+    <button type="button" class="btn" data-bctab="insights">Wnioski</button>
   </div>
 
   <section id="bcDashboard" class="bc-subview active">
@@ -667,7 +705,7 @@ input,select,textarea{width:100%;padding:9px 10px;border:1px solid var(--line);b
       <div class="field"><label>Status</label><select id="bcStatus"><option value="">Wszystkie</option><option value="good">Dobra kondycja</option><option value="warn">Wymaga uwagi</option><option value="bad">Wymaga działania</option></select></div>
       <div class="field"><label>Grupowanie</label><select id="bcGroup"><option value="">Bez grupowania</option><option value="status">Status</option></select></div>
       <div class="field"><label>Sortowanie</label><select id="bcSort"><option value="score">Wynik punktowy</option><option value="ukPct">UK – wykonanie planu</option><option value="detailPct">Detal – wykonanie planu</option><option value="ukYoy">UK – wzrost r/r</option><option value="detailYoy">Detal – wzrost r/r</option><option value="combined">Wynik łączny</option></select></div>
-      <button id="bcClearFilters" class="btn">Wyczyść filtry</button>
+      <button type="button" id="bcClearFilters" class="btn" onclick="window.mobileButtonAction && window.mobileButtonAction('bcClearFilters',event)">Wyczyść filtry</button>
     </div>
     <div id="bcActiveFilters" class="bc-active-filters"></div>
     <div id="bcMetricGrid" class="bc-metric-grid"></div>
@@ -718,7 +756,7 @@ input,select,textarea{width:100%;padding:9px 10px;border:1px solid var(--line);b
 </div></section>
 
 <section id="regionMap" class="view">
-  <div class="head"><div><h2>Mapa regionu</h2><p>Mapa kondycji oddziałów oparta na wyniku 360°.</p></div><button id="refreshMapBtn" class="btn">Odśwież</button></div>
+  <div class="head"><div><h2>Mapa regionu</h2><p>Mapa kondycji oddziałów oparta na wyniku 360°.</p></div><button type="button" id="refreshMapBtn" class="btn" onclick="window.mobileButtonAction && window.mobileButtonAction('refreshMapBtn',event)">Odśwież</button></div>
   <div class="panel">
     <div class="map-legend"><span><i class="dot good"></i>dobra kondycja</span><span><i class="dot warn"></i>wymaga uwagi</span><span><i class="dot bad"></i>pilne działania</span></div>
     <div id="regionMapGrid" class="map-grid"></div>
@@ -735,7 +773,7 @@ input,select,textarea{width:100%;padding:9px 10px;border:1px solid var(--line);b
         <option value="5">Maj</option><option value="6">Czerwiec</option><option value="7">Lipiec</option><option value="8">Sierpień</option>
         <option value="9">Wrzesień</option><option value="10">Październik</option><option value="11">Listopad</option><option value="12">Grudzień</option>
       </select></label>
-      <button id="loadComparisonBtn" class="btn primary">Porównaj</button>
+      <button type="button" id="loadComparisonBtn" class="btn primary" onclick="window.mobileButtonAction && window.mobileButtonAction('loadComparisonBtn',event)">Porównaj</button>
     </div>
   </div>
   <div id="comparisonMsg" class="msg"></div>
@@ -749,20 +787,20 @@ input,select,textarea{width:100%;padding:9px 10px;border:1px solid var(--line);b
 </section>
 
 <section id="branches" class="view"><div class="head"><div><h2>Oddziały</h2><p>Zarządzanie oddziałami z poziomu strony.</p></div>
-<div class="controls admin-only"><button id="addRegionBtn" class="btn">+ Dodaj region</button><button id="renameRegionBtn" class="btn">Zmień nazwę regionu</button><button id="deleteRegionBtn" class="btn danger">Usuń region</button></div></div><div id="adminRegionPanel" class="panel admin-only" style="margin-bottom:12px">
+<div class="controls admin-only"><button type="button" id="addRegionBtn" class="btn" onclick="window.mobileButtonAction && window.mobileButtonAction('addRegionBtn',event)">+ Dodaj region</button><button type="button" id="renameRegionBtn" class="btn" onclick="window.mobileButtonAction && window.mobileButtonAction('renameRegionBtn',event)">Zmień nazwę regionu</button><button type="button" id="deleteRegionBtn" class="btn danger" onclick="window.mobileButtonAction && window.mobileButtonAction('deleteRegionBtn',event)">Usuń region</button></div></div><div id="adminRegionPanel" class="panel admin-only" style="margin-bottom:12px">
       <h3>Zarządzanie regionem</h3>
       <div class="controls">
         <label>Aktywny region<input id="activeRegionNameAdmin" readonly></label>
-        <button id="renameRegionBtn2" class="btn primary">Zmień nazwę regionu</button>
+        <button type="button" id="renameRegionBtn2" class="btn primary" onclick="window.mobileButtonAction && window.mobileButtonAction('renameRegionBtn2',event)">Zmień nazwę regionu</button>
       </div>
       <div class="muted" style="margin-top:6px">Zmiana nazwy nie usuwa ani nie przenosi danych. Wszystkie oddziały i wpisy pozostają przypisane do tego samego regionu.</div>
       <div id="regionAdminMsg" class="msg"></div>
     </div>
-    <div class="g2"><div class="panel"><h3>Dodaj oddział</h3><div class="form"><label>Nazwa<input id="newBranchName"></label><button id="addBranchBtn" class="btn primary">+ Dodaj oddział</button></div><div id="branchMsg" class="msg"></div></div><div class="panel"><h3>Oddziały</h3><div id="branchList" class="list"></div></div></div></section>
+    <div class="g2"><div class="panel"><h3>Dodaj oddział</h3><div class="form"><label>Nazwa<input id="newBranchName"></label><button type="button" id="addBranchBtn" class="btn primary" onclick="window.mobileButtonAction && window.mobileButtonAction('addBranchBtn',event)">+ Dodaj oddział</button></div><div id="branchMsg" class="msg"></div></div><div class="panel"><h3>Oddziały</h3><div id="branchList" class="list"></div></div></div></section>
 
-<section id="contacts" class="view"><div class="head"><div><h2>Kontakty</h2><p>Osoby kontaktowe w oddziałach.</p></div></div><div class="g2"><div class="panel"><h3 id="contactTitle">Dodaj kontakt</h3><div class="form"><label>Oddział<select id="contactBranch"></select></label><label>Imię<input id="contactFirst"></label><label>Nazwisko<input id="contactLast"></label><label>Stanowisko<input id="contactPos"></label><label>Telefon<input id="contactPhone"></label><label>GG<input id="contactGG"></label><label>E-mail<input id="contactEmail"></label><div class="controls"><button id="saveContact" class="btn primary">Zapisz</button><button id="clearContact" class="btn">Wyczyść</button></div></div><div id="contactMsg" class="msg"></div></div><div class="panel"><div class="controls"><label>Oddział<select id="contactFilter"></select></label><label>Szukaj<input id="contactSearch"></label></div><div id="contactsTable" class="table" style="margin-top:10px"></div></div></div></section>
+<section id="contacts" class="view"><div class="head"><div><h2>Kontakty</h2><p>Osoby kontaktowe w oddziałach.</p></div></div><div class="g2"><div class="panel"><h3 id="contactTitle">Dodaj kontakt</h3><div class="form"><label>Oddział<select id="contactBranch"></select></label><label>Imię<input id="contactFirst"></label><label>Nazwisko<input id="contactLast"></label><label>Stanowisko<input id="contactPos"></label><label>Telefon<input id="contactPhone"></label><label>GG<input id="contactGG"></label><label>E-mail<input id="contactEmail"></label><div class="controls"><button type="button" id="saveContact" class="btn primary mobile-save-action" onclick="window.mobileButtonAction && window.mobileButtonAction('saveContact',event)">Zapisz</button><button type="button" id="clearContact" class="btn" onclick="window.mobileButtonAction && window.mobileButtonAction('clearContact',event)">Wyczyść</button></div></div><div id="contactMsg" class="msg"></div></div><div class="panel"><div class="controls"><label>Oddział<select id="contactFilter"></select></label><label>Szukaj<input id="contactSearch"></label></div><div id="contactsTable" class="table" style="margin-top:10px"></div></div></div></section>
 
-<section id="contactLogs" class="view"><div class="head"><div><h2>Rejestr kontaktów</h2><p>Telefon, e-mail i GG – baza „ostatniego kontaktu”.</p></div></div><div class="g2"><div class="panel"><h3 id="logTitle">Dodaj kontakt</h3><div class="form"><label>Oddział<select id="logBranch"></select></label><label>Data<input id="logDate" type="date"></label><label>Kanał<select id="logChannel"><option value="phone">Telefon</option><option value="email">E-mail</option><option value="gg">GG</option></select></label><label>Osoba<input id="logPerson"></label><label>Notatka<textarea id="logNote"></textarea></label><div class="controls"><button type="button" id="saveLog" class="btn primary log-save-btn" onclick="window.saveLogNow && window.saveLogNow(event)">Zapisz</button><button type="button" id="clearLog" class="btn">Wyczyść</button></div></div><div id="logSaveTopMsg" class="msg log-save-top-msg"></div><div id="logMsg" class="msg"></div></div><div class="panel"><label>Oddział<select id="logFilter"></select></label><div id="logList" class="list" style="margin-top:10px"></div></div></div></section>
+<section id="contactLogs" class="view"><div class="head"><div><h2>Rejestr kontaktów</h2><p>Telefon, e-mail i GG – baza „ostatniego kontaktu”.</p></div></div><div class="g2"><div class="panel"><h3 id="logTitle">Dodaj kontakt</h3><div class="form"><label>Oddział<select id="logBranch"></select></label><label>Data<input id="logDate" type="date"></label><label>Kanał<select id="logChannel"><option value="phone">Telefon</option><option value="email">E-mail</option><option value="gg">GG</option></select></label><label>Osoba<input id="logPerson"></label><label>Notatka<textarea id="logNote"></textarea></label><div class="controls"><button type="button" id="saveLog" class="btn primary log-save-btn" onclick="window.saveLogNow && window.saveLogNow(event)">Zapisz</button><button type="button" id="clearLog" class="btn" onclick="window.mobileButtonAction && window.mobileButtonAction('clearLog',event)">Wyczyść</button></div></div><div id="logSaveTopMsg" class="msg log-save-top-msg"></div><div id="logMsg" class="msg"></div></div><div class="panel"><label>Oddział<select id="logFilter"></select></label><div id="logList" class="list" style="margin-top:10px"></div></div></div></section>
 
 <section id="meetings" class="view">
   <div class="head">
@@ -770,8 +808,8 @@ input,select,textarea{width:100%;padding:9px 10px;border:1px solid var(--line);b
     <div class="controls">
       <label>Oddział<select id="meetingBranch"></select></label>
       <label>Data spotkania<input id="meetingDate" type="date"></label>
-      <button id="refreshMeetingPreviewBtn" class="btn primary">Odśwież dane</button>
-      <button id="printMeetingBtn" class="btn">Drukuj notatkę</button>
+      <button type="button" id="refreshMeetingPreviewBtn" class="btn primary" onclick="window.mobileButtonAction && window.mobileButtonAction('refreshMeetingPreviewBtn',event)">Odśwież dane</button>
+      <button type="button" id="printMeetingBtn" class="btn" onclick="window.mobileButtonAction && window.mobileButtonAction('printMeetingBtn',event)">Drukuj notatkę</button>
     </div>
   </div>
 
@@ -812,9 +850,9 @@ input,select,textarea{width:100%;padding:9px 10px;border:1px solid var(--line);b
         </div>
 
         <div class="controls">
-          <button id="saveMeeting" class="btn primary">Zapisz notatkę</button>
-          <button id="prepareNextMeetingBtn" class="btn">Automatycznie przygotuj 1:1</button>
-          <button id="clearMeeting" class="btn">Nowa notatka</button>
+          <button type="button" id="saveMeeting" class="btn primary mobile-save-action" onclick="window.mobileButtonAction && window.mobileButtonAction('saveMeeting',event)">Zapisz notatkę</button>
+          <button type="button" id="prepareNextMeetingBtn" class="btn" onclick="window.mobileButtonAction && window.mobileButtonAction('prepareNextMeetingBtn',event)">Automatycznie przygotuj 1:1</button>
+          <button type="button" id="clearMeeting" class="btn" onclick="window.mobileButtonAction && window.mobileButtonAction('clearMeeting',event)">Nowa notatka</button>
         </div>
       </div>
       <div id="meetingMsg" class="msg"></div>
@@ -826,7 +864,7 @@ input,select,textarea{width:100%;padding:9px 10px;border:1px solid var(--line);b
   </div>
 </section>
 
-<section id="tasks" class="view"><div class="head"><div><h2>Terminarz</h2><p>Zadania, terminy, priorytety i status.</p></div></div><div class="g2"><div class="panel"><h3 id="taskTitleHead">Dodaj zadanie</h3><div class="form"><label>Oddział<select id="taskBranch"></select></label><label>Tytuł<input id="taskTitle"></label><label>Opis<textarea id="taskDesc"></textarea></label><label>Odpowiedzialny<input id="taskOwner"></label><label>Termin<input id="taskDeadline" type="date"></label><label>Priorytet<select id="taskPriority"><option value="high">Pilne</option><option value="normal" selected>Normalne</option><option value="low">Niskie</option></select></label><label>Źródło<input id="taskSource"></label><label>Status<select id="taskStatus"><option value="todo">Do zrobienia</option><option value="progress">W trakcie</option><option value="done">Wykonane</option></select></label><div class="controls"><button id="saveTask" class="btn primary">Zapisz</button><button id="clearTask" class="btn">Wyczyść</button></div></div><div id="taskMsg" class="msg"></div></div><div class="panel"><div class="controls"><label>Oddział<select id="taskFilter"></select></label><label>Status<select id="taskStatusFilter"><option value="all">Wszystkie</option><option value="todo">Do zrobienia</option><option value="progress">W trakcie</option><option value="done">Wykonane</option></select></label></div><div id="taskList" class="list" style="margin-top:10px"></div></div></div></section>
+<section id="tasks" class="view"><div class="head"><div><h2>Terminarz</h2><p>Zadania, terminy, priorytety i status.</p></div></div><div class="g2"><div class="panel"><h3 id="taskTitleHead">Dodaj zadanie</h3><div class="form"><label>Oddział<select id="taskBranch"></select></label><label>Tytuł<input id="taskTitle"></label><label>Opis<textarea id="taskDesc"></textarea></label><label>Odpowiedzialny<input id="taskOwner"></label><label>Termin<input id="taskDeadline" type="date"></label><label>Priorytet<select id="taskPriority"><option value="high">Pilne</option><option value="normal" selected>Normalne</option><option value="low">Niskie</option></select></label><label>Źródło<input id="taskSource"></label><label>Status<select id="taskStatus"><option value="todo">Do zrobienia</option><option value="progress">W trakcie</option><option value="done">Wykonane</option></select></label><div class="controls"><button type="button" id="saveTask" class="btn primary task-save-btn" onclick="window.saveTaskNow && window.saveTaskNow(event)">Zapisz</button><button type="button" id="clearTask" class="btn" onclick="window.mobileButtonAction && window.mobileButtonAction('clearTask',event)">Wyczyść</button></div></div><div id="taskSaveTopMsg" class="msg task-save-top-msg"></div><div id="taskMsg" class="msg"></div></div><div class="panel"><div class="controls"><label>Oddział<select id="taskFilter"></select></label><label>Status<select id="taskStatusFilter"><option value="all">Wszystkie</option><option value="todo">Do zrobienia</option><option value="progress">W trakcie</option><option value="done">Wykonane</option></select></label></div><div id="taskList" class="list" style="margin-top:10px"></div></div></div></section>
 
 <section id="visits" class="view"><div class="inner">
   <div class="head">
@@ -836,9 +874,9 @@ input,select,textarea{width:100%;padding:9px 10px;border:1px solid var(--line);b
       <label>Oddział<select id="visitBranch"></select></label>
       <label>Data wizyty<input id="visitDate" type="date"></label>
       <button type="button" class="btn primary visit-save-btn" id="saveVisit" onclick="window.saveVisitNow && window.saveVisitNow(event)">Zapisz raport</button>
-      <button type="button" class="btn" id="printVisitReport">Drukuj raport</button>
-      <button type="button" class="btn" id="generateVisitForm">Generuj formularz do podpisu</button>
-      <button type="button" class="btn" id="clearVisit">Nowy raport</button>
+      <button type="button" class="btn" id="printVisitReport" onclick="window.mobileButtonAction && window.mobileButtonAction('printVisitReport',event)">Drukuj raport</button>
+      <button type="button" class="btn" id="generateVisitForm" onclick="window.mobileButtonAction && window.mobileButtonAction('generateVisitForm',event)">Generuj formularz do podpisu</button>
+      <button type="button" class="btn" id="clearVisit" onclick="window.mobileButtonAction && window.mobileButtonAction('clearVisit',event)">Nowy raport</button>
     </div><div id="visitSaveTopMsg" class="msg visit-save-top-msg"></div>
   </div>
   <div class="visit-grid">
@@ -851,7 +889,7 @@ input,select,textarea{width:100%;padding:9px 10px;border:1px solid var(--line);b
         <thead><tr><th>Zalecenie</th><th>Osoba odpowiedzialna</th><th>Termin</th><th></th></tr></thead>
         <tbody id="visitRecommendations"></tbody>
       </table></div>
-      <button type="button" class="btn add-recommendation" id="addVisitRecommendation">+ Dodaj zalecenie</button>
+      <button type="button" class="btn add-recommendation" id="addVisitRecommendation" onclick="window.mobileButtonAction && window.mobileButtonAction('addVisitRecommendation',event)">+ Dodaj zalecenie</button>
     </section>
 
     <section class="visit-card visit-full"><h3>Dodatkowe uwagi / podsumowanie</h3><textarea id="visitNotes" placeholder="Dodatkowe obserwacje i ustalenia"></textarea></section>
@@ -888,7 +926,7 @@ input,select,textarea{width:100%;padding:9px 10px;border:1px solid var(--line);b
 
 <section id="sales" class="view"><div class="inner">
 <div class="head"><div><h2>Wprowadzanie wyników UK / Detal</h2><p>Jedna tabela dla wszystkich oddziałów. Plan jest miesięczny, wykonanie narastające na wybrany dzień.</p></div>
-<div class="controls"><label>Data wyników<input id="salesEntryDate" type="date"></label><button class="btn primary" id="saveSalesEntry">Zapisz wyniki</button><span id="salesEntryStatus" class="sales-save-status"></span></div></div>
+<div class="controls"><label>Data wyników<input id="salesEntryDate" type="date"></label><button type="button" class="btn primary" id="saveSalesEntry" onclick="window.mobileButtonAction && window.mobileButtonAction('saveSalesEntry',event)">Zapisz wyniki</button><span id="salesEntryStatus" class="sales-save-status"></span></div></div>
 <div class="sales-entry-grid">
 <div class="sales-entry-card"><span>UK – realizacja regionu</span><strong id="salesUkRegion">—</strong></div>
 <div class="sales-entry-card"><span>Detal – realizacja regionu</span><strong id="salesDetailRegion">—</strong></div>
@@ -912,7 +950,7 @@ input,select,textarea{width:100%;padding:9px 10px;border:1px solid var(--line);b
     <div class="controls">
       <label>Okres KPI VoIP<input id="voipMonth" type="month"></label>
       <label>Okres controllingu<input id="controlKpiMonth" type="month"></label>
-      <button class="btn primary" id="saveMonthlyKpi">Zapisz dane miesięczne</button>
+      <button type="button" class="btn primary" id="saveMonthlyKpi" onclick="window.mobileButtonAction && window.mobileButtonAction('saveMonthlyKpi',event)">Zapisz dane miesięczne</button>
       <span id="monthlySaveStatus" style="font-size:12px;font-weight:700;color:#168451"></span>
     </div>
   </div>
@@ -941,7 +979,7 @@ input,select,textarea{width:100%;padding:9px 10px;border:1px solid var(--line);b
   <div id="kpiMsg" class="msg"></div>
 </div></section>
 
-<section id="notes" class="view"><div class="head"><div><h2>Notatki do oddziału</h2><p>Wiele notatek z datą.</p></div></div><div class="g2"><div class="panel"><h3 id="noteTitle">Dodaj notatkę</h3><div class="form"><label>Oddział<select id="noteBranch"></select></label><label>Data<input id="noteDate" type="date"></label><label>Treść<textarea id="noteText"></textarea></label><div class="controls"><button id="saveNote" class="btn primary">Zapisz</button><button id="clearNote" class="btn">Wyczyść</button></div></div><div id="noteMsg" class="msg"></div></div><div class="panel"><label>Oddział<select id="noteFilter"></select></label><div id="noteList" class="list" style="margin-top:10px"></div></div></div></section>
+<section id="notes" class="view"><div class="head"><div><h2>Notatki do oddziału</h2><p>Wiele notatek z datą.</p></div></div><div class="g2"><div class="panel"><h3 id="noteTitle">Dodaj notatkę</h3><div class="form"><label>Oddział<select id="noteBranch"></select></label><label>Data<input id="noteDate" type="date"></label><label>Treść<textarea id="noteText"></textarea></label><div class="controls"><button type="button" id="saveNote" class="btn primary mobile-save-action" onclick="window.mobileButtonAction && window.mobileButtonAction('saveNote',event)">Zapisz</button><button type="button" id="clearNote" class="btn" onclick="window.mobileButtonAction && window.mobileButtonAction('clearNote',event)">Wyczyść</button></div></div><div id="noteMsg" class="msg"></div></div><div class="panel"><label>Oddział<select id="noteFilter"></select></label><div id="noteList" class="list" style="margin-top:10px"></div></div></div></section>
 
 
 <section id="management" class="view">
@@ -956,7 +994,7 @@ input,select,textarea{width:100%;padding:9px 10px;border:1px solid var(--line);b
         <div class="g3"><label>Typ<select id="goalPeriod"><option value="month">Miesięczny</option><option value="quarter">Kwartalny</option></select></label><label>Termin<input id="goalDeadline" type="date"></label><label>Status<select id="goalStatus"><option value="open">Otwarte</option><option value="progress">W trakcie</option><option value="done">Zrealizowane</option></select></label></div>
         <label>Postęp (%)<input id="goalProgress" type="number" min="0" max="100" step="1"></label>
         <label>Komentarz<textarea id="goalNote"></textarea></label>
-        <button id="saveGoalBtn" class="btn primary">Dodaj cel</button>
+        <button type="button" id="saveGoalBtn" class="btn primary mobile-save-action" onclick="window.mobileButtonAction && window.mobileButtonAction('saveGoalBtn',event)">Dodaj cel</button>
       </div>
       <div id="goalList" class="manage-list" style="margin-top:12px"></div>
     </section>
@@ -966,7 +1004,7 @@ input,select,textarea{width:100%;padding:9px 10px;border:1px solid var(--line);b
       <div class="form">
         <div class="g3"><label>Liczba osób<input id="staffCount" type="number" min="0"></label><label>Wakaty<input id="staffVacancies" type="number" min="0"></label><label>Nowe osoby / wdrożenie<input id="staffOnboarding" type="number" min="0"></label></div>
         <label>Status / komentarz<textarea id="staffComment" placeholder="np. KUK przeciążony, rekrutacja w toku"></textarea></label>
-        <button id="saveStaffBtn" class="btn primary">Zapisz status kadrowy</button>
+        <button type="button" id="saveStaffBtn" class="btn primary mobile-save-action" onclick="window.mobileButtonAction && window.mobileButtonAction('saveStaffBtn',event)">Zapisz status kadrowy</button>
       </div>
       <div id="staffCurrent" style="margin-top:12px"></div>
 
@@ -974,7 +1012,7 @@ input,select,textarea{width:100%;padding:9px 10px;border:1px solid var(--line);b
       <div class="form">
         <label>Data<input id="personnelDate" type="date"></label>
         <label>Zmiana<input id="personnelText" placeholder="np. nowy handlowiec od 01.09"></label>
-        <button id="savePersonnelBtn" class="btn">Dodaj wpis</button>
+        <button type="button" id="savePersonnelBtn" class="btn mobile-save-action" onclick="window.mobileButtonAction && window.mobileButtonAction('savePersonnelBtn',event)">Dodaj wpis</button>
       </div>
       <div id="personnelList" class="manage-list" style="margin-top:10px"></div>
     </section>
@@ -985,7 +1023,7 @@ input,select,textarea{width:100%;padding:9px 10px;border:1px solid var(--line);b
         <label>Ryzyko<input id="riskTitle" placeholder="np. przeciążenie KUK"></label>
         <div class="g2"><label>Poziom<select id="riskLevel"><option value="high">Wysokie</option><option value="medium">Średnie</option><option value="low">Niskie</option></select></label><label>Status<select id="riskStatus"><option value="open">Otwarte</option><option value="monitor">Monitorowane</option><option value="closed">Zamknięte</option></select></label></div>
         <label>Plan działania<textarea id="riskAction"></textarea></label>
-        <button id="saveRiskBtn" class="btn primary">Dodaj ryzyko</button>
+        <button type="button" id="saveRiskBtn" class="btn primary mobile-save-action" onclick="window.mobileButtonAction && window.mobileButtonAction('saveRiskBtn',event)">Dodaj ryzyko</button>
       </div>
       <div id="riskList" class="manage-list" style="margin-top:12px"></div>
     </section>
@@ -995,14 +1033,14 @@ input,select,textarea{width:100%;padding:9px 10px;border:1px solid var(--line);b
       <div class="form">
         <label>Planowana data<input id="visitPlanDate" type="date"></label>
         <label>Cel wizyty<textarea id="visitPlanPurpose"></textarea></label>
-        <button id="saveVisitPlanBtn" class="btn primary">Zaplanuj wizytę</button>
+        <button type="button" id="saveVisitPlanBtn" class="btn primary mobile-save-action" onclick="window.mobileButtonAction && window.mobileButtonAction('saveVisitPlanBtn',event)">Zaplanuj wizytę</button>
       </div>
       <div id="visitPlanList" class="manage-list" style="margin-top:12px"></div>
     </section>
 
     <section class="manage-card visit-full">
       <div class="head"><div><h3 style="margin:0">Automatyczne podsumowanie miesiąca</h3><p>Wynik, KPI, kadry, ryzyka, cele i działania w jednym raporcie.</p></div>
-      <div class="controls"><label>Miesiąc<input id="autoSummaryMonth" type="month"></label><button id="generateMonthlySummaryBtn" class="btn primary">Generuj podsumowanie</button><button id="saveSummaryAsCommentBtn" class="btn">Zapisz jako komentarz RKS</button></div></div>
+      <div class="controls"><label>Miesiąc<input id="autoSummaryMonth" type="month"></label><button type="button" id="generateMonthlySummaryBtn" class="btn primary" onclick="window.mobileButtonAction && window.mobileButtonAction('generateMonthlySummaryBtn',event)">Generuj podsumowanie</button><button type="button" id="saveSummaryAsCommentBtn" class="btn" onclick="window.mobileButtonAction && window.mobileButtonAction('saveSummaryAsCommentBtn',event)">Zapisz jako komentarz RKS</button></div></div>
       <div id="monthlyAutoSummary" class="month-summary muted">Wybierz miesiąc i wygeneruj podsumowanie.</div>
     </section>
     <section class="manage-card visit-full">
@@ -1010,7 +1048,7 @@ input,select,textarea{width:100%;padding:9px 10px;border:1px solid var(--line);b
       <div class="form">
         <label>Miesiąc<input id="monthlyCommentMonth" type="month"></label>
         <label>Co się wydarzyło / co mnie martwi / czego oczekuję<textarea id="monthlyCommentText" style="min-height:130px"></textarea></label>
-        <button id="saveMonthlyCommentBtn" class="btn primary">Zapisz komentarz miesiąca</button>
+        <button type="button" id="saveMonthlyCommentBtn" class="btn primary mobile-save-action" onclick="window.mobileButtonAction && window.mobileButtonAction('saveMonthlyCommentBtn',event)">Zapisz komentarz miesiąca</button>
       </div>
       <div id="monthlyCommentList" class="manage-list" style="margin-top:12px"></div>
     </section>
@@ -1032,7 +1070,7 @@ input,select,textarea{width:100%;padding:9px 10px;border:1px solid var(--line);b
         <label>Opis<textarea id="decisionDescription"></textarea></label>
         <div class="decision-form-row"><label>Typ<select id="decisionType"><option value="decision">Decyzja</option><option value="escalation">Eskalacja</option></select></label><label>Priorytet<select id="decisionPriority"><option value="high">Wysoki</option><option value="normal" selected>Normalny</option><option value="low">Niski</option></select></label></div>
         <div class="decision-form-row"><label>Decydent / osoba odpowiedzialna<input id="decisionOwner"></label><label>Termin<input id="decisionDeadline" type="date"></label></div>
-        <button id="saveDecisionBtn" class="btn primary">Dodaj</button>
+        <button type="button" id="saveDecisionBtn" class="btn primary mobile-save-action" onclick="window.mobileButtonAction && window.mobileButtonAction('saveDecisionBtn',event)">Dodaj</button>
       </div>
       <div id="decisionMsg" class="msg"></div>
     </section>
@@ -1044,7 +1082,7 @@ input,select,textarea{width:100%;padding:9px 10px;border:1px solid var(--line);b
 </section>
 <section id="checklist" class="view">
   <div class="head"><div><h2>Checklista miesięczna RKS</h2><p>Automatyczna kontrola, czy wszystkie kluczowe działania dla oddziałów są wykonane.</p></div>
-  <div class="controls"><label>Miesiąc<input id="checklistMonth" type="month"></label><button id="refreshChecklistBtn" class="btn primary">Odśwież</button></div></div>
+  <div class="controls"><label>Miesiąc<input id="checklistMonth" type="month"></label><button type="button" id="refreshChecklistBtn" class="btn primary" onclick="window.mobileButtonAction && window.mobileButtonAction('refreshChecklistBtn',event)">Odśwież</button></div></div>
   <div id="checklistSummary" class="brief-grid"></div>
   <div id="checklistGrid" class="checklist-grid"></div>
 </section>
@@ -1052,19 +1090,19 @@ input,select,textarea{width:100%;padding:9px 10px;border:1px solid var(--line);b
 
 <section id="weekPlan" class="view">
   <div class="head"><div><h2>Plan tygodnia RKS</h2><p>Przypisz działania do dni tygodnia i porównaj plan z wykonaniem.</p></div>
-  <div class="controls"><label>Tydzień od<input id="weekStart" type="date"></label><button id="refreshWeekPlanBtn" class="btn primary">Odśwież</button></div></div>
+  <div class="controls"><label>Tydzień od<input id="weekStart" type="date"></label><button type="button" id="refreshWeekPlanBtn" class="btn primary" onclick="window.mobileButtonAction && window.mobileButtonAction('refreshWeekPlanBtn',event)">Odśwież</button></div></div>
   <section class="panel">
     <div class="form">
       <div class="g3"><label>Dzień<input id="weekActionDate" type="date"></label><label>Oddział<select id="weekActionBranch"></select></label><label>Typ<select id="weekActionType"><option value="contact">Kontakt</option><option value="visit">Wizyta</option><option value="meeting">1:1</option><option value="task">Zadanie</option><option value="other">Inne</option></select></label></div>
       <label>Działanie<input id="weekActionTitle"></label>
-      <button id="saveWeekActionBtn" class="btn primary">Dodaj do planu</button>
+      <button type="button" id="saveWeekActionBtn" class="btn primary mobile-save-action" onclick="window.mobileButtonAction && window.mobileButtonAction('saveWeekActionBtn',event)">Dodaj do planu</button>
     </div>
   </section>
   <div id="weekBoard" class="week-board" style="margin-top:12px"></div>
 </section>
 
 <section id="adminCenter" class="view">
-  <div class="head"><div><h2>Centrum administracyjne</h2><p>Stan danych aplikacji, regionów i kopii zamknięcia miesiąca.</p></div><button id="refreshAdminCenterBtn" class="btn primary">Odśwież</button></div>
+  <div class="head"><div><h2>Centrum administracyjne</h2><p>Stan danych aplikacji, regionów i kopii zamknięcia miesiąca.</p></div><button type="button" id="refreshAdminCenterBtn" class="btn primary" onclick="window.mobileButtonAction && window.mobileButtonAction('refreshAdminCenterBtn',event)">Odśwież</button></div>
   <div id="adminMetrics" class="admin-grid"></div>
   <div class="grid2" style="margin-top:12px">
     <section class="panel"><h3>Regiony</h3><div id="adminRegions" class="table"></div></section>
@@ -1074,7 +1112,7 @@ input,select,textarea{width:100%;padding:9px 10px;border:1px solid var(--line);b
 
 <section id="trash" class="view">
   <div class="head"><div><h2>Kosz</h2><p>Usunięte rekordy są przechowywane przez 30 dni i mogą zostać przywrócone.</p></div>
-  <div class="controls"><button id="refreshTrashBtn" class="btn primary">Odśwież</button><button id="emptyExpiredTrashBtn" class="btn danger">Usuń wygasłe</button></div></div>
+  <div class="controls"><button type="button" id="refreshTrashBtn" class="btn primary" onclick="window.mobileButtonAction && window.mobileButtonAction('refreshTrashBtn',event)">Odśwież</button><button type="button" id="emptyExpiredTrashBtn" class="btn danger" onclick="window.mobileButtonAction && window.mobileButtonAction('emptyExpiredTrashBtn',event)">Usuń wygasłe</button></div></div>
   <div id="trashList" class="manage-list"></div>
 </section>
 <section id="branchCard" class="view">
@@ -1089,7 +1127,7 @@ input,select,textarea{width:100%;padding:9px 10px;border:1px solid var(--line);b
     <div class="branch-state"><span>Ryzyko</span><strong id="stateRisk">—</strong></div>
     <div class="branch-state"><span>Ostatni kontakt</span><strong id="stateContact">—</strong></div>
   </div>
-  <section class="panel" style="margin-bottom:12px"><div class="head"><div><h3 style="margin:0">Przypięte informacje</h3><p>Najważniejsze informacje widoczne od razu na Karcie oddziału.</p></div><button id="addPinnedNoteBtn" class="btn">Przypnij informację</button></div><div id="pinnedNotes"></div></section><div id="cardContent"></div>
+  <section class="panel" style="margin-bottom:12px"><div class="head"><div><h3 style="margin:0">Przypięte informacje</h3><p>Najważniejsze informacje widoczne od razu na Karcie oddziału.</p></div><button type="button" id="addPinnedNoteBtn" class="btn" onclick="window.mobileButtonAction && window.mobileButtonAction('addPinnedNoteBtn',event)">Przypnij informację</button></div><div id="pinnedNotes"></div></section><div id="cardContent"></div>
 </section>
 <section id="history" class="view">
   <div class="head">
@@ -1101,7 +1139,7 @@ input,select,textarea{width:100%;padding:9px 10px;border:1px solid var(--line);b
     <label>Od<input id="historyFrom" type="date"></label>
     <label>Do<input id="historyTo" type="date"></label>
     <label>Szukaj<input id="historySearch" type="search" placeholder="np. controlling, rekrutacja, UK..."></label>
-    <button id="clearHistoryFilters" class="btn">Wyczyść filtry</button>
+    <button type="button" id="clearHistoryFilters" class="btn" onclick="window.mobileButtonAction && window.mobileButtonAction('clearHistoryFilters',event)">Wyczyść filtry</button>
   </div>
 
   <div class="controls" style="margin-bottom:10px;flex-wrap:wrap">
@@ -1128,7 +1166,7 @@ input,select,textarea{width:100%;padding:9px 10px;border:1px solid var(--line);b
 <section id="attachments" class="view">
   <div class="head"><div><h2>Załączniki do oddziału</h2><p>Prywatne pliki przypisane do oddziałów.</p></div></div>
   <div class="g2">
-    <div class="panel"><h3>Dodaj załącznik</h3><div class="form"><label>Oddział<select id="attachmentBranch"></select></label><label>Opis<input id="attachmentDesc"></label><div class="dropzone"><input id="attachmentFile" type="file"><div class="muted" style="margin-top:7px">Plik trafia do prywatnego Storage Supabase.</div></div><button id="uploadAttachmentBtn" class="btn primary">Dodaj plik</button><div id="attachmentMsg" class="msg"></div></div></div>
+    <div class="panel"><h3>Dodaj załącznik</h3><div class="form"><label>Oddział<select id="attachmentBranch"></select></label><label>Opis<input id="attachmentDesc"></label><div class="dropzone"><input id="attachmentFile" type="file"><div class="muted" style="margin-top:7px">Plik trafia do prywatnego Storage Supabase.</div></div><button type="button" id="uploadAttachmentBtn" class="btn primary mobile-save-action" onclick="window.mobileButtonAction && window.mobileButtonAction('uploadAttachmentBtn',event)">Dodaj plik</button><div id="attachmentMsg" class="msg"></div></div></div>
     <div class="panel"><div class="controls" style="margin-bottom:9px"><label>Oddział<select id="attachmentFilter"></select></label></div><div id="attachmentList"></div></div>
   </div>
 </section>
@@ -1155,10 +1193,10 @@ input,select,textarea{width:100%;padding:9px 10px;border:1px solid var(--line);b
             </select>
           </label>
           <div class="io-actions">
-            <button id="exportModuleExcelBtn" class="btn">Eksport Excel</button>
-            <button id="exportModuleJsonBtn" class="btn">Eksport JSON</button>
-            <button id="downloadTemplateBtn" class="btn">Wzór Excel</button>
-            <button id="refreshIoPreviewBtn" class="btn">Podgląd danych</button>
+            <button type="button" id="exportModuleExcelBtn" class="btn" onclick="window.mobileButtonAction && window.mobileButtonAction('exportModuleExcelBtn',event)">Eksport Excel</button>
+            <button type="button" id="exportModuleJsonBtn" class="btn" onclick="window.mobileButtonAction && window.mobileButtonAction('exportModuleJsonBtn',event)">Eksport JSON</button>
+            <button type="button" id="downloadTemplateBtn" class="btn" onclick="window.mobileButtonAction && window.mobileButtonAction('downloadTemplateBtn',event)">Wzór Excel</button>
+            <button type="button" id="refreshIoPreviewBtn" class="btn" onclick="window.mobileButtonAction && window.mobileButtonAction('refreshIoPreviewBtn',event)">Podgląd danych</button>
           </div>
           <label>Import pliku Excel / JSON
             <input id="moduleImportFile" type="file" accept=".xlsx,.xls,.json,application/json,application/vnd.openxmlformats-officedocument.spreadsheetml.sheet,application/vnd.ms-excel">
@@ -1166,7 +1204,7 @@ input,select,textarea{width:100%;padding:9px 10px;border:1px solid var(--line);b
           <label>Sposób importu
             <select id="moduleImportMode"><option value="append">Dodaj nowe rekordy</option><option value="upsert">Aktualizuj / dodaj</option></select>
           </label>
-          <button id="importModuleBtn" class="btn primary">Importuj wybraną zakładkę</button>
+          <button type="button" id="importModuleBtn" class="btn primary" onclick="window.mobileButtonAction && window.mobileButtonAction('importModuleBtn',event)">Importuj wybraną zakładkę</button>
           <div id="ioMsg" class="msg"></div>
           <div class="io-note">Excel może używać polskich nazw kolumn. Dla danych przypisanych do oddziału możesz wpisać nazwę oddziału zamiast UUID. Najbezpieczniej pobrać najpierw „Wzór Excel”.</div>
         </div>
@@ -1185,8 +1223,8 @@ input,select,textarea{width:100%;padding:9px 10px;border:1px solid var(--line);b
           <div class="io-note" style="margin-top:5px">Import nastąpi wyłącznie do regionu wybranego powyżej. Aplikacja nie użyje automatycznie aktualnie otwartego regionu.</div>
         </div>
         <div class="controls" style="margin-top:9px">
-          <button id="analyzeV45Btn" class="btn">Sprawdź pliki v45</button>
-          <button id="importV45Btn" class="btn primary">Importuj dane z v45</button>
+          <button type="button" id="analyzeV45Btn" class="btn" onclick="window.mobileButtonAction && window.mobileButtonAction('analyzeV45Btn',event)">Sprawdź pliki v45</button>
+          <button type="button" id="importV45Btn" class="btn primary" onclick="window.mobileButtonAction && window.mobileButtonAction('importV45Btn',event)">Importuj dane z v45</button>
         </div>
         <div id="v45ImportMsg" class="msg"></div>
         <div id="v45ImportPreview" class="io-note"></div>
@@ -1195,12 +1233,12 @@ input,select,textarea{width:100%;padding:9px 10px;border:1px solid var(--line);b
       <div class="backup-card" style="margin-top:12px">
         <h4>Kopia aktywnego regionu</h4>
         <div class="io-note">Zapisuje wszystkie dane aktywnego regionu do pliku JSON na dysku komputera.</div>
-        <div class="controls" style="margin-top:9px"><button id="backupRegionBtn" class="btn primary">Pobierz kopię regionu</button><button id="restoreRegionBtn" class="btn">Przywróć region</button><input id="restoreRegionFile" type="file" accept=".json,application/json" hidden></div>
+        <div class="controls" style="margin-top:9px"><button type="button" id="backupRegionBtn" class="btn primary" onclick="window.mobileButtonAction && window.mobileButtonAction('backupRegionBtn',event)">Pobierz kopię regionu</button><button type="button" id="restoreRegionBtn" class="btn" onclick="window.mobileButtonAction && window.mobileButtonAction('restoreRegionBtn',event)">Przywróć region</button><input id="restoreRegionFile" type="file" accept=".json,application/json" hidden></div>
       </div>
       <div class="backup-card danger-zone admin-only" style="margin-top:12px">
         <h4>Pełna kopia bazy aplikacji</h4>
         <div class="io-note">Tylko administrator. Kopia ZIP zawiera plik <b>backup.json</b> z danymi wszystkich regionów oraz, jeśli są dostępne, prywatne załączniki ze Storage. Nie obejmuje haseł ani danych Supabase Auth.</div>
-        <div class="controls" style="margin-top:9px"><button id="backupDatabaseBtn" class="btn primary">Pobierz pełną kopię ZIP</button><button id="restoreDatabaseBtn" class="btn danger">Przywróć pełną kopię</button><input id="restoreDatabaseFile" type="file" accept=".zip,application/zip" hidden></div>
+        <div class="controls" style="margin-top:9px"><button type="button" id="backupDatabaseBtn" class="btn primary" onclick="window.mobileButtonAction && window.mobileButtonAction('backupDatabaseBtn',event)">Pobierz pełną kopię ZIP</button><button type="button" id="restoreDatabaseBtn" class="btn danger" onclick="window.mobileButtonAction && window.mobileButtonAction('restoreDatabaseBtn',event)">Przywróć pełną kopię</button><input id="restoreDatabaseFile" type="file" accept=".zip,application/zip" hidden></div>
       </div>
     </div>
     <div class="panel"><h3>Podgląd</h3><div id="ioPreview" class="io-preview table"><div class="empty">Wybierz typ danych i kliknij „Podgląd danych”.</div></div></div>
@@ -1225,7 +1263,7 @@ input,select,textarea{width:100%;padding:9px 10px;border:1px solid var(--line);b
       <div class="controls">
         <label>Rok<input id="bonusMonthYear" type="number" min="2020" max="2100" step="1" style="width:100px"></label>
         <label>Miesiąc<select id="bonusMonthSelect" style="width:150px"></select></label>
-        <button id="calcMonthlyBonusBtn" class="btn primary">Przelicz miesiąc</button>
+        <button type="button" id="calcMonthlyBonusBtn" class="btn primary" onclick="window.mobileButtonAction && window.mobileButtonAction('calcMonthlyBonusBtn',event)">Przelicz miesiąc</button>
       </div>
     </div>
 
@@ -1254,7 +1292,7 @@ input,select,textarea{width:100%;padding:9px 10px;border:1px solid var(--line);b
       <div class="controls">
         <label>Rok<input id="bonusYear" type="number" min="2020" max="2100" step="1" style="width:100px"></label>
         <label>Kwartał<select id="bonusQuarter"><option value="1">I kwartał</option><option value="2">II kwartał</option><option value="3">III kwartał</option><option value="4">IV kwartał</option></select></label>
-        <button id="calcBonusBtn" class="btn primary">Przelicz kwartał</button>
+        <button type="button" id="calcBonusBtn" class="btn primary" onclick="window.mobileButtonAction && window.mobileButtonAction('calcBonusBtn',event)">Przelicz kwartał</button>
       </div>
     </div>
 
@@ -1285,17 +1323,17 @@ input,select,textarea{width:100%;padding:9px 10px;border:1px solid var(--line);b
       <div class="form">
         <label>Miesiąc<input id="closeMonthKey" type="month"></label>
         <label>Powód / komentarz<input id="closeMonthNote" placeholder="np. miesiąc rozliczony"></label>
-        <div class="controls"><button id="closeMonthBtn" class="btn primary">Zamknij miesiąc</button><button id="reopenMonthBtn" class="btn">Otwórz miesiąc</button><span id="closeMonthStatus"></span></div><div id="closeMonthCompleteness" class="close-check"></div><div class="controls" style="margin-top:8px"><button id="exportFullMonthlyReportBtn" class="btn">Eksport pełnego raportu miesiąca</button></div>
+        <div class="controls"><button type="button" id="closeMonthBtn" class="btn primary mobile-save-action" onclick="window.mobileButtonAction && window.mobileButtonAction('closeMonthBtn',event)">Zamknij miesiąc</button><button type="button" id="reopenMonthBtn" class="btn" onclick="window.mobileButtonAction && window.mobileButtonAction('reopenMonthBtn',event)">Otwórz miesiąc</button><span id="closeMonthStatus"></span></div><div id="closeMonthCompleteness" class="close-check"></div><div class="controls" style="margin-top:8px"><button type="button" id="exportFullMonthlyReportBtn" class="btn" onclick="window.mobileButtonAction && window.mobileButtonAction('exportFullMonthlyReportBtn',event)">Eksport pełnego raportu miesiąca</button></div>
       </div>
       <div class="muted">Po zamknięciu miesiąca wyniki UK/Detal i KPI z tego miesiąca nie mogą być zmieniane, dopóki miesiąc nie zostanie ponownie otwarty.</div>
     </section>
     <section class="panel">
-      <div class="head"><div><h3 style="margin:0">Log zmian</h3><p>Kto, kiedy i co zmienił.</p></div><button id="refreshAuditBtn" class="btn">Odśwież</button></div>
+      <div class="head"><div><h3 style="margin:0">Log zmian</h3><p>Kto, kiedy i co zmienił.</p></div><button type="button" id="refreshAuditBtn" class="btn" onclick="window.mobileButtonAction && window.mobileButtonAction('refreshAuditBtn',event)">Odśwież</button></div>
       <div id="auditLogTable" class="table audit-table"></div>
     </section>
   </div>
 <div class="g2" style="margin-top:12px">
-    <div class="panel"><h3>Archiwum miesiąca</h3><div class="form"><label>Miesiąc<input id="archiveMonth" type="month"></label><button id="createArchiveBtn" class="btn primary">Utwórz archiwum</button><div id="archiveMsg" class="msg"></div></div></div>
+    <div class="panel"><h3>Archiwum miesiąca</h3><div class="form"><label>Miesiąc<input id="archiveMonth" type="month"></label><button type="button" id="createArchiveBtn" class="btn primary" onclick="window.mobileButtonAction && window.mobileButtonAction('createArchiveBtn',event)">Utwórz archiwum</button><div id="archiveMsg" class="msg"></div></div></div>
     <div class="panel"><h3>Archiwa</h3><div id="archiveList" class="list"></div></div>
   </div>
 </section>
@@ -1303,18 +1341,18 @@ input,select,textarea{width:100%;padding:9px 10px;border:1px solid var(--line);b
 </main>
 <div id="quickAddModal" class="quick-modal hidden">
   <div class="quick-card">
-    <div class="head"><div><h3 style="margin:0">Szybkie dodawanie</h3><p>Dodaj najczęstszy wpis bez szukania zakładki.</p></div><button id="closeQuickAdd" class="btn">Zamknij</button></div>
+    <div class="head"><div><h3 style="margin:0">Szybkie dodawanie</h3><p>Dodaj najczęstszy wpis bez szukania zakładki.</p></div><button type="button" id="closeQuickAdd" class="btn" onclick="window.mobileButtonAction && window.mobileButtonAction('closeQuickAdd',event)">Zamknij</button></div>
     <div class="quick-options">
-      <button class="quick-option" data-quick="tasks"><b>Zadanie</b><span>Terminarz i deadline</span></button>
-      <button class="quick-option" data-quick="notes"><b>Notatka</b><span>Notatka do oddziału</span></button>
-      <button class="quick-option" data-quick="contactLogs"><b>Kontakt</b><span>Telefon, e-mail lub GG</span></button>
-      <button class="quick-option" data-quick="management-risk"><b>Ryzyko</b><span>Ryzyko i plan działania</span></button>
-      <button class="quick-option" data-quick="management-goal"><b>Cel</b><span>Cel miesięczny / kwartalny</span></button>
-      <button class="quick-option" data-quick="visits"><b>Wizyta</b><span>Raport z wizyty</span></button>
+      <button type="button" class="quick-option" data-quick="tasks"><b>Zadanie</b><span>Terminarz i deadline</span></button>
+      <button type="button" class="quick-option" data-quick="notes"><b>Notatka</b><span>Notatka do oddziału</span></button>
+      <button type="button" class="quick-option" data-quick="contactLogs"><b>Kontakt</b><span>Telefon, e-mail lub GG</span></button>
+      <button type="button" class="quick-option" data-quick="management-risk"><b>Ryzyko</b><span>Ryzyko i plan działania</span></button>
+      <button type="button" class="quick-option" data-quick="management-goal"><b>Cel</b><span>Cel miesięczny / kwartalny</span></button>
+      <button type="button" class="quick-option" data-quick="visits"><b>Wizyta</b><span>Raport z wizyty</span></button>
     </div>
   </div>
 </div>
-<button id="quickAddFab" class="quick-add-fab" title="Szybkie dodawanie">+</button>
+<button type="button" id="quickAddFab" class="quick-add-fab" title="Szybkie dodawanie" onclick="window.mobileButtonAction && window.mobileButtonAction('quickAddFab',event)">+</button>
 </div>
 
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
@@ -1348,6 +1386,123 @@ async function forceLogout(){
   }
 }
 window.forceLogout=forceLogout;
+
+async function mobileButtonAction(id,evt=null){
+  if(evt){evt.preventDefault();evt.stopPropagation()}
+  try{
+    const named={
+      tabOrderBtn:'openTabOrder',
+      cancelTabOrderBtn:'closeTabOrder',
+      saveTabOrderBtn:'saveTabOrder',
+      resetTabOrderBtn:'resetTabOrderDraft',
+      refreshMapBtn:'loadRegionMap',
+      addRegionBtn:'manageAddRegion',
+      renameRegionBtn:'manageRenameRegion',
+      deleteRegionBtn:'manageDeleteRegion',
+      renameRegionBtn2:'renameActiveRegionAdmin',
+      addBranchBtn:'addBranch',
+      refreshToday:'loadDashboard',
+      exportRegionBriefExcel:'exportRegionBriefExcel',
+      loadComparisonBtn:'loadComparison',
+      saveContact:'saveContact',
+      clearContact:'clearContact',
+      clearLog:'clearLog',
+      refreshMeetingPreviewBtn:'renderMeetingNoteV45',
+      printMeetingBtn:'printMeeting',
+      saveMeeting:'saveMeeting',
+      prepareNextMeetingBtn:'prepareNextMeeting',
+      clearMeeting:'clearMeeting',
+      clearTask:'clearTask',
+      printVisitReport:'printVisitSignatureForm',
+      generateVisitForm:'generateVisitSignatureForm',
+      clearVisit:'clearVisit',
+      saveNote:'saveNote',
+      clearNote:'clearNote',
+      saveGoalBtn:'saveGoal',
+      saveStaffBtn:'saveStaff',
+      savePersonnelBtn:'savePersonnel',
+      saveRiskBtn:'saveRisk',
+      saveVisitPlanBtn:'saveVisitPlan',
+      generateMonthlySummaryBtn:'generateMonthlySummary',
+      saveSummaryAsCommentBtn:'saveSummaryAsComment',
+      saveMonthlyCommentBtn:'saveMonthlyComment',
+      saveDecisionBtn:'saveDecision',
+      refreshChecklistBtn:'loadChecklist',
+      refreshWeekPlanBtn:'loadWeekPlan',
+      saveWeekActionBtn:'saveWeekAction',
+      refreshAdminCenterBtn:'loadAdminCenter',
+      refreshTrashBtn:'loadTrash',
+      emptyExpiredTrashBtn:'emptyExpiredTrash',
+      addPinnedNoteBtn:'addPinnedNote',
+      uploadAttachmentBtn:'uploadAttachment',
+      exportModuleExcelBtn:'exportModuleExcel',
+      exportModuleJsonBtn:'exportModuleJson',
+      downloadTemplateBtn:'downloadModuleTemplate',
+      refreshIoPreviewBtn:'previewIo',
+      importModuleBtn:'importModule',
+      analyzeV45Btn:'analyzeV45Files',
+      importV45Btn:'importV45Files',
+      backupRegionBtn:'exportRegionBackupV7',
+      backupDatabaseBtn:'fullDatabaseBackup',
+      calcMonthlyBonusBtn:'calculateMonthlyBonus',
+      calcBonusBtn:'calculateBonus',
+      closeMonthBtn:'closeMonth',
+      reopenMonthBtn:'reopenMonth',
+      exportFullMonthlyReportBtn:'exportFullMonthlyReport',
+      refreshAuditBtn:'loadAuditLog',
+      createArchiveBtn:'createArchive',
+      markChangesSeenBtn:'markChangesSeen',
+      installPwaBtn:'installPwa',
+      changeModeBtn:'changeWorkMode',
+      chooseAdminModeBtn:'chooseAdminMode',
+      chooseUserModeBtn:'chooseUserMode',
+      confirmUserModeBtn:'confirmUserMode'
+    };
+
+    if(id==='logoutBtn'||id==='modeLogoutBtn')return forceLogout();
+    if(id==='saveLog')return (window.saveLogNow||saveLog)(evt);
+    if(id==='saveTask')return (window.saveTaskNow||saveTask)(evt);
+    if(id==='saveVisit')return (window.saveVisitNow||saveVisit)(evt);
+    if(id==='saveSalesEntry')return saveSalesEntry(true);
+    if(id==='saveMonthlyKpi')return saveMonthlyKpi(true);
+    if(id==='addVisitRecommendation')return addVisitRecommendationRow();
+    if(id==='applyGlobalPeriod')return applyGlobalPeriodValue();
+    if(id==='exportBackupBtn')return exportRegionBackup();
+    if(id==='importBackupBtn')return $('importBackupFile')?.click();
+    if(id==='restoreRegionBtn')return $('restoreRegionFile')?.click();
+    if(id==='restoreDatabaseBtn')return $('restoreDatabaseFile')?.click();
+    if(id==='printRegionBrief')return window.print();
+    if(id==='openWeekPlanBtn')return document.querySelector('.tab[data-v="weekPlan"]')?.click();
+    if(id==='quickAddFab')return $('quickAddModal')?.classList.remove('hidden');
+    if(id==='closeQuickAdd')return $('quickAddModal')?.classList.add('hidden');
+    if(id==='closePwaHelp')return $('pwaHelpModal')?.classList.add('hidden');
+    if(id==='cancelModeRegionBtn')return $('modeRegionBox')?.classList.add('hidden');
+
+    if(id==='clearHistoryFilters'){
+      $('historyFrom').value='';
+      $('historyTo').value='';
+      $('historySearch').value='';
+      document.querySelectorAll('.historyType').forEach(x=>x.checked=true);
+      return window.refreshHistoryNow?.()||loadHistory();
+    }
+
+    if(id==='bcClearFilters'){
+      $('bcSearch').value='';
+      $('bcStatus').value='';
+      $('bcGroup').value='';
+      $('bcSort').value='score';
+      return loadBranchCompare();
+    }
+
+    const fn=named[id] && window[named[id]];
+    if(typeof fn==='function')return await fn();
+  }catch(e){
+    console.error('Przycisk mobilny:',id,e);
+    alert('Nie udało się wykonać operacji: '+(e?.message||e));
+  }
+}
+window.mobileButtonAction=mobileButtonAction;
+
 
 let workMode=null,workModeRegion=null;
 let user=null,profile=null,branches=[],edit={contact:null,log:null,meeting:null,task:null,visit:null,note:null};
@@ -1389,8 +1544,8 @@ function renderTabOrderEditor(){
       <div class="tab-order-num">${i+1}</div>
       <div class="tab-order-name">${esc(tabLabel(v))}</div>
       <div class="tab-order-actions">
-        <button class="btn small" ${i===0?'disabled':''} onclick="moveTabOrder(${i},-1)" title="Przesuń w górę">↑</button>
-        <button class="btn small" ${i===tabOrderDraft.length-1?'disabled':''} onclick="moveTabOrder(${i},1)" title="Przesuń w dół">↓</button>
+        <button type="button" class="btn small" ${i===0?'disabled':''} onclick="moveTabOrder(${i},-1)" title="Przesuń w górę">↑</button>
+        <button type="button" class="btn small" ${i===tabOrderDraft.length-1?'disabled':''} onclick="moveTabOrder(${i},1)" title="Przesuń w dół">↓</button>
       </div>
     </div>`).join('');
 }
@@ -1443,12 +1598,12 @@ function sl(v){return v==='todo'?'Do zrobienia':v==='progress'?'W trakcie':'Wyko
 async function loadProfile(){let{data,error}=await sb.from('profiles').select('*').eq('id',user.id).single();if(error)throw error;profile=data;$('headerUser').textContent=(data.display_name||'Użytkownik')+' • '+data.email;$('roleBadge').textContent=data.role.toUpperCase()}
 async function loadRegions(){let{data,error}=await sb.from('regions').select('*').order('name');if(error)throw error;$('regionSelect').innerHTML=(data||[]).map(r=>`<option value="${r.id}">${esc(r.name)}</option>`).join('')}
 async function loadBranches(){let{data,error}=await sb.from('branches').select('*').eq('region_id',rid()).order('name');if(error)throw error;branches=data||[];fill();renderBranches();await Promise.all([loadContacts(),loadLogs(),loadMeetings(),loadTasks(),loadVisits(),loadSales(),loadKpis(),loadNotes(),loadDashboard(),loadCard(),loadHistory()])}
-function renderBranches(){$('branchList').innerHTML=branches.length?branches.map(b=>`<div class="item"><div class="top"><b>${esc(b.name)}</b><div class="actions"><button class="btn small" onclick="renameBranch('${b.id}')">Zmień</button><button class="btn small danger" onclick="deleteBranch('${b.id}')">Usuń</button></div></div></div>`).join(''):'<div class="empty">Brak oddziałów.</div>'}
+function renderBranches(){$('branchList').innerHTML=branches.length?branches.map(b=>`<div class="item"><div class="top"><b>${esc(b.name)}</b><div class="actions"><button type="button" class="btn small" onclick="renameBranch('${b.id}')">Zmień</button><button type="button" class="btn small danger" onclick="deleteBranch('${b.id}')">Usuń</button></div></div></div>`).join(''):'<div class="empty">Brak oddziałów.</div>'}
 async function addBranch(){let name=$('newBranchName').value.trim();if(!name)return;let{error}=await sb.from('branches').insert({region_id:rid(),name});if(error)return msg('branchMsg',error.message,'error');$('newBranchName').value='';await loadBranches()}
 window.renameBranch=async id=>{let b=branches.find(x=>x.id===id),name=prompt('Nowa nazwa:',b.name);if(!name)return;let{error}=await sb.from('branches').update({name:name.trim()}).eq('id',id);if(error)return msg('branchMsg',error.message,'error');await loadBranches()};
 window.deleteBranch=async id=>{let b=branches.find(x=>x.id===id);if(!confirm(`Usunąć ${b.name}? Powiązane dane mogą zostać usunięte.`))return;let{error}=await sb.from('branches').delete().eq('id',id);if(error)return msg('branchMsg',error.message,'error');await loadBranches()};
 
-async function loadContacts(){let x=await q('contacts');if(x.error)return;window._contacts=x.data||[];let f=$('contactFilter').value,s=$('contactSearch').value.toLowerCase(),a=window._contacts.filter(c=>(f==='all'||c.branch_id===f)&&(!s||[c.first_name,c.last_name,c.position,c.phone,c.gg,c.email,bn(c.branch_id)].join(' ').toLowerCase().includes(s)));$('contactsTable').innerHTML=a.length?`<table><tr><th>Oddział</th><th>Imię i nazwisko</th><th>Stanowisko</th><th>Telefon</th><th>GG</th><th>E-mail</th><th></th></tr>${a.map(c=>`<tr><td>${esc(bn(c.branch_id))}</td><td>${esc((c.first_name||'')+' '+(c.last_name||''))}</td><td>${esc(c.position||'')}</td><td>${esc(c.phone||'')}</td><td>${esc(c.gg||'')}</td><td>${esc(c.email||'')}</td><td><button class="btn small" onclick="editContact('${c.id}')">Edytuj</button> <button class="btn small danger" onclick="delContact('${c.id}')">Usuń</button></td></tr>`).join('')}</table>`:'<div class="empty">Brak kontaktów.</div>'}
+async function loadContacts(){let x=await q('contacts');if(x.error)return;window._contacts=x.data||[];let f=$('contactFilter').value,s=$('contactSearch').value.toLowerCase(),a=window._contacts.filter(c=>(f==='all'||c.branch_id===f)&&(!s||[c.first_name,c.last_name,c.position,c.phone,c.gg,c.email,bn(c.branch_id)].join(' ').toLowerCase().includes(s)));$('contactsTable').innerHTML=a.length?`<table><tr><th>Oddział</th><th>Imię i nazwisko</th><th>Stanowisko</th><th>Telefon</th><th>GG</th><th>E-mail</th><th></th></tr>${a.map(c=>`<tr><td>${esc(bn(c.branch_id))}</td><td>${esc((c.first_name||'')+' '+(c.last_name||''))}</td><td>${esc(c.position||'')}</td><td>${esc(c.phone||'')}</td><td>${esc(c.gg||'')}</td><td>${esc(c.email||'')}</td><td><button type="button" class="btn small" onclick="editContact('${c.id}')">Edytuj</button> <button type="button" class="btn small danger" onclick="delContact('${c.id}')">Usuń</button></td></tr>`).join('')}</table>`:'<div class="empty">Brak kontaktów.</div>'}
 function clearContact(){edit.contact=null;$('contactTitle').textContent='Dodaj kontakt';['contactFirst','contactLast','contactPos','contactPhone','contactGG','contactEmail'].forEach(i=>$(i).value='')}
 async function saveContact(){let r={region_id:rid(),branch_id:$('contactBranch').value,first_name:$('contactFirst').value.trim(),last_name:$('contactLast').value.trim(),position:$('contactPos').value.trim(),phone:$('contactPhone').value.trim(),gg:$('contactGG').value.trim(),email:$('contactEmail').value.trim()};
   if(!edit.contact && (r.email||r.phone) && await duplicateExists('contacts',{region_id:r.region_id,branch_id:r.branch_id,...(r.email?{email:r.email}:{phone:r.phone})})){if(!confirm('Podobny kontakt już istnieje w tym oddziale. Zapisać mimo to?'))return}
@@ -1456,7 +1611,7 @@ async function saveContact(){let r={region_id:rid(),branch_id:$('contactBranch')
 window.editContact=id=>{let c=window._contacts.find(x=>x.id===id);edit.contact=id;$('contactTitle').textContent='Edytuj kontakt';$('contactBranch').value=c.branch_id;$('contactFirst').value=c.first_name||'';$('contactLast').value=c.last_name||'';$('contactPos').value=c.position||'';$('contactPhone').value=c.phone||'';$('contactGG').value=c.gg||'';$('contactEmail').value=c.email||''};
 window.delContact=async id=>{if(confirm('Usunąć kontakt?')){await sb.from('contacts').delete().eq('id',id);loadContacts();loadCard()}};
 
-async function loadLogs(){let x=await q('contact_logs');if(x.error){msg('logMsg','Najpierw uruchom SQL tworzący contact_logs.','error');return}window._logs=x.data||[];let f=$('logFilter').value,a=window._logs.filter(v=>f==='all'||v.branch_id===f).sort((a,b)=>b.contact_date.localeCompare(a.contact_date));$('logList').innerHTML=a.length?a.map(v=>`<div class="item"><div class="top"><div><b>${esc(bn(v.branch_id))} • ${fd(v.contact_date)} • ${esc(v.channel)}</b><div class="meta">${esc(v.person||'')}</div></div><div class="actions"><button class="btn small" onclick="editLog('${v.id}')">Edytuj</button><button class="btn small danger" onclick="delLog('${v.id}')">Usuń</button></div></div><div class="text">${esc(v.note||'')}</div></div>`).join(''):'<div class="empty">Brak wpisów.</div>'}
+async function loadLogs(){let x=await q('contact_logs');if(x.error){msg('logMsg','Najpierw uruchom SQL tworzący contact_logs.','error');return}window._logs=x.data||[];let f=$('logFilter').value,a=window._logs.filter(v=>f==='all'||v.branch_id===f).sort((a,b)=>b.contact_date.localeCompare(a.contact_date));$('logList').innerHTML=a.length?a.map(v=>`<div class="item"><div class="top"><div><b>${esc(bn(v.branch_id))} • ${fd(v.contact_date)} • ${esc(v.channel)}</b><div class="meta">${esc(v.person||'')}</div></div><div class="actions"><button type="button" class="btn small" onclick="editLog('${v.id}')">Edytuj</button><button type="button" class="btn small danger" onclick="delLog('${v.id}')">Usuń</button></div></div><div class="text">${esc(v.note||'')}</div></div>`).join(''):'<div class="empty">Brak wpisów.</div>'}
 function clearLog(){edit.log=null;$('logTitle').textContent='Dodaj kontakt';$('logDate').value=today();$('logPerson').value='';$('logNote').value=''}
 async function saveLog(evt=null){
   if(evt){evt.preventDefault();evt.stopPropagation()}
@@ -1632,32 +1787,96 @@ async function renderMeetingNoteV45(){
   `;
 }
 
-async function loadMeetings(){let x=await q('meeting_notes');if(x.error)return;window._meetings=x.data||[];let f=$('meetingFilter').value,a=window._meetings.filter(v=>f==='all'||v.branch_id===f).sort((a,b)=>b.meeting_date.localeCompare(a.meeting_date));$('meetingList').innerHTML=a.length?a.map(v=>`<div class="item"><div class="top"><div><b>${esc(bn(v.branch_id))} • ${fd(v.meeting_date)}</b><div class="meta">${att(v.attendance)}</div></div><div class="actions"><button class="btn small" onclick="editMeeting('${v.id}')">Edytuj</button><button class="btn small danger" onclick="delMeeting('${v.id}')">Usuń</button></div></div><div class="text">${esc(v.urgent_topics||'')}</div></div>`).join(''):'<div class="empty">Brak notatek 1:1.</div>';await renderMeetingNoteV45();
+async function loadMeetings(){let x=await q('meeting_notes');if(x.error)return;window._meetings=x.data||[];let f=$('meetingFilter').value,a=window._meetings.filter(v=>f==='all'||v.branch_id===f).sort((a,b)=>b.meeting_date.localeCompare(a.meeting_date));$('meetingList').innerHTML=a.length?a.map(v=>`<div class="item"><div class="top"><div><b>${esc(bn(v.branch_id))} • ${fd(v.meeting_date)}</b><div class="meta">${att(v.attendance)}</div></div><div class="actions"><button type="button" class="btn small" onclick="editMeeting('${v.id}')">Edytuj</button><button type="button" class="btn small danger" onclick="delMeeting('${v.id}')">Usuń</button></div></div><div class="text">${esc(v.urgent_topics||'')}</div></div>`).join(''):'<div class="empty">Brak notatek 1:1.</div>';await renderMeetingNoteV45();
 }
 function clearMeeting(){edit.meeting=null;$('meetingTitle').textContent='Nowa notatka';$('meetingDate').value=today();$('meetingAttendance').value='present_manager';$('meetingComment').value='';$('meetingTopics').value='';setMeetingContent({});toggleComment();renderMeetingNoteV45()}
 async function saveMeeting(){let a=$('meetingAttendance').value,c=$('meetingComment').value.trim();if(a==='absent_excused'&&!c)return msg('meetingMsg','Wpisz komentarz do usprawiedliwienia.','error');let r={region_id:rid(),branch_id:$('meetingBranch').value,meeting_date:$('meetingDate').value,attendance:a,attendance_comment:c||null,urgent_topics:$('meetingTopics').value.trim(),content:meetingContent(),created_by:user.id};let z=edit.meeting?await sb.from('meeting_notes').update(r).eq('id',edit.meeting):await sb.from('meeting_notes').insert(r);if(z.error)return msg('meetingMsg',z.error.message,'error');clearMeeting();loadMeetings();loadCard();loadHistory()}
 window.editMeeting=id=>{let v=window._meetings.find(x=>x.id===id);edit.meeting=id;$('meetingTitle').textContent='Edytuj notatkę';$('meetingBranch').value=v.branch_id;$('meetingDate').value=v.meeting_date;$('meetingAttendance').value=v.attendance;$('meetingComment').value=v.attendance_comment||'';$('meetingTopics').value=v.urgent_topics||'';setMeetingContent(v.content||{});toggleComment()};
 window.delMeeting=async id=>{if(confirm('Usunąć notatkę?')){await sb.from('meeting_notes').delete().eq('id',id);loadMeetings();loadCard();loadHistory()}};
 
-async function loadTasks(){let x=await q('tasks');if(x.error)return;window._tasks=x.data||[];let f=$('taskFilter').value,s=$('taskStatusFilter').value,a=window._tasks.filter(v=>(f==='all'||v.branch_id===f)&&(s==='all'||v.status===s)).sort((a,b)=>(a.deadline||'9999').localeCompare(b.deadline||'9999'));$('taskList').innerHTML=a.length?a.map(v=>`<div class="item"><div class="top"><div><b>${esc(v.title)}</b><div class="meta">${esc(bn(v.branch_id))} • ${fd(v.deadline)} • <span class="${v.priority}">${v.priority}</span> • <span class="status ${v.status}">${sl(v.status)}</span></div></div><div class="actions"><button class="btn small" onclick="editTask('${v.id}')">Edytuj</button>${v.status!=='done'?`<button class="btn small" onclick="doneTask('${v.id}')">Wykonane</button>`:''}<button class="btn small danger" onclick="delTask('${v.id}')">Usuń</button></div></div><div class="text">${esc(v.description||'')}</div></div>`).join(''):'<div class="empty">Brak zadań.</div>'}
+async function loadTasks(){let x=await q('tasks');if(x.error)return;window._tasks=x.data||[];let f=$('taskFilter').value,s=$('taskStatusFilter').value,a=window._tasks.filter(v=>(f==='all'||v.branch_id===f)&&(s==='all'||v.status===s)).sort((a,b)=>(a.deadline||'9999').localeCompare(b.deadline||'9999'));$('taskList').innerHTML=a.length?a.map(v=>`<div class="item"><div class="top"><div><b>${esc(v.title)}</b><div class="meta">${esc(bn(v.branch_id))} • ${fd(v.deadline)} • <span class="${v.priority}">${v.priority}</span> • <span class="status ${v.status}">${sl(v.status)}</span></div></div><div class="actions"><button type="button" class="btn small" onclick="editTask('${v.id}')">Edytuj</button>${v.status!=='done'?`<button type="button" class="btn small" onclick="doneTask('${v.id}')">Wykonane</button>`:''}<button type="button" class="btn small danger" onclick="delTask('${v.id}')">Usuń</button></div></div><div class="text">${esc(v.description||'')}</div></div>`).join(''):'<div class="empty">Brak zadań.</div>'}
 function clearTask(){edit.task=null;$('taskTitleHead').textContent='Dodaj zadanie';['taskTitle','taskDesc','taskOwner','taskDeadline','taskSource'].forEach(i=>$(i).value='');$('taskPriority').value='normal';$('taskStatus').value='todo'}
-async function saveTask(){let r={region_id:rid(),branch_id:$('taskBranch').value,title:$('taskTitle').value.trim(),description:$('taskDesc').value.trim(),owner:$('taskOwner').value.trim(),deadline:$('taskDeadline').value||null,priority:$('taskPriority').value,source:$('taskSource').value.trim(),status:$('taskStatus').value,created_by:user.id};if(!r.title)return msg('taskMsg','Wpisz tytuł.','error');
-  if(!edit.task && await duplicateExists('tasks',{region_id:r.region_id,branch_id:r.branch_id,title:r.title,status:r.status})){if(!confirm('Podobne zadanie już istnieje. Dodać kolejne?'))return}
-  let z=edit.task?await sb.from('tasks').update(r).eq('id',edit.task):await sb.from('tasks').insert(r);if(z.error)return msg('taskMsg',z.error.message,'error');clearTask();loadTasks();loadDashboard();loadCard()}
-window.editTask=id=>{let v=window._tasks.find(x=>x.id===id);edit.task=id;$('taskTitleHead').textContent='Edytuj zadanie';$('taskBranch').value=v.branch_id;$('taskTitle').value=v.title;$('taskDesc').value=v.description||'';$('taskOwner').value=v.owner||'';$('taskDeadline').value=v.deadline||'';$('taskPriority').value=v.priority;$('taskSource').value=v.source||'';$('taskStatus').value=v.status};
-window.doneTask=async id=>{await sb.from('tasks').update({status:'done'}).eq('id',id);loadTasks();loadDashboard();loadCard()};
-window.delTask=async id=>{if(confirm('Usunąć zadanie?')){await sb.from('tasks').delete().eq('id',id);loadTasks();loadDashboard();loadCard()}};
+async function saveTask(evt=null){
+  if(evt){evt.preventDefault();evt.stopPropagation()}
+  const btn=$('saveTask');
+  const topMsg=$('taskSaveTopMsg');
+  const setTop=(text,kind='')=>{
+    if(!topMsg)return;
+    topMsg.textContent=text||'';
+    topMsg.className='msg task-save-top-msg'+(kind?' '+kind:'');
+  };
 
+  const r={
+    region_id:rid(),
+    branch_id:$('taskBranch').value,
+    title:$('taskTitle').value.trim(),
+    description:$('taskDesc').value.trim(),
+    owner:$('taskOwner').value.trim(),
+    deadline:$('taskDeadline').value||null,
+    priority:$('taskPriority').value,
+    source:$('taskSource').value.trim(),
+    status:$('taskStatus').value,
+    created_by:user.id
+  };
 
-function addVisitRecommendationRow(data={}){
-  const tr=document.createElement('tr');
-  tr.innerHTML=`<td><textarea class="visit-rec-text">${esc(data.text||'')}</textarea></td>
-    <td><input class="visit-rec-owner" value="${esc(data.owner||'')}"></td>
-    <td><input class="visit-rec-deadline" type="date" value="${esc(data.deadline||'')}"></td>
-    <td><button type="button" class="btn small danger">Usuń</button></td>`;
-  tr.querySelector('button').onclick=()=>tr.remove();
-  $('visitRecommendations').appendChild(tr);
+  if(!r.branch_id){
+    msg('taskMsg','Wybierz oddział.','error');
+    setTop('Wybierz oddział.','error');
+    return;
+  }
+  if(!r.title){
+    msg('taskMsg','Wpisz tytuł zadania.','error');
+    setTop('Wpisz tytuł zadania.','error');
+    return;
+  }
+
+  if(!edit.task && await duplicateExists('tasks',{region_id:r.region_id,branch_id:r.branch_id,title:r.title,status:r.status})){
+    if(!confirm('Podobne zadanie już istnieje. Dodać kolejne?'))return;
+  }
+
+  if(btn?.disabled)return;
+  const oldText=btn?.textContent||'Zapisz';
+  if(btn){btn.disabled=true;btn.textContent='Zapisywanie…'}
+  setTop('Zapisywanie zadania…');
+
+  try{
+    let z;
+    if(edit.task) z=await sb.from('tasks').update(r).eq('id',edit.task).select().single();
+    else z=await sb.from('tasks').insert(r).select().single();
+
+    if(z.error)throw z.error;
+
+    clearTask();
+
+    // Odświeżenia pomocnicze nie mogą blokować potwierdzenia zapisu.
+    const refreshes=[
+      ()=>loadTasks(),
+      ()=>loadDashboard(),
+      ()=>window.refreshBranchCardNow?.(r.branch_id),
+      ()=>window.refreshHistoryNow?.(r.branch_id),
+      ()=>loadWeekActionsDashboard()
+    ];
+    for(const fn of refreshes){
+      try{await fn()}catch(refreshErr){console.error('Odświeżanie po zapisie zadania:',refreshErr)}
+    }
+
+    msg('taskMsg','Zadanie zostało zapisane.','ok');
+    setTop('✓ Zadanie zostało zapisane.','ok');
+
+    if(window.innerWidth<=800){
+      topMsg?.scrollIntoView({behavior:'smooth',block:'nearest'});
+    }
+  }catch(e){
+    console.error('Zapis zadania:',e);
+    const text=e?.message||'Nie udało się zapisać zadania.';
+    msg('taskMsg',text,'error');
+    setTop('Błąd zapisu: '+text,'error');
+    if(btn)btn.textContent=oldText;
+  }finally{
+    if(btn){btn.disabled=false;if(btn.textContent==='Zapisywanie…')btn.textContent='Zapisz'}
+  }
 }
+window.saveTaskNow=saveTask;
 function currentVisitRecommendations(){
   return [...document.querySelectorAll('#visitRecommendations tr')].map(tr=>({
     text:tr.querySelector('.visit-rec-text')?.value.trim()||'',
@@ -1689,8 +1908,8 @@ async function loadVisits(){
     <h4>${esc(bn(v.branch_id))} • ${esc(v.visit_date||'—')}</h4>
     <div class="meta">Uczestnicy: ${esc(v.participants||'—')} • zaleceń: ${(Array.isArray(v.recommendations)?v.recommendations:[]).length}</div>
     <div>${esc((v.topics||'').slice(0,220)||'Brak opisu.')}</div>
-    <div style="margin-top:8px"><button class="btn small" onclick="editVisit('${v.id}')">Otwórz</button>
-    <button class="btn small danger" onclick="delVisit('${v.id}')">Usuń</button></div>
+    <div style="margin-top:8px"><button type="button" class="btn small" onclick="editVisit('${v.id}')">Otwórz</button>
+    <button type="button" class="btn small danger" onclick="delVisit('${v.id}')">Usuń</button></div>
   </div>`).join(''):'<div class="muted">Brak zapisanych raportów dla tego regionu.</div>';
 }
 async function syncVisitRecommendationsToTasksOnline(visit){
@@ -2085,7 +2304,7 @@ async function saveMonthlyKpi(showAlert=true){
 }
 async function loadKpis(){return renderMonthlyKpi()}
 async function saveKpi(){return saveMonthlyKpi(true)}
-async function loadNotes(){let x=await q('branch_notes');if(x.error)return;window._notes=x.data||[];let f=$('noteFilter').value,a=window._notes.filter(v=>f==='all'||v.branch_id===f).sort((a,b)=>b.note_date.localeCompare(a.note_date));$('noteList').innerHTML=a.length?a.map(v=>`<div class="item"><div class="top"><div><b>${esc(bn(v.branch_id))} • ${fd(v.note_date)}</b></div><div class="actions"><button class="btn small" onclick="editNote('${v.id}')">Edytuj</button><button class="btn small danger" onclick="delNote('${v.id}')">Usuń</button></div></div><div class="text">${esc(v.note)}</div></div>`).join(''):'<div class="empty">Brak notatek.</div>'}
+async function loadNotes(){let x=await q('branch_notes');if(x.error)return;window._notes=x.data||[];let f=$('noteFilter').value,a=window._notes.filter(v=>f==='all'||v.branch_id===f).sort((a,b)=>b.note_date.localeCompare(a.note_date));$('noteList').innerHTML=a.length?a.map(v=>`<div class="item"><div class="top"><div><b>${esc(bn(v.branch_id))} • ${fd(v.note_date)}</b></div><div class="actions"><button type="button" class="btn small" onclick="editNote('${v.id}')">Edytuj</button><button type="button" class="btn small danger" onclick="delNote('${v.id}')">Usuń</button></div></div><div class="text">${esc(v.note)}</div></div>`).join(''):'<div class="empty">Brak notatek.</div>'}
 function clearNote(){edit.note=null;$('noteTitle').textContent='Dodaj notatkę';$('noteDate').value=today();$('noteText').value=''}
 async function saveNote(){let r={region_id:rid(),branch_id:$('noteBranch').value,note_date:$('noteDate').value,note:$('noteText').value.trim(),created_by:user.id};if(!r.note)return;let z=edit.note?await sb.from('branch_notes').update(r).eq('id',edit.note):await sb.from('branch_notes').insert(r);if(z.error)return msg('noteMsg',z.error.message,'error');clearNote();loadNotes();loadCard();loadHistory()}
 window.editNote=id=>{let v=window._notes.find(x=>x.id===id);edit.note=id;$('noteTitle').textContent='Edytuj notatkę';$('noteBranch').value=v.branch_id;$('noteDate').value=v.note_date;$('noteText').value=v.note};
@@ -2529,7 +2748,7 @@ async function createTasksFromVisit(id){const v=(window._visits||[]).find(x=>x.i
 async function loadAttachments(){
   let x=await q('attachments');if(x.error)return;
   let f=$('attachmentFilter').value,a=(x.data||[]).filter(v=>f==='all'||v.branch_id===f).sort((a,b)=>(b.created_at||'').localeCompare(a.created_at||''));
-  $('attachmentList').innerHTML=a.length?a.map(v=>`<div class="file-row"><div><div class="file-name">${esc(v.file_name)}</div><div class="file-meta">${esc(bn(v.branch_id))} • ${esc(v.description||'')} • ${Math.round((v.file_size||0)/1024)} KB</div></div><div class="actions"><button class="btn small" onclick="downloadAttachment('${v.id}')">Otwórz</button><button class="btn small danger" onclick="deleteAttachment('${v.id}')">Usuń</button></div></div>`).join(''):'<div class="empty">Brak załączników.</div>';window._attachments=a;
+  $('attachmentList').innerHTML=a.length?a.map(v=>`<div class="file-row"><div><div class="file-name">${esc(v.file_name)}</div><div class="file-meta">${esc(bn(v.branch_id))} • ${esc(v.description||'')} • ${Math.round((v.file_size||0)/1024)} KB</div></div><div class="actions"><button type="button" class="btn small" onclick="downloadAttachment('${v.id}')">Otwórz</button><button type="button" class="btn small danger" onclick="deleteAttachment('${v.id}')">Usuń</button></div></div>`).join(''):'<div class="empty">Brak załączników.</div>';window._attachments=a;
 }
 async function uploadAttachment(){
   const file=$('attachmentFile').files[0],bid=$('attachmentBranch').value;if(!file||!bid)return msg('attachmentMsg','Wybierz plik i oddział.','error');
@@ -2795,7 +3014,7 @@ async function createArchive(){
   let z=await sb.from('region_archives').insert({region_id:rid(),archive_month:month,snapshot:snap,created_by:user.id});
   if(z.error)return msg('archiveMsg',z.error.message,'error');msg('archiveMsg','Archiwum utworzone.','ok');loadArchives();
 }
-async function loadArchives(){let z=await sb.from('region_archives').select('*').eq('region_id',rid()).order('archive_month',{ascending:false});$('archiveList').innerHTML=(z.data||[]).length?(z.data||[]).map(a=>`<div class="item"><div class="top"><b>${esc(a.archive_month)}</b><button class="btn small danger" onclick="deleteArchive('${a.id}')">Usuń</button></div><div class="meta">${new Date(a.created_at).toLocaleString('pl-PL')}</div></div>`).join(''):'<div class="empty">Brak archiwów.</div>'}
+async function loadArchives(){let z=await sb.from('region_archives').select('*').eq('region_id',rid()).order('archive_month',{ascending:false});$('archiveList').innerHTML=(z.data||[]).length?(z.data||[]).map(a=>`<div class="item"><div class="top"><b>${esc(a.archive_month)}</b><button type="button" class="btn small danger" onclick="deleteArchive('${a.id}')">Usuń</button></div><div class="meta">${new Date(a.created_at).toLocaleString('pl-PL')}</div></div>`).join(''):'<div class="empty">Brak archiwów.</div>'}
 window.deleteArchive=async id=>{if(confirm('Usunąć archiwum?')){await sb.from('region_archives').delete().eq('id',id);loadArchives()}};
 
 async function exportRegionBackup(){
@@ -3305,13 +3524,13 @@ async function loadManagement(){
     mgmtRows('branch_goals',bid),mgmtRows('branch_staffing',bid),mgmtRows('branch_risks',bid),
     mgmtRows('visit_plans',bid),mgmtRows('personnel_history',bid),mgmtRows('monthly_rks_comments',bid)
   ]);
-  $('goalList').innerHTML=goals.sort((a,b)=>(a.deadline||'').localeCompare(b.deadline||'')).map(g=>`<div class="manage-item"><div class="top"><div><b>${esc(g.title)}</b><div class="meta">${g.period_type==='quarter'?'kwartalny':'miesięczny'} • ${fd(g.deadline)} • ${esc(g.status)}</div></div><div class="controls"><button class="btn small" onclick="createLinkedTask('branch_goals','${g.id}','${g.branch_id}',${JSON.stringify('Realizacja celu: '+g.title)},${JSON.stringify(g.note||'')})">Zadanie</button><button class="btn small" onclick="addOutcome('branch_goals','${g.id}','${g.branch_id}')">Efekt</button><button class="btn small danger" onclick="deleteMgmt('branch_goals','${g.id}')">Usuń</button></div></div><div class="goal-progress"><i style="width:${Math.max(0,Math.min(100,Number(g.progress)||0))}%"></i></div><div class="meta">${Number(g.progress)||0}% • ${esc(g.note||'')}</div></div>`).join('')||'<div class="muted">Brak celów.</div>';
+  $('goalList').innerHTML=goals.sort((a,b)=>(a.deadline||'').localeCompare(b.deadline||'')).map(g=>`<div class="manage-item"><div class="top"><div><b>${esc(g.title)}</b><div class="meta">${g.period_type==='quarter'?'kwartalny':'miesięczny'} • ${fd(g.deadline)} • ${esc(g.status)}</div></div><div class="controls"><button type="button" class="btn small" onclick="createLinkedTask('branch_goals','${g.id}','${g.branch_id}',${JSON.stringify('Realizacja celu: '+g.title)},${JSON.stringify(g.note||'')})">Zadanie</button><button type="button" class="btn small" onclick="addOutcome('branch_goals','${g.id}','${g.branch_id}')">Efekt</button><button type="button" class="btn small danger" onclick="deleteMgmt('branch_goals','${g.id}')">Usuń</button></div></div><div class="goal-progress"><i style="width:${Math.max(0,Math.min(100,Number(g.progress)||0))}%"></i></div><div class="meta">${Number(g.progress)||0}% • ${esc(g.note||'')}</div></div>`).join('')||'<div class="muted">Brak celów.</div>';
   const s=staff.sort((a,b)=>(b.updated_at||'').localeCompare(a.updated_at||''))[0];
   $('staffCurrent').innerHTML=s?`<div class="manage-item"><b>${s.staff_count||0} osób • ${s.vacancies||0} wakatów • ${s.onboarding||0} we wdrożeniu</b><div class="meta">${esc(s.comment||'')}</div></div>`:'<div class="muted">Brak statusu kadrowego.</div>';
-  $('riskList').innerHTML=risks.filter(r=>r.status!=='closed').map(r=>`<div class="manage-item risk-${r.level}"><div class="top"><div><b>${esc(r.title)}</b><div class="meta">${r.level==='high'?'wysokie':r.level==='medium'?'średnie':'niskie'} • ${esc(r.status)}</div></div><div class="controls"><button class="btn small" onclick="createLinkedTask('branch_risks','${r.id}','${r.branch_id}',${JSON.stringify('Działanie do ryzyka: '+r.title)},${JSON.stringify(r.action_plan||'')})">Zadanie</button><button class="btn small" onclick="addOutcome('branch_risks','${r.id}','${r.branch_id}')">Efekt</button><button class="btn small danger" onclick="deleteMgmt('branch_risks','${r.id}')">Usuń</button></div></div><div class="meta">${esc(r.action_plan||'')}</div></div>`).join('')||'<div class="muted">Brak otwartych ryzyk.</div>';
-  $('visitPlanList').innerHTML=plans.sort((a,b)=>(a.planned_date||'').localeCompare(b.planned_date||'')).map(v=>`<div class="manage-item"><div class="top"><div><b>${fd(v.planned_date)}</b><div class="meta">${esc(v.purpose||'')}</div></div><button class="btn small danger" onclick="deleteMgmt('visit_plans','${v.id}')">Usuń</button></div></div>`).join('')||'<div class="muted">Brak zaplanowanych wizyt.</div>';
-  $('personnelList').innerHTML=personnel.sort((a,b)=>(b.event_date||'').localeCompare(a.event_date||'')).map(v=>`<div class="manage-item"><div class="top"><div><b>${fd(v.event_date)}</b><div class="meta">${esc(v.description)}</div></div><button class="btn small danger" onclick="deleteMgmt('personnel_history','${v.id}')">Usuń</button></div></div>`).join('')||'<div class="muted">Brak historii zmian.</div>';
-  $('monthlyCommentList').innerHTML=comments.sort((a,b)=>(b.month_key||'').localeCompare(a.month_key||'')).map(v=>`<div class="manage-item"><div class="top"><div><b>${esc(v.month_key)}</b><div class="meta">${esc(v.comment)}</div></div><button class="btn small danger" onclick="deleteMgmt('monthly_rks_comments','${v.id}')">Usuń</button></div></div>`).join('')||'<div class="muted">Brak komentarzy miesięcznych.</div>';
+  $('riskList').innerHTML=risks.filter(r=>r.status!=='closed').map(r=>`<div class="manage-item risk-${r.level}"><div class="top"><div><b>${esc(r.title)}</b><div class="meta">${r.level==='high'?'wysokie':r.level==='medium'?'średnie':'niskie'} • ${esc(r.status)}</div></div><div class="controls"><button type="button" class="btn small" onclick="createLinkedTask('branch_risks','${r.id}','${r.branch_id}',${JSON.stringify('Działanie do ryzyka: '+r.title)},${JSON.stringify(r.action_plan||'')})">Zadanie</button><button type="button" class="btn small" onclick="addOutcome('branch_risks','${r.id}','${r.branch_id}')">Efekt</button><button type="button" class="btn small danger" onclick="deleteMgmt('branch_risks','${r.id}')">Usuń</button></div></div><div class="meta">${esc(r.action_plan||'')}</div></div>`).join('')||'<div class="muted">Brak otwartych ryzyk.</div>';
+  $('visitPlanList').innerHTML=plans.sort((a,b)=>(a.planned_date||'').localeCompare(b.planned_date||'')).map(v=>`<div class="manage-item"><div class="top"><div><b>${fd(v.planned_date)}</b><div class="meta">${esc(v.purpose||'')}</div></div><button type="button" class="btn small danger" onclick="deleteMgmt('visit_plans','${v.id}')">Usuń</button></div></div>`).join('')||'<div class="muted">Brak zaplanowanych wizyt.</div>';
+  $('personnelList').innerHTML=personnel.sort((a,b)=>(b.event_date||'').localeCompare(a.event_date||'')).map(v=>`<div class="manage-item"><div class="top"><div><b>${fd(v.event_date)}</b><div class="meta">${esc(v.description)}</div></div><button type="button" class="btn small danger" onclick="deleteMgmt('personnel_history','${v.id}')">Usuń</button></div></div>`).join('')||'<div class="muted">Brak historii zmian.</div>';
+  $('monthlyCommentList').innerHTML=comments.sort((a,b)=>(b.month_key||'').localeCompare(a.month_key||'')).map(v=>`<div class="manage-item"><div class="top"><div><b>${esc(v.month_key)}</b><div class="meta">${esc(v.comment)}</div></div><button type="button" class="btn small danger" onclick="deleteMgmt('monthly_rks_comments','${v.id}')">Usuń</button></div></div>`).join('')||'<div class="muted">Brak komentarzy miesięcznych.</div>';
 }
 window.deleteMgmt=async(table,id)=>{if(!confirm('Usunąć wpis?'))return;const {error}=await sb.from(table).delete().eq('id',id);if(error)return alert(error.message);await loadManagement();await loadDashboard();await loadCard()};
 async function saveGoal(){const r={region_id:rid(),branch_id:$('manageBranch').value,title:$('goalTitle').value.trim(),period_type:$('goalPeriod').value,deadline:$('goalDeadline').value||null,status:$('goalStatus').value,progress:Number($('goalProgress').value)||0,note:$('goalNote').value.trim(),created_by:user.id};if(!r.title)return;const{error}=await sb.from('branch_goals').insert(r);if(error)return msg('managementMsg',error.message,'error');$('goalTitle').value='';$('goalNote').value='';await loadManagement()}
@@ -3545,7 +3764,7 @@ async function softDeleteRecord(table,id,regionId,branchId,rowData){
 async function loadTrash(){
   const {data,error}=await sb.from('trash_records').select('*').eq('region_id',rid()).order('deleted_at',{ascending:false});
   if(error)return $('trashList').innerHTML=`<div class="empty">${esc(error.message)}</div>`;
-  $('trashList').innerHTML=(data||[]).length?(data||[]).map(r=>`<div class="trash-row"><div><b>${esc(r.source_table)}</b> • ${new Date(r.deleted_at).toLocaleString('pl-PL')}</div><div class="meta">Wygasa: ${new Date(r.expires_at).toLocaleDateString('pl-PL')} • rekord: ${esc(r.source_id)}</div><div class="trash-actions" style="margin-top:8px"><button class="btn small primary" onclick="restoreTrash('${r.id}')">Przywróć</button><button class="btn small danger" onclick="deleteTrashPermanently('${r.id}')">Usuń na stałe</button></div></div>`).join(''):'<div class="empty">Kosz jest pusty.</div>';
+  $('trashList').innerHTML=(data||[]).length?(data||[]).map(r=>`<div class="trash-row"><div><b>${esc(r.source_table)}</b> • ${new Date(r.deleted_at).toLocaleString('pl-PL')}</div><div class="meta">Wygasa: ${new Date(r.expires_at).toLocaleDateString('pl-PL')} • rekord: ${esc(r.source_id)}</div><div class="trash-actions" style="margin-top:8px"><button type="button" class="btn small primary" onclick="restoreTrash('${r.id}')">Przywróć</button><button type="button" class="btn small danger" onclick="deleteTrashPermanently('${r.id}')">Usuń na stałe</button></div></div>`).join(''):'<div class="empty">Kosz jest pusty.</div>';
 }
 window.restoreTrash=async id=>{
   const {data:r,error}=await sb.from('trash_records').select('*').eq('id',id).single();if(error)return alert(error.message);
@@ -3597,7 +3816,7 @@ async function loadWeekActionsDashboard(){
     ...(goals.data||[]).map(x=>({date:x.deadline,b:x.branch_id,title:`Cel: ${x.title}`,view:'management'})),
     ...(risks.data||[]).slice(0,4).map(x=>({date:s,b:x.branch_id,title:`Ryzyko: ${x.title}`,view:'management'}))
   ].sort((a,b)=>(a.date||'').localeCompare(b.date||'')).slice(0,10);
-  $('weekActions').innerHTML=arr.length?arr.map(x=>`<div class="today-item warn"><div class="main"><b>${esc(x.title)}</b><div class="sub">${esc(bn(x.b))} • ${fd(x.date)}</div></div><button class="btn small go" onclick="todayGoToTab('${x.view}','${x.b}')">Otwórz</button></div>`).join(''):'<div class="muted">Brak zaplanowanych działań na ten tydzień.</div>';
+  $('weekActions').innerHTML=arr.length?arr.map(x=>`<div class="today-item warn"><div class="main"><b>${esc(x.title)}</b><div class="sub">${esc(bn(x.b))} • ${fd(x.date)}</div></div><button type="button" class="btn small go" onclick="todayGoToTab('${x.view}','${x.b}')">Otwórz</button></div>`).join(''):'<div class="muted">Brak zaplanowanych działań na ten tydzień.</div>';
 }
 async function threeMonthTrend(branchId){
   const now=new Date(),months=[];
@@ -3661,7 +3880,7 @@ async function loadWeekPlan(){
   if(error)return $('weekBoard').innerHTML=`<div class="empty">${esc(error.message)}</div>`;
   const arr=data||[];
   const days=[];for(let i=0;i<5;i++){const d=new Date(d0);d.setDate(d.getDate()+i);days.push(d)}
-  $('weekBoard').innerHTML=days.map(d=>{const key=d.toISOString().slice(0,10),items=arr.filter(x=>x.action_date===key);return `<div class="week-day"><h4>${d.toLocaleDateString('pl-PL',{weekday:'long',day:'2-digit',month:'2-digit'})}</h4>${items.map(x=>`<div class="week-slot ${x.status==='done'?'done':''}"><b>${esc(x.title)}</b><div class="meta">${esc(bn(x.branch_id))} • ${esc(x.action_type)}</div><div class="controls" style="margin-top:5px"><button class="btn small" onclick="toggleWeekItem('${x.id}','${x.status==='done'?'open':'done'}')">${x.status==='done'?'Cofnij':'Wykonane'}</button><button class="btn small danger" onclick="deleteWeekItem('${x.id}')">Usuń</button></div></div>`).join('')||'<div class="muted">Brak działań.</div>'}</div>`}).join('');
+  $('weekBoard').innerHTML=days.map(d=>{const key=d.toISOString().slice(0,10),items=arr.filter(x=>x.action_date===key);return `<div class="week-day"><h4>${d.toLocaleDateString('pl-PL',{weekday:'long',day:'2-digit',month:'2-digit'})}</h4>${items.map(x=>`<div class="week-slot ${x.status==='done'?'done':''}"><b>${esc(x.title)}</b><div class="meta">${esc(bn(x.branch_id))} • ${esc(x.action_type)}</div><div class="controls" style="margin-top:5px"><button type="button" class="btn small" onclick="toggleWeekItem('${x.id}','${x.status==='done'?'open':'done'}')">${x.status==='done'?'Cofnij':'Wykonane'}</button><button type="button" class="btn small danger" onclick="deleteWeekItem('${x.id}')">Usuń</button></div></div>`).join('')||'<div class="muted">Brak działań.</div>'}</div>`}).join('');
 }
 async function saveWeekAction(){
   const r={region_id:rid(),branch_id:$('weekActionBranch').value,action_date:$('weekActionDate').value,action_type:$('weekActionType').value,title:$('weekActionTitle').value.trim(),status:'open',created_by:user.id};
@@ -3680,7 +3899,7 @@ async function loadAdminCenter(){
   const regs=regionsRes.data||[],br=branchesRes.data||[],sn=snapRes.data||[];
   $('adminMetrics').innerHTML=`<div class="admin-box"><span>Regiony</span><strong>${regs.length}</strong></div><div class="admin-box"><span>Oddziały</span><strong>${br.length}</strong></div><div class="admin-box"><span>Rekordy w koszu</span><strong>${trashRes.count||0}</strong></div><div class="admin-box"><span>Logi zmian</span><strong>${auditRes.count||0}</strong></div>`;
   $('adminRegions').innerHTML=`<table><tr><th>Region</th><th>Oddziały</th></tr>${regs.map(r=>`<tr><td>${esc(r.name)}</td><td>${br.filter(b=>b.region_id===r.id).length}</td></tr>`).join('')}</table>`;
-  $('adminSnapshots').innerHTML=sn.length?`<table><tr><th>Region</th><th>Miesiąc</th><th>Data snapshotu</th><th></th></tr>${sn.map(s=>`<tr><td>${esc(regs.find(r=>r.id===s.region_id)?.name||'—')}</td><td>${esc(s.month_key)}</td><td>${new Date(s.created_at).toLocaleString('pl-PL')}</td><td><button class="btn small danger" onclick="restoreSnapshot('${s.id}','${esc(s.month_key)}')">Przywróć</button></td></tr>`).join('')}</table>`:'<div class="empty">Brak snapshotów.</div>';
+  $('adminSnapshots').innerHTML=sn.length?`<table><tr><th>Region</th><th>Miesiąc</th><th>Data snapshotu</th><th></th></tr>${sn.map(s=>`<tr><td>${esc(regs.find(r=>r.id===s.region_id)?.name||'—')}</td><td>${esc(s.month_key)}</td><td>${new Date(s.created_at).toLocaleString('pl-PL')}</td><td><button type="button" class="btn small danger" onclick="restoreSnapshot('${s.id}','${esc(s.month_key)}')">Przywróć</button></td></tr>`).join('')}</table>`:'<div class="empty">Brak snapshotów.</div>';
 }
 async function exportFullMonthlyReport(){
   const key=$('closeMonthKey').value;if(!key)return;const {y,m,from,to}=monthBounds(key);
@@ -3759,9 +3978,9 @@ async function loadDecisions(){
     <div style="font-size:11px;margin-top:6px;white-space:pre-wrap">${esc(d.description||'')}</div>
     <div class="meta">Decydent: ${esc(d.decision_owner||'—')}${d.resolution?` • Wynik: ${esc(d.resolution)}`:''}</div>
     <div class="controls" style="margin-top:8px">
-      ${d.status!=='closed'?`<button class="btn small primary" onclick="closeDecision('${d.id}','${d.branch_id}')">Zamknij decyzję</button>`:''}
-      <button class="btn small" onclick="createLinkedTask('decisions_escalations','${d.id}','${d.branch_id}',${JSON.stringify('Wdrożenie decyzji: '+d.title)},${JSON.stringify(d.description||'')})">Utwórz zadanie</button>
-      <button class="btn small" onclick="addOutcome('decisions_escalations','${d.id}','${d.branch_id}')">Efekt</button>
+      ${d.status!=='closed'?`<button type="button" class="btn small primary" onclick="closeDecision('${d.id}','${d.branch_id}')">Zamknij decyzję</button>`:''}
+      <button type="button" class="btn small" onclick="createLinkedTask('decisions_escalations','${d.id}','${d.branch_id}',${JSON.stringify('Wdrożenie decyzji: '+d.title)},${JSON.stringify(d.description||'')})">Utwórz zadanie</button>
+      <button type="button" class="btn small" onclick="addOutcome('decisions_escalations','${d.id}','${d.branch_id}')">Efekt</button>
     </div></div>`).join(''):'<div class="empty">Brak decyzji.</div>';
 }
 window.closeDecision=async(id,branchId)=>{
@@ -3773,7 +3992,7 @@ window.closeDecision=async(id,branchId)=>{
 async function loadPinnedNotes(expectedBid=null){
   if(!$('pinnedNotes')||!$('cardBranch'))return;const bid=expectedBid||$('cardBranch').value;if(!bid)return;
   const {data,error}=await sb.from('pinned_branch_notes').select('*').eq('region_id',rid()).eq('branch_id',bid).order('created_at',{ascending:false});
-  if(error||$('cardBranch').value!==bid)return;$('pinnedNotes').innerHTML=(data||[]).length?(data||[]).map(n=>`<div class="pin-note"><div class="top"><b>${esc(n.note)}</b><button class="btn small danger" onclick="deletePinnedNote('${n.id}')">Usuń</button></div></div>`).join(''):'<div class="muted">Brak przypiętych informacji.</div>';
+  if(error||$('cardBranch').value!==bid)return;$('pinnedNotes').innerHTML=(data||[]).length?(data||[]).map(n=>`<div class="pin-note"><div class="top"><b>${esc(n.note)}</b><button type="button" class="btn small danger" onclick="deletePinnedNote('${n.id}')">Usuń</button></div></div>`).join(''):'<div class="muted">Brak przypiętych informacji.</div>';
 }
 window.deletePinnedNote=async id=>{await sb.from('pinned_branch_notes').delete().eq('id',id);await loadPinnedNotes()};
 async function addPinnedNote(){const bid=$('cardBranch').value,note=prompt('Treść informacji do przypięcia:');if(!note)return;const{error}=await sb.from('pinned_branch_notes').insert({region_id:rid(),branch_id:bid,note,created_by:user.id});if(error)return alert(error.message);await loadPinnedNotes()}
@@ -3861,15 +4080,15 @@ async function loadDashboard(){
   const kpiSet=new Set((kpiCurrent.data||[]).map(x=>`${x.branch_id}|${x.year}-${String(x.month).padStart(2,'0')}`));
   branches.forEach(b=>{if(!kpiSet.has(`${b.id}|${currentYm}`))dataAlerts.push({title:'Brak KPI za bieżący miesiąc',branch_id:b.id,owner:'',deadline:null,kind:'data'})});
   const priority=[...overdue,...open.filter(t=>t.priority==='high'&&!overdue.some(o=>o.id===t.id))].slice(0,8);
-  const priorityHtml=priority.map(t=>`<div class="today-item bad"><div class="main"><b>${esc(t.title)}</b><div class="sub">${esc(bn(t.branch_id))} • ${esc(t.owner||'bez odpowiedzialnego')} • termin ${fd(t.deadline)}</div></div><button class="btn small go" onclick="todayGoToTab('tasks','${t.branch_id}')">Otwórz</button></div>`).join('');
-  const alertHtml=dataAlerts.slice(0,4).map(a=>`<div class="today-item warn"><div class="main"><b>${esc(a.title)}</b><div class="sub">${esc(bn(a.branch_id))}</div></div><button class="btn small go" onclick="todayGoToTab('kpis','${a.branch_id}')">KPI</button></div>`).join('');
+  const priorityHtml=priority.map(t=>`<div class="today-item bad"><div class="main"><b>${esc(t.title)}</b><div class="sub">${esc(bn(t.branch_id))} • ${esc(t.owner||'bez odpowiedzialnego')} • termin ${fd(t.deadline)}</div></div><button type="button" class="btn small go" onclick="todayGoToTab('tasks','${t.branch_id}')">Otwórz</button></div>`).join('');
+  const alertHtml=dataAlerts.slice(0,4).map(a=>`<div class="today-item warn"><div class="main"><b>${esc(a.title)}</b><div class="sub">${esc(bn(a.branch_id))}</div></div><button type="button" class="btn small go" onclick="todayGoToTab('kpis','${a.branch_id}')">KPI</button></div>`).join('');
   $('todayPriorities').innerHTML=(priorityHtml+alertHtml)||'<div class="muted">Brak pilnych spraw.</div>';
 
-  $('todayNext7').innerHTML=week.length?week.slice(0,12).map(t=>`<div class="today-item warn"><div class="main"><b>${esc(t.title)}</b><div class="sub">${esc(bn(t.branch_id))} • ${fd(t.deadline)}</div></div><button class="btn small go" onclick="todayGoToTab('tasks','${t.branch_id}')">Otwórz</button></div>`).join(''):'<div class="muted">Brak terminów w najbliższych 7 dniach.</div>';
+  $('todayNext7').innerHTML=week.length?week.slice(0,12).map(t=>`<div class="today-item warn"><div class="main"><b>${esc(t.title)}</b><div class="sub">${esc(bn(t.branch_id))} • ${fd(t.deadline)}</div></div><button type="button" class="btn small go" onclick="todayGoToTab('tasks','${t.branch_id}')">Otwórz</button></div>`).join(''):'<div class="muted">Brak terminów w najbliższych 7 dniach.</div>';
 
-  $('todayBranches').innerHTML=attention.length?attention.sort((a,b)=>(Number.isFinite(a.status.score)?a.status.score:0)-(Number.isFinite(b.status.score)?b.status.score:0)).map(x=>`<div class="today-item ${x.status.cls}"><div class="main"><b>${esc(x.b.name)}</b><div class="sub">${x.status.label}${Number.isFinite(x.status.score)?' • '+Math.round(x.status.score)+'/100':''}</div></div><button class="btn small go" onclick="todayGoToTab('branchCard','${x.b.id}')">Karta</button></div>`).join(''):'<div class="muted">Wszystkie oddziały w dobrej kondycji.</div>';
+  $('todayBranches').innerHTML=attention.length?attention.sort((a,b)=>(Number.isFinite(a.status.score)?a.status.score:0)-(Number.isFinite(b.status.score)?b.status.score:0)).map(x=>`<div class="today-item ${x.status.cls}"><div class="main"><b>${esc(x.b.name)}</b><div class="sub">${x.status.label}${Number.isFinite(x.status.score)?' • '+Math.round(x.status.score)+'/100':''}</div></div><button type="button" class="btn small go" onclick="todayGoToTab('branchCard','${x.b.id}')">Karta</button></div>`).join(''):'<div class="muted">Wszystkie oddziały w dobrej kondycji.</div>';
 
-  $('todayContacts').innerHTML=branchRows.sort((a,b)=>(a.last?.date||'').localeCompare(b.last?.date||'')).map(x=>`<div class="today-item ${(!x.last||todayDaysFrom(x.last.date)<-14)?'warn':'good'}"><div class="main"><b>${esc(x.b.name)}</b><div class="sub">${x.last?`${esc(x.last.type)}: ${fd(x.last.date)}`:'brak zapisanej wizyty / 1:1'}</div></div><button class="btn small go" onclick="todayGoToTab('history','${x.b.id}')">Historia</button></div>`).join('');
+  $('todayContacts').innerHTML=branchRows.sort((a,b)=>(a.last?.date||'').localeCompare(b.last?.date||'')).map(x=>`<div class="today-item ${(!x.last||todayDaysFrom(x.last.date)<-14)?'warn':'good'}"><div class="main"><b>${esc(x.b.name)}</b><div class="sub">${x.last?`${esc(x.last.type)}: ${fd(x.last.date)}`:'brak zapisanej wizyty / 1:1'}</div></div><button type="button" class="btn small go" onclick="todayGoToTab('history','${x.b.id}')">Historia</button></div>`).join('');
 }
 
 
@@ -4282,7 +4501,7 @@ $('meetingAttendance').onchange=toggleComment;$('refreshMeetingPreviewBtn').oncl
 ['meetingBranch','meetingDate','meetingAttendance'].forEach(id=>$(id).addEventListener('change',renderMeetingNoteV45));
 ['meetingTopics','meetingComment'].forEach(id=>$(id).addEventListener('input',renderMeetingNoteV45));
 $('saveMeeting').onclick=saveMeeting;$('clearMeeting').onclick=clearMeeting;$('meetingFilter').onchange=loadMeetings;
-$('saveTask').onclick=saveTask;$('clearTask').onclick=clearTask;$('taskFilter').onchange=loadTasks;$('taskStatusFilter').onchange=loadTasks;
+$('saveTask').onclick=(e)=>saveTask(e);$('clearTask').onclick=clearTask;$('taskFilter').onchange=loadTasks;$('taskStatusFilter').onchange=loadTasks;
 $('saveVisit').onclick=(e)=>saveVisit(e);$('clearVisit').onclick=clearVisit;$('addVisitRecommendation').onclick=()=>addVisitRecommendationRow();$('generateVisitForm').onclick=generateVisitSignatureForm;$('printVisitReport').onclick=printVisitSignatureForm;
 $('salesEntryDate').onchange=renderSalesEntry;$('saveSalesEntry').onclick=()=>saveSalesEntry(true);$('saveMonthlyKpi').onclick=()=>saveMonthlyKpi(true);$('voipMonth').onchange=renderMonthlyKpi;$('controlKpiMonth').onchange=renderMonthlyKpi;
 $('saveNote').onclick=saveNote;$('clearNote').onclick=clearNote;$('noteFilter').onchange=loadNotes;$('cardBranch').onchange=()=>refreshBranchCard($('cardBranch').value);$('cardBranch').addEventListener('input',()=>refreshBranchCard($('cardBranch').value));$('historyBranch').onchange=()=>refreshHistory($('historyBranch').value);$('historyBranch').addEventListener('input',()=>refreshHistory($('historyBranch').value));$('historyFrom').onchange=()=>refreshHistory();$('historyTo').onchange=()=>refreshHistory();$('historySearch').oninput=()=>refreshHistory();document.querySelectorAll('.historyType').forEach(x=>x.onchange=()=>refreshHistory());$('clearHistoryFilters').onclick=()=>{$('historyFrom').value='';$('historyTo').value='';$('historySearch').value='';document.querySelectorAll('.historyType').forEach(x=>x.checked=true);refreshHistory()};
@@ -4290,7 +4509,7 @@ $('saveNote').onclick=saveNote;$('clearNote').onclick=clearNote;$('noteFilter').
 </script>
 <div id="pwaHelpModal" class="quick-modal hidden">
   <div class="quick-card">
-    <div class="head"><div><h3 style="margin:0">Instalacja Eltrox RKS</h3></div><button id="closePwaHelp" class="btn">Zamknij</button></div>
+    <div class="head"><div><h3 style="margin:0">Instalacja Eltrox RKS</h3></div><button type="button" id="closePwaHelp" class="btn" onclick="window.mobileButtonAction && window.mobileButtonAction('closePwaHelp',event)">Zamknij</button></div>
     <div id="pwaHelpText" class="pwa-help"></div>
   </div>
 </div>
