@@ -2,7 +2,7 @@
 <html lang="pl">
 <head>
 <meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
-<title>Eltrox RKS – Supabase v15.5</title><meta name="theme-color" content="#ef6c00"><meta name="apple-mobile-web-app-capable" content="yes"><meta name="apple-mobile-web-app-status-bar-style" content="default"><meta name="apple-mobile-web-app-title" content="Eltrox RKS"><link rel="manifest" href="./manifest.webmanifest"><link rel="apple-touch-icon" href="./icon-192.png">
+<title>Eltrox RKS – Supabase v15.6</title><meta name="theme-color" content="#ef6c00"><meta name="apple-mobile-web-app-capable" content="yes"><meta name="apple-mobile-web-app-status-bar-style" content="default"><meta name="apple-mobile-web-app-title" content="Eltrox RKS"><link rel="manifest" href="./manifest.webmanifest"><link rel="apple-touch-icon" href="./icon-192.png">
 <style>
 :root{--o:#f36f21;--od:#d85d12;--bg:#eef1f4;--w:#fff;--line:#d9dde3;--t:#242424;--m:#6b7280;--r:#c9372c;--g:#25894b;--b:#2f71c8;--sh:0 8px 24px rgba(0,0,0,.08)}
 *{box-sizing:border-box}html,body{margin:0;min-height:100%;font-family:Arial,Helvetica,sans-serif;background:var(--bg);color:var(--t)}button,input,select,textarea{font:inherit}button{cursor:pointer}.hidden{display:none!important}
@@ -679,6 +679,18 @@ button:disabled,.btn:disabled{opacity:.6;cursor:not-allowed}
   #saveSalesEntry{width:100%!important;min-height:50px!important;font-size:16px!important}
   #salesMsg{font-size:13px;line-height:1.4}
 }
+
+#regionSelect{
+  appearance:auto!important;
+  -webkit-appearance:menulist!important;
+  pointer-events:auto!important;
+  touch-action:manipulation!important;
+  position:relative!important;
+  z-index:10!important;
+}
+@media(max-width:800px){
+  #regionSelect{min-height:48px!important;font-size:16px!important}
+}
 </style></head>
 <body>
 <div id="pwaUpdateBanner" class="pwa-update-banner hidden">
@@ -687,7 +699,7 @@ button:disabled,.btn:disabled{opacity:.6;cursor:not-allowed}
   <button type="button" id="dismissPwaUpdateBtn" class="btn">Później</button>
 </div>
 
-<div id="loginView" class="login-shell"><div class="login-card"><div class="brand"><h1>Eltrox RKS</h1><p>Wersja online v15.5</p></div><form id="loginForm" class="form"><label>E-mail<input id="loginEmail" type="email" required></label><label>Hasło<input id="loginPassword" type="password" required></label><button id="loginBtn" type="submit" class="btn primary" onclick="window.loginNow && window.loginNow(event)">Zaloguj</button><div id="loginMsg" class="msg"></div></form></div></div>
+<div id="loginView" class="login-shell"><div class="login-card"><div class="brand"><h1>Eltrox RKS</h1><p>Wersja online v15.6</p></div><form id="loginForm" class="form"><label>E-mail<input id="loginEmail" type="email" required></label><label>Hasło<input id="loginPassword" type="password" required></label><button id="loginBtn" type="submit" class="btn primary" onclick="window.loginNow && window.loginNow(event)">Zaloguj</button><div id="loginMsg" class="msg"></div></form></div></div>
 
 <div id="modeView" class="mode-shell hidden">
   <div class="mode-card">
@@ -706,9 +718,9 @@ button:disabled,.btn:disabled{opacity:.6;cursor:not-allowed}
   </div>
 </div>
 <div id="mobileActionStatus" class="mobile-action-status hidden"></div><div id="appView" class="hidden">
-<header class="header"><div><h1>Eltrox RKS – v15.5</h1><small id="headerUser"></small><div id="contextBar" class="context-bar">Region: — • Oddział: — • Okres: —</div></div><div class="ha">
+<header class="header"><div><h1>Eltrox RKS – v15.6</h1><small id="headerUser"></small><div id="contextBar" class="context-bar">Region: — • Oddział: — • Okres: —</div><div id="regionSwitchStatus" class="muted" style="font-size:12px;margin-top:3px"></div></div><div class="ha">
 <div class="searchbox"><input id="globalSearch" type="search" placeholder="Szukaj w aplikacji..."><div id="globalSearchResults" class="search-results hidden"></div></div>
-<label style="min-width:210px">Region<select id="regionSelect"></select></label>
+<label style="min-width:210px">Region<select id="regionSelect" onchange="window.switchRegionNow && window.switchRegionNow(this.value)" oninput="window.switchRegionNow && window.switchRegionNow(this.value)"></select></label>
 <span id="roleBadge" class="badge"></span><span id="workModeBadge" class="mode-badge"></span><button type="button" id="changeModeBtn" class="btn" onclick="window.mobileButtonAction && window.mobileButtonAction('changeModeBtn',event)">Zmień tryb</button>
 <div class="global-period"><label>Okres globalny<input id="globalPeriod" type="month"></label><button type="button" id="applyGlobalPeriod" class="btn" onclick="window.mobileButtonAction && window.mobileButtonAction('applyGlobalPeriod',event)">Ustaw okres</button></div><button type="button" id="installPwaBtn" class="btn pwa-install" onclick="window.mobileButtonAction && window.mobileButtonAction('installPwaBtn',event)">Zainstaluj aplikację</button><button type="button" id="tabOrderBtn" class="btn" onclick="window.mobileButtonAction && window.mobileButtonAction('tabOrderBtn',event)">Kolejność zakładek</button>
 <button type="button" id="exportBackupBtn" class="btn" onclick="window.mobileButtonAction && window.mobileButtonAction('exportBackupBtn',event)">Kopia regionu</button>
@@ -1914,6 +1926,71 @@ function sl(v){return v==='todo'?'Do zrobienia':v==='progress'?'W trakcie':'Wyko
 
 async function loadProfile(){let{data,error}=await sb.from('profiles').select('*').eq('id',user.id).single();if(error)throw error;profile=data;$('headerUser').textContent=(data.display_name||'Użytkownik')+' • '+data.email;$('roleBadge').textContent=data.role.toUpperCase()}
 async function loadRegions(){let{data,error}=await sb.from('regions').select('*').order('name');if(error)throw error;$('regionSelect').innerHTML=(data||[]).map(r=>`<option value="${r.id}">${esc(r.name)}</option>`).join('')}
+
+let _regionSwitchSeq=0;
+async function switchRegion(regionId){
+  const sel=$('regionSelect');
+  if(!sel||!regionId)return;
+
+  // W trybie "Mój region" region pozostaje zablokowany.
+  if(workMode==='user'){
+    if(workModeRegion && sel.value!==workModeRegion)sel.value=workModeRegion;
+    showActionStatus('W trybie „Mój region” możesz pracować tylko na przypisanym regionie.','info',3500);
+    return;
+  }
+
+  // Admin może swobodnie przełączać regiony.
+  if(workMode!=='admin')return;
+
+  if(sel.value!==regionId)sel.value=regionId;
+  const seq=++_regionSwitchSeq;
+  const name=sel.selectedOptions?.[0]?.textContent||'region';
+
+  if($('regionSwitchStatus'))$('regionSwitchStatus').textContent=`Przełączanie na region: ${name}…`;
+  sel.disabled=true;
+
+  try{
+    refreshAdminRegionName();
+    updateContextBar();
+    await loadBranches();
+
+    if(seq!==_regionSwitchSeq)return;
+
+    // Odśwież aktywną zakładkę po zmianie regionu.
+    const active=document.querySelector('.view.active')?.id;
+    const loaders={
+      dashboard:loadDashboard,
+      analysis:loadAnalysis,
+      sales:loadSales,
+      kpis:loadKpis,
+      visits:loadVisits,
+      contacts:loadContacts,
+      contactLogs:loadLogs,
+      meetings:loadMeetings,
+      tasks:loadTasks,
+      notes:loadNotes,
+      branchCard:()=>window.refreshBranchCardNow?.(),
+      history:()=>window.refreshHistoryNow?.(),
+      branchCompare:loadBranchCompare,
+      regionMap:loadRegionMap,
+      management:loadManagement,
+      decisions:loadDecisions
+    };
+    try{if(loaders[active])await loaders[active]()}catch(e){console.warn('Odświeżenie aktywnej zakładki:',e)}
+
+    updateContextBar();
+    if($('regionSwitchStatus'))$('regionSwitchStatus').textContent=`Aktywny region: ${name}`;
+    showActionStatus(`Przełączono na region: ${name}`,'ok',2200);
+  }catch(e){
+    console.error('Zmiana regionu:',e);
+    if($('regionSwitchStatus'))$('regionSwitchStatus').textContent=`Błąd zmiany regionu: ${e.message}`;
+    showActionStatus('Nie udało się przełączyć regionu.','error',5000);
+  }finally{
+    if(workMode==='admin')sel.disabled=false;
+  }
+}
+window.switchRegionNow=(regionId)=>switchRegion(regionId);
+
 async function loadBranches(){
   let{data,error}=await sb.from('branches').select('*').eq('region_id',rid()).order('name');
   if(error)throw error;
@@ -4885,11 +4962,17 @@ async function showApp(session,modeResolved=false){
   $('loginView').classList.add('hidden');$('modeView').classList.add('hidden');$('appView').classList.remove('hidden');
   initializePeriodControls();
   updateContextBar();
-  await loadProfile();updateWorkModeUi();await loadTabOrder();await loadRegions();
+  await loadProfile();updateWorkModeUi();await loadTabOrder();
+  const previousRegion=$('regionSelect')?.value||null;
+  await loadRegions();
   if(workMode==='user'&&workModeRegion&&[...$('regionSelect').options].some(o=>o.value===workModeRegion)){
     $('regionSelect').value=workModeRegion;$('regionSelect').disabled=true;
-  }else{$('regionSelect').disabled=false}
+  }else{
+    if(previousRegion&&[...$('regionSelect').options].some(o=>o.value===previousRegion))$('regionSelect').value=previousRegion;
+    $('regionSelect').disabled=false;
+  }
   refreshAdminRegionName();await loadBranches();
+  updateContextBar();
   clearLog();clearMeeting();clearTask();clearVisit();clearNote();$('salesEntryDate').value=today();
   let d=new Date();{
     const vd=new Date(d.getFullYear(),d.getMonth()-2,1);
@@ -4931,7 +5014,7 @@ $('backupRegionBtn').onclick=exportRegionBackupV7;$('restoreRegionBtn').onclick=
 $('backupDatabaseBtn').onclick=fullDatabaseBackup;$('restoreDatabaseBtn').onclick=()=>$('restoreDatabaseFile').click();$('restoreDatabaseFile').onchange=e=>{restoreFullDatabase(e.target.files[0]);e.target.value=''};
 $('analyzeV45Btn').onclick=analyzeV45Files;$('importV45Btn').onclick=importV45Files;$('v45ImportFiles').onchange=analyzeV45Files;
 $('renameRegionBtn2')&&($('renameRegionBtn2').onclick=renameActiveRegionAdmin);
-$('regionSelect').addEventListener('change',refreshAdminRegionName);
+
 
 $('chooseAdminModeBtn').onclick=chooseAdminMode;
 $('chooseUserModeBtn').onclick=chooseUserMode;
@@ -4975,7 +5058,7 @@ $('refreshAdminCenterBtn').onclick=loadAdminCenter;$('exportFullMonthlyReportBtn
 $('saveDecisionBtn').onclick=saveDecision;$('decisionFilterBranch').onchange=loadDecisions;$('decisionFilterStatus').onchange=loadDecisions;
 $('addPinnedNoteBtn').onclick=addPinnedNote;$('installPwaBtn').onclick=installPwa;$('closePwaHelp').onclick=()=>$('pwaHelpModal').classList.add('hidden');
 $('logoutBtn').onclick=forceLogout;
-$('loadComparisonBtn').onclick=loadComparison;$('regionSelect').onchange=loadBranches;$('addBranchBtn').onclick=addBranch;
+$('loadComparisonBtn').onclick=loadComparison;$('regionSelect').onchange=()=>switchRegion($('regionSelect').value);$('regionSelect').addEventListener('input',()=>switchRegion($('regionSelect').value));$('addBranchBtn').onclick=addBranch;
 $('saveContact').onclick=saveContact;$('clearContact').onclick=clearContact;$('contactFilter').onchange=loadContacts;$('contactSearch').oninput=loadContacts;
 $('saveLog').onclick=(e)=>saveLog(e);$('clearLog').onclick=clearLog;$('logFilter').onchange=loadLogs;
 $('meetingAttendance').onchange=toggleComment;$('refreshMeetingPreviewBtn').onclick=renderMeetingNoteV45;
