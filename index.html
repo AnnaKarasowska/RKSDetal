@@ -2,7 +2,7 @@
 <html lang="pl">
 <head>
 <meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
-<title>Eltrox RKS – Supabase v14.8</title><meta name="theme-color" content="#ef6c00"><meta name="apple-mobile-web-app-capable" content="yes"><meta name="apple-mobile-web-app-status-bar-style" content="default"><meta name="apple-mobile-web-app-title" content="Eltrox RKS"><link rel="manifest" href="./manifest.webmanifest"><link rel="apple-touch-icon" href="./icon-192.png">
+<title>Eltrox RKS – Supabase v14.9</title><meta name="theme-color" content="#ef6c00"><meta name="apple-mobile-web-app-capable" content="yes"><meta name="apple-mobile-web-app-status-bar-style" content="default"><meta name="apple-mobile-web-app-title" content="Eltrox RKS"><link rel="manifest" href="./manifest.webmanifest"><link rel="apple-touch-icon" href="./icon-192.png">
 <style>
 :root{--o:#f36f21;--od:#d85d12;--bg:#eef1f4;--w:#fff;--line:#d9dde3;--t:#242424;--m:#6b7280;--r:#c9372c;--g:#25894b;--b:#2f71c8;--sh:0 8px 24px rgba(0,0,0,.08)}
 *{box-sizing:border-box}html,body{margin:0;min-height:100%;font-family:Arial,Helvetica,sans-serif;background:var(--bg);color:var(--t)}button,input,select,textarea{font:inherit}button{cursor:pointer}.hidden{display:none!important}
@@ -472,6 +472,26 @@ input,select,textarea{width:100%;padding:9px 10px;border:1px solid var(--line);b
 @media(max-width:950px){.meeting-grid,.bonus-grid{grid-template-columns:1fr}.rec-row{grid-template-columns:1fr}.searchbox{min-width:180px}}
 
 /* v14.8 — mobilne zapisywanie raportu wizyty */
+
+/* v14.9 — mobilne zapisywanie Rejestru kontaktów */
+.log-save-btn{touch-action:manipulation;-webkit-tap-highlight-color:transparent}
+.log-save-top-msg{margin-top:8px}
+@media(max-width:800px){
+  #contactLogs .g2{grid-template-columns:1fr!important}
+  #contactLogs .controls{display:grid;grid-template-columns:1fr 1fr;gap:8px}
+  #contactLogs .controls .btn{width:100%;min-height:46px}
+  #contactLogs .log-save-btn{
+    grid-column:1/-1;
+    position:sticky;
+    bottom:8px;
+    z-index:45;
+    min-height:52px;
+    font-size:16px;
+    box-shadow:0 7px 20px rgba(0,0,0,.16);
+  }
+  #contactLogs input,#contactLogs select,#contactLogs textarea{font-size:16px}
+}
+
 .visit-save-btn{touch-action:manipulation;-webkit-tap-highlight-color:transparent}
 .visit-save-top-msg{margin-top:8px}
 @media(max-width:800px){
@@ -503,7 +523,7 @@ input,select,textarea{width:100%;padding:9px 10px;border:1px solid var(--line);b
 @media(max-width:950px){.g2,.g3,.g4{grid-template-columns:1fr}.header{align-items:flex-start;flex-direction:column}.nav{top:108px}}
 </style></head>
 <body>
-<div id="loginView" class="login-shell"><div class="login-card"><div class="brand"><h1>Eltrox RKS</h1><p>Wersja online v14.8</p></div><form id="loginForm" class="form"><label>E-mail<input id="loginEmail" type="email" required></label><label>Hasło<input id="loginPassword" type="password" required></label><button class="btn primary">Zaloguj</button><div id="loginMsg" class="msg"></div></form></div></div>
+<div id="loginView" class="login-shell"><div class="login-card"><div class="brand"><h1>Eltrox RKS</h1><p>Wersja online v14.9</p></div><form id="loginForm" class="form"><label>E-mail<input id="loginEmail" type="email" required></label><label>Hasło<input id="loginPassword" type="password" required></label><button class="btn primary">Zaloguj</button><div id="loginMsg" class="msg"></div></form></div></div>
 
 <div id="modeView" class="mode-shell hidden">
   <div class="mode-card">
@@ -742,7 +762,7 @@ input,select,textarea{width:100%;padding:9px 10px;border:1px solid var(--line);b
 
 <section id="contacts" class="view"><div class="head"><div><h2>Kontakty</h2><p>Osoby kontaktowe w oddziałach.</p></div></div><div class="g2"><div class="panel"><h3 id="contactTitle">Dodaj kontakt</h3><div class="form"><label>Oddział<select id="contactBranch"></select></label><label>Imię<input id="contactFirst"></label><label>Nazwisko<input id="contactLast"></label><label>Stanowisko<input id="contactPos"></label><label>Telefon<input id="contactPhone"></label><label>GG<input id="contactGG"></label><label>E-mail<input id="contactEmail"></label><div class="controls"><button id="saveContact" class="btn primary">Zapisz</button><button id="clearContact" class="btn">Wyczyść</button></div></div><div id="contactMsg" class="msg"></div></div><div class="panel"><div class="controls"><label>Oddział<select id="contactFilter"></select></label><label>Szukaj<input id="contactSearch"></label></div><div id="contactsTable" class="table" style="margin-top:10px"></div></div></div></section>
 
-<section id="contactLogs" class="view"><div class="head"><div><h2>Rejestr kontaktów</h2><p>Telefon, e-mail i GG – baza „ostatniego kontaktu”.</p></div></div><div class="g2"><div class="panel"><h3 id="logTitle">Dodaj kontakt</h3><div class="form"><label>Oddział<select id="logBranch"></select></label><label>Data<input id="logDate" type="date"></label><label>Kanał<select id="logChannel"><option value="phone">Telefon</option><option value="email">E-mail</option><option value="gg">GG</option></select></label><label>Osoba<input id="logPerson"></label><label>Notatka<textarea id="logNote"></textarea></label><div class="controls"><button id="saveLog" class="btn primary">Zapisz</button><button id="clearLog" class="btn">Wyczyść</button></div></div><div id="logMsg" class="msg"></div></div><div class="panel"><label>Oddział<select id="logFilter"></select></label><div id="logList" class="list" style="margin-top:10px"></div></div></div></section>
+<section id="contactLogs" class="view"><div class="head"><div><h2>Rejestr kontaktów</h2><p>Telefon, e-mail i GG – baza „ostatniego kontaktu”.</p></div></div><div class="g2"><div class="panel"><h3 id="logTitle">Dodaj kontakt</h3><div class="form"><label>Oddział<select id="logBranch"></select></label><label>Data<input id="logDate" type="date"></label><label>Kanał<select id="logChannel"><option value="phone">Telefon</option><option value="email">E-mail</option><option value="gg">GG</option></select></label><label>Osoba<input id="logPerson"></label><label>Notatka<textarea id="logNote"></textarea></label><div class="controls"><button type="button" id="saveLog" class="btn primary log-save-btn" onclick="window.saveLogNow && window.saveLogNow(event)">Zapisz</button><button type="button" id="clearLog" class="btn">Wyczyść</button></div></div><div id="logSaveTopMsg" class="msg log-save-top-msg"></div><div id="logMsg" class="msg"></div></div><div class="panel"><label>Oddział<select id="logFilter"></select></label><div id="logList" class="list" style="margin-top:10px"></div></div></div></section>
 
 <section id="meetings" class="view">
   <div class="head">
@@ -1438,15 +1458,76 @@ window.delContact=async id=>{if(confirm('Usunąć kontakt?')){await sb.from('con
 
 async function loadLogs(){let x=await q('contact_logs');if(x.error){msg('logMsg','Najpierw uruchom SQL tworzący contact_logs.','error');return}window._logs=x.data||[];let f=$('logFilter').value,a=window._logs.filter(v=>f==='all'||v.branch_id===f).sort((a,b)=>b.contact_date.localeCompare(a.contact_date));$('logList').innerHTML=a.length?a.map(v=>`<div class="item"><div class="top"><div><b>${esc(bn(v.branch_id))} • ${fd(v.contact_date)} • ${esc(v.channel)}</b><div class="meta">${esc(v.person||'')}</div></div><div class="actions"><button class="btn small" onclick="editLog('${v.id}')">Edytuj</button><button class="btn small danger" onclick="delLog('${v.id}')">Usuń</button></div></div><div class="text">${esc(v.note||'')}</div></div>`).join(''):'<div class="empty">Brak wpisów.</div>'}
 function clearLog(){edit.log=null;$('logTitle').textContent='Dodaj kontakt';$('logDate').value=today();$('logPerson').value='';$('logNote').value=''}
-async function saveLog(){let r={region_id:rid(),branch_id:$('logBranch').value,contact_date:$('logDate').value,channel:$('logChannel').value,person:$('logPerson').value.trim(),note:$('logNote').value.trim(),created_by:user.id,updated_at:new Date().toISOString()};let z=edit.log?await sb.from('contact_logs').update(r).eq('id',edit.log):await sb.from('contact_logs').insert(r);if(z.error)return msg('logMsg',z.error.message,'error');clearLog();await loadLogs();loadDashboard();loadCard();loadHistory()}
-window.editLog=id=>{let v=window._logs.find(x=>x.id===id);edit.log=id;$('logTitle').textContent='Edytuj kontakt';$('logBranch').value=v.branch_id;$('logDate').value=v.contact_date;$('logChannel').value=v.channel;$('logPerson').value=v.person||'';$('logNote').value=v.note||''};
-window.delLog=async id=>{if(confirm('Usunąć wpis?')){await sb.from('contact_logs').delete().eq('id',id);loadLogs();loadDashboard();loadCard();loadHistory()}};
+async function saveLog(evt=null){
+  if(evt){evt.preventDefault();evt.stopPropagation()}
+  const btn=$('saveLog');
+  const topMsg=$('logSaveTopMsg');
+  const setTop=(text,kind='')=>{
+    if(!topMsg)return;
+    topMsg.textContent=text||'';
+    topMsg.className='msg log-save-top-msg'+(kind?' '+kind:'');
+  };
 
-function toggleComment(){$('meetingCommentLabel').style.display=$('meetingAttendance').value==='absent_excused'?'grid':'none'}
+  const r={
+    region_id:rid(),
+    branch_id:$('logBranch').value,
+    contact_date:$('logDate').value,
+    channel:$('logChannel').value,
+    person:$('logPerson').value.trim(),
+    note:$('logNote').value.trim(),
+    created_by:user.id,
+    updated_at:new Date().toISOString()
+  };
 
-function meetingMoney(v){
-  return new Intl.NumberFormat("pl-PL",{style:"currency",currency:"PLN",maximumFractionDigits:0}).format(Number(v)||0);
+  if(!r.branch_id||!r.contact_date){
+    msg('logMsg','Wybierz oddział i datę kontaktu.','error');
+    setTop('Wybierz oddział i datę kontaktu.','error');
+    return;
+  }
+
+  if(btn?.disabled)return;
+  const oldText=btn?.textContent||'Zapisz';
+  if(btn){btn.disabled=true;btn.textContent='Zapisywanie…'}
+  setTop('Zapisywanie kontaktu…');
+
+  try{
+    let z;
+    if(edit.log) z=await sb.from('contact_logs').update(r).eq('id',edit.log).select().single();
+    else z=await sb.from('contact_logs').insert(r).select().single();
+
+    if(z.error)throw z.error;
+
+    const savedId=z.data?.id;
+    clearLog();
+
+    // Odświeżenie modułów pomocniczych nie może "udawać", że zapis się nie powiódł.
+    const refreshes=[
+      ()=>loadLogs(),
+      ()=>loadDashboard(),
+      ()=>window.refreshBranchCardNow?.(r.branch_id),
+      ()=>window.refreshHistoryNow?.(r.branch_id)
+    ];
+    for(const fn of refreshes){
+      try{await fn()}catch(refreshErr){console.error('Odświeżanie po zapisie kontaktu:',refreshErr)}
+    }
+
+    msg('logMsg','Kontakt został zapisany.','ok');
+    setTop('✓ Kontakt został zapisany.','ok');
+
+    if(window.innerWidth<=800){
+      topMsg?.scrollIntoView({behavior:'smooth',block:'nearest'});
+    }
+  }catch(e){
+    console.error('Zapis kontaktu:',e);
+    const text=e?.message||'Nie udało się zapisać kontaktu.';
+    msg('logMsg',text,'error');
+    setTop('Błąd zapisu: '+text,'error');
+    if(btn)btn.textContent=oldText;
+  }finally{
+    if(btn){btn.disabled=false;if(btn.textContent==='Zapisywanie…')btn.textContent='Zapisz'}
+  }
 }
+window.saveLogNow=saveLog;
 function meetingPctValue(v){
   return Number.isFinite(v)?new Intl.NumberFormat("pl-PL",{minimumFractionDigits:1,maximumFractionDigits:1}).format(v)+" %":"—";
 }
@@ -4196,7 +4277,7 @@ $('addPinnedNoteBtn').onclick=addPinnedNote;$('installPwaBtn').onclick=installPw
 $('logoutBtn').onclick=forceLogout;
 $('loadComparisonBtn').onclick=loadComparison;$('regionSelect').onchange=loadBranches;$('addBranchBtn').onclick=addBranch;
 $('saveContact').onclick=saveContact;$('clearContact').onclick=clearContact;$('contactFilter').onchange=loadContacts;$('contactSearch').oninput=loadContacts;
-$('saveLog').onclick=saveLog;$('clearLog').onclick=clearLog;$('logFilter').onchange=loadLogs;
+$('saveLog').onclick=(e)=>saveLog(e);$('clearLog').onclick=clearLog;$('logFilter').onchange=loadLogs;
 $('meetingAttendance').onchange=toggleComment;$('refreshMeetingPreviewBtn').onclick=renderMeetingNoteV45;
 ['meetingBranch','meetingDate','meetingAttendance'].forEach(id=>$(id).addEventListener('change',renderMeetingNoteV45));
 ['meetingTopics','meetingComment'].forEach(id=>$(id).addEventListener('input',renderMeetingNoteV45));
