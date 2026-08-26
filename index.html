@@ -2,7 +2,7 @@
 <html lang="pl">
 <head>
 <meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
-<title>Eltrox RKS – Supabase v15.8</title><meta name="theme-color" content="#ef6c00"><meta name="apple-mobile-web-app-capable" content="yes"><meta name="apple-mobile-web-app-status-bar-style" content="default"><meta name="apple-mobile-web-app-title" content="Eltrox RKS"><link rel="manifest" href="./manifest.webmanifest"><link rel="apple-touch-icon" href="./icon-192.png">
+<title>Eltrox RKS – Supabase v15.9</title><meta name="theme-color" content="#ef6c00"><meta name="apple-mobile-web-app-capable" content="yes"><meta name="apple-mobile-web-app-status-bar-style" content="default"><meta name="apple-mobile-web-app-title" content="Eltrox RKS"><link rel="manifest" href="./manifest.webmanifest"><link rel="apple-touch-icon" href="./icon-192.png">
 <style>
 :root{--o:#f36f21;--od:#d85d12;--bg:#eef1f4;--w:#fff;--line:#d9dde3;--t:#242424;--m:#6b7280;--r:#c9372c;--g:#25894b;--b:#2f71c8;--sh:0 8px 24px rgba(0,0,0,.08)}
 *{box-sizing:border-box}html,body{margin:0;min-height:100%;font-family:Arial,Helvetica,sans-serif;background:var(--bg);color:var(--t)}button,input,select,textarea{font:inherit}button{cursor:pointer}.hidden{display:none!important}
@@ -725,7 +725,7 @@ button:disabled,.btn:disabled{opacity:.6;cursor:not-allowed}
   <button type="button" id="dismissPwaUpdateBtn" class="btn">Później</button>
 </div>
 
-<div id="loginView" class="login-shell"><div class="login-card"><div class="brand"><h1>Eltrox RKS</h1><p>Wersja online v15.8</p></div><form id="loginForm" class="form"><label>E-mail<input id="loginEmail" type="email" required></label><label>Hasło<input id="loginPassword" type="password" required></label><button id="loginBtn" type="submit" class="btn primary" onclick="window.loginNow && window.loginNow(event)">Zaloguj</button><div id="loginMsg" class="msg"></div></form></div></div>
+<div id="loginView" class="login-shell"><div class="login-card"><div class="brand"><h1>Eltrox RKS</h1><p>Wersja online v15.9</p></div><form id="loginForm" class="form"><label>E-mail<input id="loginEmail" type="email" required></label><label>Hasło<input id="loginPassword" type="password" required></label><button id="loginBtn" type="submit" class="btn primary" onclick="window.loginNow && window.loginNow(event)">Zaloguj</button><div id="loginMsg" class="msg"></div></form></div></div>
 
 <div id="modeView" class="mode-shell hidden">
   <div class="mode-card">
@@ -744,7 +744,7 @@ button:disabled,.btn:disabled{opacity:.6;cursor:not-allowed}
   </div>
 </div>
 <div id="mobileActionStatus" class="mobile-action-status hidden"></div><div id="appView" class="hidden">
-<header class="header"><div><h1>Eltrox RKS – v15.8</h1><small id="headerUser"></small><div id="contextBar" class="context-bar">Region: — • Oddział: — • Okres: —</div><div id="regionSwitchStatus" class="muted" style="font-size:12px;margin-top:3px"></div></div><div class="ha">
+<header class="header"><div><h1>Eltrox RKS – v15.9</h1><small id="headerUser"></small><div id="contextBar" class="context-bar">Region: — • Oddział: — • Okres: —</div><div id="regionSwitchStatus" class="muted" style="font-size:12px;margin-top:3px"></div></div><div class="ha">
 <div class="searchbox"><input id="globalSearch" type="search" placeholder="Szukaj w aplikacji..."><div id="globalSearchResults" class="search-results hidden"></div></div>
 <label style="min-width:210px">Region<select id="regionSelect" onchange="window.switchRegionNow && window.switchRegionNow(this.value)" oninput="window.switchRegionNow && window.switchRegionNow(this.value)"></select></label>
 <span id="roleBadge" class="badge"></span><span id="workModeBadge" class="mode-badge"></span><button type="button" id="changeModeBtn" class="btn" onclick="window.mobileButtonAction && window.mobileButtonAction('changeModeBtn',event)">Zmień tryb</button>
@@ -2261,7 +2261,118 @@ async function loadTasks(){
 }
 window.refreshTasksNow=()=>loadTasks();
 
-window.saveTaskNow=saveTask;
+
+function clearTask(){
+  edit.task=null;
+  $('taskTitleHead').textContent='Dodaj zadanie';
+  ['taskTitle','taskDesc','taskOwner','taskDeadline','taskSource'].forEach(i=>{if($(i))$(i).value=''});
+  if($('taskPriority'))$('taskPriority').value='normal';
+  if($('taskStatus'))$('taskStatus').value='todo';
+  if($('saveTask'))$('saveTask').textContent='Zapisz';
+  msg('taskMsg','');
+  if($('taskSaveTopMsg'))$('taskSaveTopMsg').textContent='';
+}
+
+async function saveTask(evt=null){
+  if(evt){evt.preventDefault();evt.stopPropagation()}
+
+  const btn=$('saveTask');
+  const editingId=edit.task;
+  const row={
+    region_id:rid(),
+    branch_id:$('taskBranch').value,
+    title:$('taskTitle').value.trim(),
+    description:$('taskDesc').value.trim(),
+    owner:$('taskOwner').value.trim(),
+    deadline:$('taskDeadline').value||null,
+    priority:$('taskPriority').value,
+    source:$('taskSource').value.trim(),
+    status:$('taskStatus').value,
+    created_by:user.id
+  };
+
+  if(!row.branch_id){
+    msg('taskMsg','Wybierz oddział.','error');
+    return;
+  }
+  if(!row.title){
+    msg('taskMsg','Wpisz tytuł zadania.','error');
+    return;
+  }
+
+  if(!editingId){
+    try{
+      if(await duplicateExists('tasks',{
+        region_id:row.region_id,
+        branch_id:row.branch_id,
+        title:row.title,
+        status:row.status
+      })){
+        if(!confirm('Podobne zadanie już istnieje. Dodać kolejne?'))return;
+      }
+    }catch(e){console.warn('Kontrola duplikatu zadania:',e)}
+  }
+
+  if(btn?.disabled)return;
+  const originalText=btn?.textContent||'Zapisz';
+  if(btn){
+    btn.disabled=true;
+    btn.textContent=editingId?'Zapisywanie zmian…':'Zapisywanie…';
+  }
+  if($('taskSaveTopMsg')){
+    $('taskSaveTopMsg').textContent=editingId?'Zapisywanie zmian…':'Zapisywanie zadania…';
+    $('taskSaveTopMsg').className='msg task-save-top-msg';
+  }
+
+  try{
+    let result;
+    if(editingId){
+      // Bez .select().single() - przy RLS aktualizacja może się udać,
+      // a odczyt zwrotny może zostać zablokowany i wyglądać jak błąd zapisu.
+      result=await sb.from('tasks')
+        .update(row)
+        .eq('region_id',rid())
+        .eq('id',editingId);
+    }else{
+      result=await sb.from('tasks').insert(row);
+    }
+
+    if(result.error)throw result.error;
+
+    const wasEdit=!!editingId;
+    clearTask();
+    await loadTasks();
+
+    try{await loadDashboard()}catch(e){console.warn(e)}
+    try{await window.refreshBranchCardNow?.(row.branch_id)}catch(e){console.warn(e)}
+    try{await window.refreshHistoryNow?.(row.branch_id)}catch(e){console.warn(e)}
+    try{await loadWeekActionsDashboard()}catch(e){console.warn(e)}
+
+    msg('taskMsg',wasEdit?'Zmiany w zadaniu zostały zapisane.':'Zadanie zostało zapisane.','ok');
+    if($('taskSaveTopMsg')){
+      $('taskSaveTopMsg').textContent=wasEdit?'✓ Zmiany zostały zapisane.':'✓ Zadanie zostało zapisane.';
+      $('taskSaveTopMsg').className='msg task-save-top-msg ok';
+    }
+    showActionStatus(wasEdit?'Zmiany w zadaniu zapisane.':'Zadanie zapisane.','ok',2800);
+  }catch(e){
+    console.error('Terminarz - zapis zadania:',e);
+    const text=e?.message||'Nie udało się zapisać zadania.';
+    msg('taskMsg',text,'error');
+    if($('taskSaveTopMsg')){
+      $('taskSaveTopMsg').textContent='Błąd zapisu: '+text;
+      $('taskSaveTopMsg').className='msg task-save-top-msg error';
+    }
+    showActionStatus('Nie udało się zapisać zmian w zadaniu.','error',5000);
+    if(btn)btn.textContent=originalText;
+  }finally{
+    if(btn)btn.disabled=false;
+  }
+}
+
+window.saveTaskNow=(evt=null)=>{
+  if(evt){evt.preventDefault();evt.stopPropagation()}
+  return saveTask(evt);
+};
 
 window.taskEditNow=(id,evt=null)=>{
   if(evt){evt.preventDefault();evt.stopPropagation()}
@@ -5164,7 +5275,7 @@ $('meetingAttendance').onchange=toggleComment;$('refreshMeetingPreviewBtn').oncl
 ['meetingBranch','meetingDate','meetingAttendance'].forEach(id=>$(id).addEventListener('change',renderMeetingNoteV45));
 ['meetingTopics','meetingComment'].forEach(id=>$(id).addEventListener('input',renderMeetingNoteV45));
 $('saveMeeting').onclick=saveMeeting;$('clearMeeting').onclick=clearMeeting;$('meetingFilter').onchange=loadMeetings;
-$('saveTask').onclick=(e)=>saveTask(e);$('clearTask').onclick=clearTask;$('taskFilter').onchange=()=>loadTasks();$('taskStatusFilter').onchange=()=>loadTasks();
+$('saveTask').onclick=(e)=>window.saveTaskNow(e);$('clearTask').onclick=clearTask;$('taskFilter').onchange=()=>loadTasks();$('taskStatusFilter').onchange=()=>loadTasks();
 $('saveVisit').onclick=(e)=>saveVisit(e);$('clearVisit').onclick=clearVisit;$('addVisitRecommendation').onclick=()=>addVisitRecommendationRow();$('generateVisitForm').onclick=generateVisitSignatureForm;$('printVisitReport').onclick=printVisitSignatureForm;
 $('salesEntryDate').onchange=()=>renderSalesEntry();$('saveSalesEntry').onclick=(e)=>window.saveSalesEntryNow(e,true);$('saveMonthlyKpi').onclick=()=>saveMonthlyKpi(true);$('voipMonth').onchange=renderMonthlyKpi;$('controlKpiMonth').onchange=renderMonthlyKpi;
 $('saveNote').onclick=saveNote;$('clearNote').onclick=clearNote;$('noteFilter').onchange=loadNotes;$('cardBranch').onchange=()=>refreshBranchCard($('cardBranch').value);$('cardBranch').addEventListener('input',()=>refreshBranchCard($('cardBranch').value));$('historyBranch').onchange=()=>refreshHistory($('historyBranch').value);$('historyBranch').addEventListener('input',()=>refreshHistory($('historyBranch').value));$('historyFrom').onchange=()=>refreshHistory();$('historyTo').onchange=()=>refreshHistory();$('historySearch').oninput=()=>refreshHistory();document.querySelectorAll('.historyType').forEach(x=>x.onchange=()=>refreshHistory());$('clearHistoryFilters').onclick=()=>{$('historyFrom').value='';$('historyTo').value='';$('historySearch').value='';document.querySelectorAll('.historyType').forEach(x=>x.checked=true);refreshHistory()};
