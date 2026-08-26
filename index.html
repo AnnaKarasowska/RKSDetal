@@ -2,7 +2,7 @@
 <html lang="pl">
 <head>
 <meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
-<title>Eltrox RKS – Supabase v15.7</title><meta name="theme-color" content="#ef6c00"><meta name="apple-mobile-web-app-capable" content="yes"><meta name="apple-mobile-web-app-status-bar-style" content="default"><meta name="apple-mobile-web-app-title" content="Eltrox RKS"><link rel="manifest" href="./manifest.webmanifest"><link rel="apple-touch-icon" href="./icon-192.png">
+<title>Eltrox RKS – Supabase v15.8</title><meta name="theme-color" content="#ef6c00"><meta name="apple-mobile-web-app-capable" content="yes"><meta name="apple-mobile-web-app-status-bar-style" content="default"><meta name="apple-mobile-web-app-title" content="Eltrox RKS"><link rel="manifest" href="./manifest.webmanifest"><link rel="apple-touch-icon" href="./icon-192.png">
 <style>
 :root{--o:#f36f21;--od:#d85d12;--bg:#eef1f4;--w:#fff;--line:#d9dde3;--t:#242424;--m:#6b7280;--r:#c9372c;--g:#25894b;--b:#2f71c8;--sh:0 8px 24px rgba(0,0,0,.08)}
 *{box-sizing:border-box}html,body{margin:0;min-height:100%;font-family:Arial,Helvetica,sans-serif;background:var(--bg);color:var(--t)}button,input,select,textarea{font:inherit}button{cursor:pointer}.hidden{display:none!important}
@@ -696,6 +696,27 @@ button:disabled,.btn:disabled{opacity:.6;cursor:not-allowed}
   #reportsBonus .head .controls{display:grid;grid-template-columns:1fr;gap:8px;width:100%}
   #bonusMonthYear,#bonusMonthSelect,#bonusAsOfDate,#calcMonthlyBonusBtn{width:100%!important;min-height:46px;font-size:16px}
 }
+
+/* v15.8 - Terminarz */
+#tasks .task-native-select{
+  appearance:auto!important;
+  -webkit-appearance:menulist!important;
+  pointer-events:auto!important;
+  touch-action:manipulation!important;
+  position:relative!important;
+  z-index:5!important;
+}
+#tasks .actions{display:flex;gap:6px;flex-wrap:wrap}
+#tasks .actions .btn{touch-action:manipulation;-webkit-tap-highlight-color:transparent}
+@media(max-width:800px){
+  #tasks .g2{grid-template-columns:1fr!important}
+  #tasks select,#tasks input,#tasks textarea{font-size:16px}
+  #taskStatus,#taskStatusFilter,#taskFilter{min-height:48px!important;width:100%!important}
+  #tasks .item .top{display:block}
+  #tasks .item .actions{margin-top:10px;display:grid;grid-template-columns:1fr 1fr;gap:8px}
+  #tasks .item .actions .btn{min-height:46px;width:100%}
+  #tasks .item .actions .danger{grid-column:1/-1}
+}
 </style></head>
 <body>
 <div id="pwaUpdateBanner" class="pwa-update-banner hidden">
@@ -704,7 +725,7 @@ button:disabled,.btn:disabled{opacity:.6;cursor:not-allowed}
   <button type="button" id="dismissPwaUpdateBtn" class="btn">Później</button>
 </div>
 
-<div id="loginView" class="login-shell"><div class="login-card"><div class="brand"><h1>Eltrox RKS</h1><p>Wersja online v15.7</p></div><form id="loginForm" class="form"><label>E-mail<input id="loginEmail" type="email" required></label><label>Hasło<input id="loginPassword" type="password" required></label><button id="loginBtn" type="submit" class="btn primary" onclick="window.loginNow && window.loginNow(event)">Zaloguj</button><div id="loginMsg" class="msg"></div></form></div></div>
+<div id="loginView" class="login-shell"><div class="login-card"><div class="brand"><h1>Eltrox RKS</h1><p>Wersja online v15.8</p></div><form id="loginForm" class="form"><label>E-mail<input id="loginEmail" type="email" required></label><label>Hasło<input id="loginPassword" type="password" required></label><button id="loginBtn" type="submit" class="btn primary" onclick="window.loginNow && window.loginNow(event)">Zaloguj</button><div id="loginMsg" class="msg"></div></form></div></div>
 
 <div id="modeView" class="mode-shell hidden">
   <div class="mode-card">
@@ -723,7 +744,7 @@ button:disabled,.btn:disabled{opacity:.6;cursor:not-allowed}
   </div>
 </div>
 <div id="mobileActionStatus" class="mobile-action-status hidden"></div><div id="appView" class="hidden">
-<header class="header"><div><h1>Eltrox RKS – v15.7</h1><small id="headerUser"></small><div id="contextBar" class="context-bar">Region: — • Oddział: — • Okres: —</div><div id="regionSwitchStatus" class="muted" style="font-size:12px;margin-top:3px"></div></div><div class="ha">
+<header class="header"><div><h1>Eltrox RKS – v15.8</h1><small id="headerUser"></small><div id="contextBar" class="context-bar">Region: — • Oddział: — • Okres: —</div><div id="regionSwitchStatus" class="muted" style="font-size:12px;margin-top:3px"></div></div><div class="ha">
 <div class="searchbox"><input id="globalSearch" type="search" placeholder="Szukaj w aplikacji..."><div id="globalSearchResults" class="search-results hidden"></div></div>
 <label style="min-width:210px">Region<select id="regionSelect" onchange="window.switchRegionNow && window.switchRegionNow(this.value)" oninput="window.switchRegionNow && window.switchRegionNow(this.value)"></select></label>
 <span id="roleBadge" class="badge"></span><span id="workModeBadge" class="mode-badge"></span><button type="button" id="changeModeBtn" class="btn" onclick="window.mobileButtonAction && window.mobileButtonAction('changeModeBtn',event)">Zmień tryb</button>
@@ -1007,7 +1028,7 @@ button:disabled,.btn:disabled{opacity:.6;cursor:not-allowed}
   </div>
 </section>
 
-<section id="tasks" class="view"><div class="head"><div><h2>Terminarz</h2><p>Zadania, terminy, priorytety i status.</p></div></div><div class="g2"><div class="panel"><h3 id="taskTitleHead">Dodaj zadanie</h3><div class="form"><label>Oddział<select id="taskBranch"></select></label><label>Tytuł<input id="taskTitle"></label><label>Opis<textarea id="taskDesc"></textarea></label><label>Odpowiedzialny<input id="taskOwner"></label><label>Termin<input id="taskDeadline" type="date"></label><label>Priorytet<select id="taskPriority"><option value="high">Pilne</option><option value="normal" selected>Normalne</option><option value="low">Niskie</option></select></label><label>Źródło<input id="taskSource"></label><label>Status<select id="taskStatus"><option value="todo">Do zrobienia</option><option value="progress">W trakcie</option><option value="done">Wykonane</option></select></label><div class="controls"><button type="button" id="saveTask" class="btn primary task-save-btn" onclick="window.saveTaskNow && window.saveTaskNow(event)">Zapisz</button><button type="button" id="clearTask" class="btn" onclick="window.mobileButtonAction && window.mobileButtonAction('clearTask',event)">Wyczyść</button></div></div><div id="taskSaveTopMsg" class="msg task-save-top-msg"></div><div id="taskMsg" class="msg"></div></div><div class="panel"><div class="controls"><label>Oddział<select id="taskFilter"></select></label><label>Status<select id="taskStatusFilter"><option value="all">Wszystkie</option><option value="todo">Do zrobienia</option><option value="progress">W trakcie</option><option value="done">Wykonane</option></select></label></div><div id="taskList" class="list" style="margin-top:10px"></div></div></div></section>
+<section id="tasks" class="view"><div class="head"><div><h2>Terminarz</h2><p>Zadania, terminy, priorytety i status.</p></div></div><div class="g2"><div class="panel"><h3 id="taskTitleHead">Dodaj zadanie</h3><div class="form"><label>Oddział<select id="taskBranch"></select></label><label>Tytuł<input id="taskTitle"></label><label>Opis<textarea id="taskDesc"></textarea></label><label>Odpowiedzialny<input id="taskOwner"></label><label>Termin<input id="taskDeadline" type="date"></label><label>Priorytet<select id="taskPriority"><option value="high">Pilne</option><option value="normal" selected>Normalne</option><option value="low">Niskie</option></select></label><label>Źródło<input id="taskSource"></label><label>Status<select id="taskStatus" class="task-native-select"><option value="todo">Do zrobienia</option><option value="progress">W trakcie</option><option value="done">Wykonane</option></select></label><div class="controls"><button type="button" id="saveTask" class="btn primary task-save-btn" onclick="window.saveTaskNow && window.saveTaskNow(event)">Zapisz</button><button type="button" id="clearTask" class="btn" onclick="window.mobileButtonAction && window.mobileButtonAction('clearTask',event)">Wyczyść</button></div></div><div id="taskSaveTopMsg" class="msg task-save-top-msg"></div><div id="taskMsg" class="msg"></div></div><div class="panel"><div class="controls"><label>Oddział<select id="taskFilter" onchange="window.refreshTasksNow && window.refreshTasksNow()" oninput="window.refreshTasksNow && window.refreshTasksNow()"></select></label><label>Status<select id="taskStatusFilter" class="task-native-select" onchange="window.refreshTasksNow && window.refreshTasksNow()" oninput="window.refreshTasksNow && window.refreshTasksNow()"><option value="all">Wszystkie</option><option value="todo">Do zrobienia</option><option value="progress">W trakcie</option><option value="done">Wykonane</option></select></label></div><div id="taskList" class="list" style="margin-top:10px"></div></div></div></section>
 
 <section id="visits" class="view"><div class="inner">
   <div class="head">
@@ -2209,89 +2230,97 @@ async function saveMeeting(){let a=$('meetingAttendance').value,c=$('meetingComm
 window.editMeeting=id=>{let v=window._meetings.find(x=>x.id===id);edit.meeting=id;$('meetingTitle').textContent='Edytuj notatkę';$('meetingBranch').value=v.branch_id;$('meetingDate').value=v.meeting_date;$('meetingAttendance').value=v.attendance;$('meetingComment').value=v.attendance_comment||'';$('meetingTopics').value=v.urgent_topics||'';setMeetingContent(v.content||{});toggleComment()};
 window.delMeeting=async id=>{if(confirm('Usunąć notatkę?')){await sb.from('meeting_notes').delete().eq('id',id);loadMeetings();loadCard();loadHistory()}};
 
-async function loadTasks(){let x=await q('tasks');if(x.error)return;window._tasks=x.data||[];let f=$('taskFilter').value,s=$('taskStatusFilter').value,a=window._tasks.filter(v=>(f==='all'||v.branch_id===f)&&(s==='all'||v.status===s)).sort((a,b)=>(a.deadline||'9999').localeCompare(b.deadline||'9999'));$('taskList').innerHTML=a.length?a.map(v=>`<div class="item"><div class="top"><div><b>${esc(v.title)}</b><div class="meta">${esc(bn(v.branch_id))} • ${fd(v.deadline)} • <span class="${v.priority}">${v.priority}</span> • <span class="status ${v.status}">${sl(v.status)}</span></div></div><div class="actions"><button type="button" class="btn small" onclick="editTask('${v.id}')">Edytuj</button>${v.status!=='done'?`<button type="button" class="btn small" onclick="doneTask('${v.id}')">Wykonane</button>`:''}<button type="button" class="btn small danger" onclick="delTask('${v.id}')">Usuń</button></div></div><div class="text">${esc(v.description||'')}</div></div>`).join(''):'<div class="empty">Brak zadań.</div>'}
-function clearTask(){edit.task=null;$('taskTitleHead').textContent='Dodaj zadanie';['taskTitle','taskDesc','taskOwner','taskDeadline','taskSource'].forEach(i=>$(i).value='');$('taskPriority').value='normal';$('taskStatus').value='todo'}
-async function saveTask(evt=null){
-  if(evt){evt.preventDefault();evt.stopPropagation()}
-  const btn=$('saveTask');
-  const topMsg=$('taskSaveTopMsg');
-  const setTop=(text,kind='')=>{
-    if(!topMsg)return;
-    topMsg.textContent=text||'';
-    topMsg.className='msg task-save-top-msg'+(kind?' '+kind:'');
-  };
-
-  const r={
-    region_id:rid(),
-    branch_id:$('taskBranch').value,
-    title:$('taskTitle').value.trim(),
-    description:$('taskDesc').value.trim(),
-    owner:$('taskOwner').value.trim(),
-    deadline:$('taskDeadline').value||null,
-    priority:$('taskPriority').value,
-    source:$('taskSource').value.trim(),
-    status:$('taskStatus').value,
-    created_by:user.id
-  };
-
-  if(!r.branch_id){
-    msg('taskMsg','Wybierz oddział.','error');
-    setTop('Wybierz oddział.','error');
+async function loadTasks(){
+  const x=await q('tasks');
+  if(x.error){
+    console.error('Terminarz - loadTasks:',x.error);
+    $('taskList').innerHTML=`<div class="empty">${esc(x.error.message)}</div>`;
     return;
   }
-  if(!r.title){
-    msg('taskMsg','Wpisz tytuł zadania.','error');
-    setTop('Wpisz tytuł zadania.','error');
-    return;
-  }
+  window._tasks=x.data||[];
+  const f=$('taskFilter')?.value||'all';
+  const s=$('taskStatusFilter')?.value||'all';
+  const a=window._tasks
+    .filter(v=>(f==='all'||v.branch_id===f)&&(s==='all'||v.status===s))
+    .sort((a,b)=>(a.deadline||'9999').localeCompare(b.deadline||'9999'));
 
-  if(!edit.task && await duplicateExists('tasks',{region_id:r.region_id,branch_id:r.branch_id,title:r.title,status:r.status})){
-    if(!confirm('Podobne zadanie już istnieje. Dodać kolejne?'))return;
-  }
-
-  if(btn?.disabled)return;
-  const oldText=btn?.textContent||'Zapisz';
-  if(btn){btn.disabled=true;btn.textContent='Zapisywanie…'}
-  setTop('Zapisywanie zadania…');
-
-  try{
-    let z;
-    if(edit.task) z=await sb.from('tasks').update(r).eq('id',edit.task).select().single();
-    else z=await sb.from('tasks').insert(r).select().single();
-
-    if(z.error)throw z.error;
-
-    clearTask();
-
-    // Odświeżenia pomocnicze nie mogą blokować potwierdzenia zapisu.
-    const refreshes=[
-      ()=>loadTasks(),
-      ()=>loadDashboard(),
-      ()=>window.refreshBranchCardNow?.(r.branch_id),
-      ()=>window.refreshHistoryNow?.(r.branch_id),
-      ()=>loadWeekActionsDashboard()
-    ];
-    for(const fn of refreshes){
-      try{await fn()}catch(refreshErr){console.error('Odświeżanie po zapisie zadania:',refreshErr)}
-    }
-
-    msg('taskMsg','Zadanie zostało zapisane.','ok');
-    setTop('✓ Zadanie zostało zapisane.','ok');
-
-    if(window.innerWidth<=800){
-      topMsg?.scrollIntoView({behavior:'smooth',block:'nearest'});
-    }
-  }catch(e){
-    console.error('Zapis zadania:',e);
-    const text=e?.message||'Nie udało się zapisać zadania.';
-    msg('taskMsg',text,'error');
-    setTop('Błąd zapisu: '+text,'error');
-    if(btn)btn.textContent=oldText;
-  }finally{
-    if(btn){btn.disabled=false;if(btn.textContent==='Zapisywanie…')btn.textContent='Zapisz'}
-  }
+  $('taskList').innerHTML=a.length?a.map(v=>`<div class="item">
+    <div class="top">
+      <div>
+        <b>${esc(v.title)}</b>
+        <div class="meta">${esc(bn(v.branch_id))} • ${fd(v.deadline)} • <span class="${esc(v.priority)}">${esc(v.priority)}</span> • <span class="status ${esc(v.status)}">${sl(v.status)}</span></div>
+      </div>
+      <div class="actions">
+        <button type="button" class="btn small" onclick="window.taskEditNow && window.taskEditNow('${v.id}',event)">Edytuj</button>
+        ${v.status!=='done'?`<button type="button" class="btn small" onclick="window.taskDoneNow && window.taskDoneNow('${v.id}',event)">Wykonane</button>`:''}
+        <button type="button" class="btn small danger" onclick="window.taskDeleteNow && window.taskDeleteNow('${v.id}',event)">Usuń</button>
+      </div>
+    </div>
+    <div class="text">${esc(v.description||'')}</div>
+  </div>`).join(''):'<div class="empty">Brak zadań dla wybranych filtrów.</div>';
 }
+window.refreshTasksNow=()=>loadTasks();
+
 window.saveTaskNow=saveTask;
+
+window.taskEditNow=(id,evt=null)=>{
+  if(evt){evt.preventDefault();evt.stopPropagation()}
+  const v=(window._tasks||[]).find(x=>x.id===id);
+  if(!v){
+    showActionStatus('Nie znaleziono zadania do edycji.','error',4000);
+    return;
+  }
+  edit.task=id;
+  $('taskTitleHead').textContent='Edytuj zadanie';
+  $('taskBranch').value=v.branch_id||'';
+  $('taskTitle').value=v.title||'';
+  $('taskDesc').value=v.description||'';
+  $('taskOwner').value=v.owner||'';
+  $('taskDeadline').value=v.deadline||'';
+  $('taskPriority').value=v.priority||'normal';
+  $('taskSource').value=v.source||'';
+  $('taskStatus').value=v.status||'todo';
+  $('saveTask').textContent='Zapisz zmiany';
+  msg('taskMsg','Edytujesz wybrane zadanie.');
+  document.querySelector('#tasks .panel')?.scrollIntoView({behavior:'smooth',block:'start'});
+};
+
+window.taskDoneNow=async(id,evt=null)=>{
+  if(evt){evt.preventDefault();evt.stopPropagation()}
+  const v=(window._tasks||[]).find(x=>x.id===id);
+  if(!v)return;
+  try{
+    const {error}=await sb.from('tasks')
+      .update({status:'done'})
+      .eq('region_id',rid())
+      .eq('id',id);
+    if(error)throw error;
+    showActionStatus('Zadanie oznaczone jako wykonane.','ok',2500);
+    await loadTasks();
+    try{await loadDashboard()}catch(e){}
+  }catch(e){
+    console.error('Terminarz - wykonane:',e);
+    showActionStatus(e?.message||'Nie udało się zmienić statusu.','error',5000);
+  }
+};
+
+window.taskDeleteNow=async(id,evt=null)=>{
+  if(evt){evt.preventDefault();evt.stopPropagation()}
+  const v=(window._tasks||[]).find(x=>x.id===id);
+  if(!v)return;
+  if(!confirm(`Usunąć zadanie „${v.title||''}”? Zostanie przeniesione do Kosza na 30 dni.`))return;
+  try{
+    await softDeleteRecord('tasks',id,rid(),v.branch_id,v);
+    showActionStatus('Zadanie przeniesiono do Kosza.','ok',2500);
+    await loadTasks();
+    try{await loadTrash()}catch(e){}
+    try{await loadDashboard()}catch(e){}
+  }catch(e){
+    console.error('Terminarz - usuwanie:',e);
+    showActionStatus(e?.message||'Nie udało się usunąć zadania.','error',5000);
+  }
+};
+
 function currentVisitRecommendations(){
   return [...document.querySelectorAll('#visitRecommendations tr')].map(tr=>({
     text:tr.querySelector('.visit-rec-text')?.value.trim()||'',
@@ -5135,7 +5164,7 @@ $('meetingAttendance').onchange=toggleComment;$('refreshMeetingPreviewBtn').oncl
 ['meetingBranch','meetingDate','meetingAttendance'].forEach(id=>$(id).addEventListener('change',renderMeetingNoteV45));
 ['meetingTopics','meetingComment'].forEach(id=>$(id).addEventListener('input',renderMeetingNoteV45));
 $('saveMeeting').onclick=saveMeeting;$('clearMeeting').onclick=clearMeeting;$('meetingFilter').onchange=loadMeetings;
-$('saveTask').onclick=(e)=>saveTask(e);$('clearTask').onclick=clearTask;$('taskFilter').onchange=loadTasks;$('taskStatusFilter').onchange=loadTasks;
+$('saveTask').onclick=(e)=>saveTask(e);$('clearTask').onclick=clearTask;$('taskFilter').onchange=()=>loadTasks();$('taskStatusFilter').onchange=()=>loadTasks();
 $('saveVisit').onclick=(e)=>saveVisit(e);$('clearVisit').onclick=clearVisit;$('addVisitRecommendation').onclick=()=>addVisitRecommendationRow();$('generateVisitForm').onclick=generateVisitSignatureForm;$('printVisitReport').onclick=printVisitSignatureForm;
 $('salesEntryDate').onchange=()=>renderSalesEntry();$('saveSalesEntry').onclick=(e)=>window.saveSalesEntryNow(e,true);$('saveMonthlyKpi').onclick=()=>saveMonthlyKpi(true);$('voipMonth').onchange=renderMonthlyKpi;$('controlKpiMonth').onchange=renderMonthlyKpi;
 $('saveNote').onclick=saveNote;$('clearNote').onclick=clearNote;$('noteFilter').onchange=loadNotes;$('cardBranch').onchange=()=>refreshBranchCard($('cardBranch').value);$('cardBranch').addEventListener('input',()=>refreshBranchCard($('cardBranch').value));$('historyBranch').onchange=()=>refreshHistory($('historyBranch').value);$('historyBranch').addEventListener('input',()=>refreshHistory($('historyBranch').value));$('historyFrom').onchange=()=>refreshHistory();$('historyTo').onchange=()=>refreshHistory();$('historySearch').oninput=()=>refreshHistory();document.querySelectorAll('.historyType').forEach(x=>x.onchange=()=>refreshHistory());$('clearHistoryFilters').onclick=()=>{$('historyFrom').value='';$('historyTo').value='';$('historySearch').value='';document.querySelectorAll('.historyType').forEach(x=>x.checked=true);refreshHistory()};
