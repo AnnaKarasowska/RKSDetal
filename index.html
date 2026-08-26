@@ -2,7 +2,7 @@
 <html lang="pl">
 <head>
 <meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
-<title>Eltrox RKS – Supabase v15.9</title><meta name="theme-color" content="#ef6c00"><meta name="apple-mobile-web-app-capable" content="yes"><meta name="apple-mobile-web-app-status-bar-style" content="default"><meta name="apple-mobile-web-app-title" content="Eltrox RKS"><link rel="manifest" href="./manifest.webmanifest"><link rel="apple-touch-icon" href="./icon-192.png">
+<title>Eltrox RKS – Supabase v15.10</title><meta name="theme-color" content="#ef6c00"><meta name="apple-mobile-web-app-capable" content="yes"><meta name="apple-mobile-web-app-status-bar-style" content="default"><meta name="apple-mobile-web-app-title" content="Eltrox RKS"><link rel="manifest" href="./manifest.webmanifest"><link rel="apple-touch-icon" href="./icon-192.png">
 <style>
 :root{--o:#f36f21;--od:#d85d12;--bg:#eef1f4;--w:#fff;--line:#d9dde3;--t:#242424;--m:#6b7280;--r:#c9372c;--g:#25894b;--b:#2f71c8;--sh:0 8px 24px rgba(0,0,0,.08)}
 *{box-sizing:border-box}html,body{margin:0;min-height:100%;font-family:Arial,Helvetica,sans-serif;background:var(--bg);color:var(--t)}button,input,select,textarea{font:inherit}button{cursor:pointer}.hidden{display:none!important}
@@ -68,6 +68,10 @@ input,select,textarea{width:100%;padding:9px 10px;border:1px solid var(--line);b
 @page{size:A4;margin:12mm}
 @media print{
   body{background:#fff!important}
+  .header,.nav,#quickAddFab,#pwaUpdateBanner{display:none!important}
+  main.content{padding:0!important}
+  .view{display:none!important}
+  #meetings{display:block!important}
   #meetings .head,#meetings .meeting-note-editor,#meetings .meeting-notes-list{display:none!important}
   #meetings .meeting-note-layout{display:block!important}
   #meetings .meeting-note-preview{border:0!important;box-shadow:none!important;padding:0!important}
@@ -717,6 +721,12 @@ button:disabled,.btn:disabled{opacity:.6;cursor:not-allowed}
   #tasks .item .actions .btn{min-height:46px;width:100%}
   #tasks .item .actions .danger{grid-column:1/-1}
 }
+
+@media(max-width:800px){
+  #meetings .meeting-note-preview{overflow-x:auto}
+  #meetings .meeting-note-sheet{min-width:680px;padding:16px}
+  #refreshMeetingPreviewBtn,#printMeetingBtn{min-height:48px}
+}
 </style></head>
 <body>
 <div id="pwaUpdateBanner" class="pwa-update-banner hidden">
@@ -725,7 +735,7 @@ button:disabled,.btn:disabled{opacity:.6;cursor:not-allowed}
   <button type="button" id="dismissPwaUpdateBtn" class="btn">Później</button>
 </div>
 
-<div id="loginView" class="login-shell"><div class="login-card"><div class="brand"><h1>Eltrox RKS</h1><p>Wersja online v15.9</p></div><form id="loginForm" class="form"><label>E-mail<input id="loginEmail" type="email" required></label><label>Hasło<input id="loginPassword" type="password" required></label><button id="loginBtn" type="submit" class="btn primary" onclick="window.loginNow && window.loginNow(event)">Zaloguj</button><div id="loginMsg" class="msg"></div></form></div></div>
+<div id="loginView" class="login-shell"><div class="login-card"><div class="brand"><h1>Eltrox RKS</h1><p>Wersja online v15.10</p></div><form id="loginForm" class="form"><label>E-mail<input id="loginEmail" type="email" required></label><label>Hasło<input id="loginPassword" type="password" required></label><button id="loginBtn" type="submit" class="btn primary" onclick="window.loginNow && window.loginNow(event)">Zaloguj</button><div id="loginMsg" class="msg"></div></form></div></div>
 
 <div id="modeView" class="mode-shell hidden">
   <div class="mode-card">
@@ -744,7 +754,7 @@ button:disabled,.btn:disabled{opacity:.6;cursor:not-allowed}
   </div>
 </div>
 <div id="mobileActionStatus" class="mobile-action-status hidden"></div><div id="appView" class="hidden">
-<header class="header"><div><h1>Eltrox RKS – v15.9</h1><small id="headerUser"></small><div id="contextBar" class="context-bar">Region: — • Oddział: — • Okres: —</div><div id="regionSwitchStatus" class="muted" style="font-size:12px;margin-top:3px"></div></div><div class="ha">
+<header class="header"><div><h1>Eltrox RKS – v15.10</h1><small id="headerUser"></small><div id="contextBar" class="context-bar">Region: — • Oddział: — • Okres: —</div><div id="regionSwitchStatus" class="muted" style="font-size:12px;margin-top:3px"></div></div><div class="ha">
 <div class="searchbox"><input id="globalSearch" type="search" placeholder="Szukaj w aplikacji..."><div id="globalSearchResults" class="search-results hidden"></div></div>
 <label style="min-width:210px">Region<select id="regionSelect" onchange="window.switchRegionNow && window.switchRegionNow(this.value)" oninput="window.switchRegionNow && window.switchRegionNow(this.value)"></select></label>
 <span id="roleBadge" class="badge"></span><span id="workModeBadge" class="mode-badge"></span><button type="button" id="changeModeBtn" class="btn" onclick="window.mobileButtonAction && window.mobileButtonAction('changeModeBtn',event)">Zmień tryb</button>
@@ -972,8 +982,8 @@ button:disabled,.btn:disabled{opacity:.6;cursor:not-allowed}
     <div class="controls">
       <label>Oddział<select id="meetingBranch"></select></label>
       <label>Data spotkania<input id="meetingDate" type="date"></label>
-      <button type="button" id="refreshMeetingPreviewBtn" class="btn primary" onclick="window.mobileButtonAction && window.mobileButtonAction('refreshMeetingPreviewBtn',event)">Odśwież dane</button>
-      <button type="button" id="printMeetingBtn" class="btn" onclick="window.mobileButtonAction && window.mobileButtonAction('printMeetingBtn',event)">Drukuj notatkę</button>
+      <button type="button" id="refreshMeetingPreviewBtn" class="btn primary" onclick="window.renderMeetingPreviewNow && window.renderMeetingPreviewNow(event)">Odśwież dane</button>
+      <button type="button" id="printMeetingBtn" class="btn" onclick="window.printMeetingNow && window.printMeetingNow(event)">Drukuj notatkę</button>
     </div>
   </div>
 
@@ -1023,6 +1033,7 @@ button:disabled,.btn:disabled{opacity:.6;cursor:not-allowed}
     </section>
 
     <section class="meeting-note-preview">
+      <div id="meetingPreviewStatus" class="muted" style="font-size:11px;margin-bottom:8px"></div>
       <article id="meetingNotePrint" class="meeting-note-sheet"></article>
     </section>
   </div>
@@ -2223,11 +2234,201 @@ async function renderMeetingNoteV45(){
   `;
 }
 
+
+function meetingMoney(v){
+  return new Intl.NumberFormat('pl-PL',{style:'currency',currency:'PLN',maximumFractionDigits:0}).format(Number(v)||0);
+}
+function meetingPct(v){
+  const n=Number(v);
+  return Number.isFinite(n)?new Intl.NumberFormat('pl-PL',{minimumFractionDigits:1,maximumFractionDigits:1}).format(n)+' %':'—';
+}
+function meetingLines(text,count=4){
+  const items=String(text||'').split(/\r?\n/).map(x=>x.trim()).filter(Boolean);
+  if(items.length)return items.map(x=>`<div class="meeting-note-checkbox">${esc(x)}</div>`).join('');
+  return Array.from({length:count},()=>'<div class="meeting-note-checkbox"><span class="meeting-note-line" style="flex:1"></span></div>').join('');
+}
+function meetingTextBox(text,minClass=''){
+  const t=String(text||'').trim();
+  return `<div class="note-empty-box ${minClass}">${t?esc(t).replace(/\n/g,'<br>'):''}</div>`;
+}
+
+async function meetingResultSnapshot(branchId,date){
+  if(!branchId||!date)return {sales:{},kpi:{}};
+  const key=date.slice(0,7);
+  const [y,m]=key.split('-').map(Number);
+  const from=`${key}-01`;
+
+  const [salesRes,kpiRes]=await Promise.all([
+    sb.from('sales_results')
+      .select('*')
+      .eq('region_id',rid())
+      .eq('branch_id',branchId)
+      .gte('result_date',from)
+      .lte('result_date',date)
+      .order('result_date',{ascending:false}),
+    sb.from('monthly_kpis')
+      .select('*')
+      .eq('region_id',rid())
+      .eq('branch_id',branchId)
+      .eq('year',y)
+      .eq('month',m)
+      .maybeSingle()
+  ]);
+
+  if(salesRes.error)throw salesRes.error;
+  if(kpiRes.error)console.warn('1:1 KPI:',kpiRes.error);
+
+  const salesRows=salesRes.data||[];
+  const execRow=salesRows.find(r=>Number(r.uk_execution)>0||Number(r.detail_execution)>0)||salesRows[0]||{};
+  const planRow=salesRows.find(r=>Number(r.uk_plan)>0||Number(r.detail_plan)>0)||execRow;
+  return {
+    sales:{
+      ...execRow,
+      uk_plan:Number(planRow?.uk_plan)||0,
+      detail_plan:Number(planRow?.detail_plan)||0
+    },
+    kpi:kpiRes.data||{}
+  };
+}
+
+async function renderMeetingNoteV45(){
+  const preview=$('meetingNotePrint');
+  if(!preview)return;
+
+  const branchId=$('meetingBranch')?.value||'';
+  const branchName=branches.find(b=>b.id===branchId)?.name||$('meetingBranch')?.selectedOptions?.[0]?.textContent||'—';
+  const date=$('meetingDate')?.value||today();
+  const attendance=$('meetingAttendance')?.value||'present_manager';
+  const comment=$('meetingComment')?.value.trim()||'';
+  const topics=$('meetingTopics')?.value||'';
+  const content=meetingContent();
+
+  if($('meetingPreviewStatus'))$('meetingPreviewStatus').textContent='Odświeżanie podglądu…';
+
+  try{
+    const snap=await meetingResultSnapshot(branchId,date);
+    const s=snap.sales||{},k=snap.kpi||{};
+    const ukPlan=Number(s.uk_plan)||0;
+    const ukExec=Number(s.uk_execution)||0;
+    const detPlan=Number(s.detail_plan)||0;
+    const detExec=Number(s.detail_execution)||0;
+    const ukPct=ukPlan?ukExec/ukPlan*100:NaN;
+    const detPct=detPlan?detExec/detPlan*100:NaN;
+    const voipUk=k.voip_uk==null?NaN:Number(k.voip_uk);
+    const voipDetail=k.voip_detail==null?NaN:Number(k.voip_detail);
+    const voipAvg=k.voip==null?NaN:Number(k.voip);
+    const ctrl=k.controlling==null?NaN:Number(k.controlling);
+
+    preview.innerHTML=`
+      <div class="meeting-note-head">
+        <div>
+          <h1>NOTATKA ZE SPOTKANIA 1:1</h1>
+          <div style="font-size:12px;color:#666;margin-top:4px">Formularz do pracy podczas spotkania</div>
+        </div>
+        <div class="meta">
+          <div><b>Data spotkania:</b> ${fd(date)}</div>
+          <div><b>Oddział:</b> ${esc(branchName)}</div>
+          <div><b>Region:</b> ${esc($('regionSelect')?.selectedOptions?.[0]?.textContent||'—')}</div>
+          <div><b>Obecność:</b> ${esc(att(attendance))}</div>
+          ${attendance==='absent_excused'&&comment?`<div><b>Usprawiedliwienie:</b> ${esc(comment)}</div>`:''}
+        </div>
+      </div>
+
+      <section class="meeting-note-section">
+        <h2>1. Tematy pilne – do omówienia</h2>
+        <div>${meetingLines(topics,8)}</div>
+      </section>
+
+      <section class="meeting-note-section">
+        <h2>2. Wyniki i KPI</h2>
+        <div class="meeting-note-grid">
+          <div class="meeting-note-field"><span>Wynik UK</span><strong>${meetingMoney(ukExec)}</strong></div>
+          <div class="meeting-note-field"><span>Plan UK</span><strong>${meetingMoney(ukPlan)}</strong></div>
+          <div class="meeting-note-field"><span>Realizacja UK</span><strong>${meetingPct(ukPct)}</strong></div>
+          <div class="meeting-note-field"><span>Plan Detal</span><strong>${meetingMoney(detPlan)}</strong></div>
+          <div class="meeting-note-field"><span>Wynik Detal</span><strong>${meetingMoney(detExec)}</strong></div>
+          <div class="meeting-note-field"><span>Realizacja Detal</span><strong>${meetingPct(detPct)}</strong></div>
+          <div class="meeting-note-field"><span>Controlling</span><strong>${meetingPct(ctrl)}</strong></div>
+          <div class="meeting-note-field"><span>VoIP UK</span><strong>${meetingPct(voipUk)}</strong></div>
+          <div class="meeting-note-field"><span>VoIP Detal</span><strong>${meetingPct(voipDetail)}</strong></div>
+          <div class="meeting-note-field"><span>Średni VoIP</span><strong>${meetingPct(voipAvg)}</strong></div>
+        </div>
+        ${content.results?`<div style="font-size:12px;font-weight:750;margin-top:10px">Komentarz / wyniki:</div>${meetingTextBox(content.results)}`:''}
+      </section>
+
+      <section class="meeting-note-section">
+        <h2>3. Inwestycje – zrealizowane i w trakcie</h2>
+        ${content.investments?meetingTextBox(content.investments,'tall'):`
+          <div style="font-size:12px;font-weight:750;margin-bottom:4px">Zrealizowane inwestycje:</div>
+          <table class="meeting-note-table"><tbody>${Array.from({length:3},()=>'<tr><td style="width:70%"></td><td>wartość:</td></tr>').join('')}</tbody></table>
+          <div style="font-size:12px;font-weight:750;margin:9px 0 4px">Inwestycje w trakcie:</div>
+          <table class="meeting-note-table"><tbody>${Array.from({length:3},()=>'<tr><td style="width:70%"></td><td>status:</td></tr>').join('')}</tbody></table>`}
+      </section>
+
+      <section class="meeting-note-section">
+        <h2>4. Problemy i działania naprawcze</h2>
+        ${content.problems?meetingTextBox(content.problems,'tall'):`
+        <table class="meeting-note-table">
+          <thead><tr><th>Problem / ryzyko</th><th>Działanie naprawcze</th><th>Odpowiedzialny</th><th>Termin</th></tr></thead>
+          <tbody>${Array.from({length:4},()=>'<tr><td></td><td></td><td></td><td></td></tr>').join('')}</tbody>
+        </table>`}
+      </section>
+
+      <section class="meeting-note-section">
+        <h2>5. Organizacja pracy i plan najbliższych 5 dni</h2>
+        ${meetingTextBox(content.organization,'tall')}
+      </section>
+
+      <section class="meeting-note-section">
+        <h2>6. Komentarz RKS po spotkaniu</h2>
+        ${meetingTextBox(content.rks_comment,'tall')}
+      </section>
+
+      <section class="meeting-note-section">
+        <h2>7. Podsumowanie ustaleń</h2>
+        ${content.summary?meetingTextBox(content.summary,'tall'):`
+        <table class="meeting-note-table">
+          <thead><tr><th>Ustalenie / zadanie</th><th>Osoba odpowiedzialna</th><th>Termin</th></tr></thead>
+          <tbody>${Array.from({length:5},()=>'<tr><td></td><td></td><td></td></tr>').join('')}</tbody>
+        </table>`}
+      </section>
+    `;
+
+    if($('meetingPreviewStatus'))$('meetingPreviewStatus').textContent=`Podgląd: ${branchName} • ${fd(date)}`;
+  }catch(e){
+    console.error('Podgląd 1:1:',e);
+    preview.innerHTML=`<div class="empty">Nie udało się przygotować podglądu: ${esc(e?.message||e)}</div>`;
+    if($('meetingPreviewStatus'))$('meetingPreviewStatus').textContent='Błąd podglądu';
+  }
+}
+window.renderMeetingPreviewNow=(evt=null)=>{
+  if(evt){evt.preventDefault();evt.stopPropagation()}
+  return renderMeetingNoteV45();
+};
+
+async function printMeeting(){
+  try{
+    await renderMeetingNoteV45();
+    if(!$('meetingNotePrint')?.innerHTML.trim()){
+      showActionStatus('Brak notatki do wydruku.','error',4000);
+      return;
+    }
+    setTimeout(()=>window.print(),120);
+  }catch(e){
+    console.error('Druk 1:1:',e);
+    showActionStatus('Nie udało się przygotować notatki do druku.','error',5000);
+  }
+}
+window.printMeetingNow=(evt=null)=>{
+  if(evt){evt.preventDefault();evt.stopPropagation()}
+  return printMeeting();
+};
+
 async function loadMeetings(){let x=await q('meeting_notes');if(x.error)return;window._meetings=x.data||[];let f=$('meetingFilter').value,a=window._meetings.filter(v=>f==='all'||v.branch_id===f).sort((a,b)=>b.meeting_date.localeCompare(a.meeting_date));$('meetingList').innerHTML=a.length?a.map(v=>`<div class="item"><div class="top"><div><b>${esc(bn(v.branch_id))} • ${fd(v.meeting_date)}</b><div class="meta">${att(v.attendance)}</div></div><div class="actions"><button type="button" class="btn small" onclick="editMeeting('${v.id}')">Edytuj</button><button type="button" class="btn small danger" onclick="delMeeting('${v.id}')">Usuń</button></div></div><div class="text">${esc(v.urgent_topics||'')}</div></div>`).join(''):'<div class="empty">Brak notatek 1:1.</div>';await renderMeetingNoteV45();
 }
 function clearMeeting(){edit.meeting=null;$('meetingTitle').textContent='Nowa notatka';$('meetingDate').value=today();$('meetingAttendance').value='present_manager';$('meetingComment').value='';$('meetingTopics').value='';setMeetingContent({});toggleComment();renderMeetingNoteV45()}
 async function saveMeeting(){let a=$('meetingAttendance').value,c=$('meetingComment').value.trim();if(a==='absent_excused'&&!c)return msg('meetingMsg','Wpisz komentarz do usprawiedliwienia.','error');let r={region_id:rid(),branch_id:$('meetingBranch').value,meeting_date:$('meetingDate').value,attendance:a,attendance_comment:c||null,urgent_topics:$('meetingTopics').value.trim(),content:meetingContent(),created_by:user.id};let z=edit.meeting?await sb.from('meeting_notes').update(r).eq('id',edit.meeting):await sb.from('meeting_notes').insert(r);if(z.error)return msg('meetingMsg',z.error.message,'error');clearMeeting();loadMeetings();loadCard();loadHistory()}
-window.editMeeting=id=>{let v=window._meetings.find(x=>x.id===id);edit.meeting=id;$('meetingTitle').textContent='Edytuj notatkę';$('meetingBranch').value=v.branch_id;$('meetingDate').value=v.meeting_date;$('meetingAttendance').value=v.attendance;$('meetingComment').value=v.attendance_comment||'';$('meetingTopics').value=v.urgent_topics||'';setMeetingContent(v.content||{});toggleComment()};
+window.editMeeting=async id=>{let v=window._meetings.find(x=>x.id===id);if(!v)return;edit.meeting=id;$('meetingTitle').textContent='Edytuj notatkę';$('meetingBranch').value=v.branch_id;$('meetingDate').value=v.meeting_date;$('meetingAttendance').value=v.attendance;$('meetingComment').value=v.attendance_comment||'';$('meetingTopics').value=v.urgent_topics||'';setMeetingContent(v.content||{});toggleComment();await renderMeetingNoteV45();document.querySelector('.meeting-note-preview')?.scrollIntoView({behavior:'smooth',block:'start'})};
 window.delMeeting=async id=>{if(confirm('Usunąć notatkę?')){await sb.from('meeting_notes').delete().eq('id',id);loadMeetings();loadCard();loadHistory()}};
 
 async function loadTasks(){
@@ -5213,7 +5414,7 @@ document.addEventListener('keydown',e=>{if(e.key==='Escape'&&!$('tabOrderBackdro
 
 $('analysisYear').onchange=loadAnalysis;$('analysisFromM').onchange=loadAnalysis;$('analysisToM').onchange=loadAnalysis;$('refreshMapBtn').onclick=loadRegionMap;
 $('addRegionBtn')&&($('addRegionBtn').onclick=manageAddRegion);$('renameRegionBtn')&&($('renameRegionBtn').onclick=manageRenameRegion);$('deleteRegionBtn')&&($('deleteRegionBtn').onclick=manageDeleteRegion);
-$('prepareNextMeetingBtn')&&($('prepareNextMeetingBtn').onclick=prepareNextMeeting);$('printMeetingBtn')&&($('printMeetingBtn').onclick=printMeeting);
+$('prepareNextMeetingBtn')&&($('prepareNextMeetingBtn').onclick=prepareNextMeeting);$('printMeetingBtn')&&($('printMeetingBtn').onclick=(e)=>window.printMeetingNow(e));
 $('uploadAttachmentBtn').onclick=uploadAttachment;$('attachmentFilter').onchange=loadAttachments;
 $('calcMonthlyBonusBtn').onclick=calculateMonthlyBonus;$('bonusMonthYear').onchange=calculateMonthlyBonus;$('bonusMonthSelect').onchange=calculateMonthlyBonus;$('bonusAsOfDate').onchange=calculateMonthlyBonus;$('calcBonusBtn').onclick=calculateBonus;$('createArchiveBtn').onclick=createArchive;
 $('exportBackupBtn').onclick=exportRegionBackup;$('importBackupBtn').onclick=()=>$('importBackupFile').click();$('importBackupFile').onchange=e=>{importRegionBackup(e.target.files[0]);e.target.value=''};
@@ -5271,9 +5472,9 @@ $('logoutBtn').onclick=forceLogout;
 $('loadComparisonBtn').onclick=loadComparison;$('regionSelect').onchange=()=>switchRegion($('regionSelect').value);$('regionSelect').addEventListener('input',()=>switchRegion($('regionSelect').value));$('addBranchBtn').onclick=addBranch;
 $('saveContact').onclick=saveContact;$('clearContact').onclick=clearContact;$('contactFilter').onchange=loadContacts;$('contactSearch').oninput=loadContacts;
 $('saveLog').onclick=(e)=>saveLog(e);$('clearLog').onclick=clearLog;$('logFilter').onchange=loadLogs;
-$('meetingAttendance').onchange=toggleComment;$('refreshMeetingPreviewBtn').onclick=renderMeetingNoteV45;
+$('meetingAttendance').onchange=()=>{toggleComment();renderMeetingNoteV45()};$('refreshMeetingPreviewBtn').onclick=(e)=>window.renderMeetingPreviewNow(e);
 ['meetingBranch','meetingDate','meetingAttendance'].forEach(id=>$(id).addEventListener('change',renderMeetingNoteV45));
-['meetingTopics','meetingComment'].forEach(id=>$(id).addEventListener('input',renderMeetingNoteV45));
+['meetingTopics','meetingComment'].forEach(id=>$(id).addEventListener('input',()=>renderMeetingNoteV45()));
 $('saveMeeting').onclick=saveMeeting;$('clearMeeting').onclick=clearMeeting;$('meetingFilter').onchange=loadMeetings;
 $('saveTask').onclick=(e)=>window.saveTaskNow(e);$('clearTask').onclick=clearTask;$('taskFilter').onchange=()=>loadTasks();$('taskStatusFilter').onchange=()=>loadTasks();
 $('saveVisit').onclick=(e)=>saveVisit(e);$('clearVisit').onclick=clearVisit;$('addVisitRecommendation').onclick=()=>addVisitRecommendationRow();$('generateVisitForm').onclick=generateVisitSignatureForm;$('printVisitReport').onclick=printVisitSignatureForm;
