@@ -2,7 +2,7 @@
 <html lang="pl">
 <head>
 <meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
-<title>Eltrox RKS – Supabase v15.11</title><meta name="theme-color" content="#ef6c00"><meta name="apple-mobile-web-app-capable" content="yes"><meta name="apple-mobile-web-app-status-bar-style" content="default"><meta name="apple-mobile-web-app-title" content="Eltrox RKS"><link rel="manifest" href="./manifest.webmanifest"><link rel="apple-touch-icon" href="./icon-192.png">
+<title>Eltrox RKS – Supabase v15.12</title><meta name="theme-color" content="#ef6c00"><meta name="apple-mobile-web-app-capable" content="yes"><meta name="apple-mobile-web-app-status-bar-style" content="default"><meta name="apple-mobile-web-app-title" content="Eltrox RKS"><link rel="manifest" href="./manifest.webmanifest"><link rel="apple-touch-icon" href="./icon-192.png">
 <style>
 :root{--o:#f36f21;--od:#d85d12;--bg:#eef1f4;--w:#fff;--line:#d9dde3;--t:#242424;--m:#6b7280;--r:#c9372c;--g:#25894b;--b:#2f71c8;--sh:0 8px 24px rgba(0,0,0,.08)}
 *{box-sizing:border-box}html,body{margin:0;min-height:100%;font-family:Arial,Helvetica,sans-serif;background:var(--bg);color:var(--t)}button,input,select,textarea{font:inherit}button{cursor:pointer}.hidden{display:none!important}
@@ -739,7 +739,7 @@ button:disabled,.btn:disabled{opacity:.6;cursor:not-allowed}
   <button type="button" id="dismissPwaUpdateBtn" class="btn">Później</button>
 </div>
 
-<div id="loginView" class="login-shell"><div class="login-card"><div class="brand"><h1>Eltrox RKS</h1><p>Wersja online v15.11</p></div><form id="loginForm" class="form"><label>E-mail<input id="loginEmail" type="email" required></label><label>Hasło<input id="loginPassword" type="password" required></label><button id="loginBtn" type="submit" class="btn primary" onclick="window.loginNow && window.loginNow(event)">Zaloguj</button><div id="loginMsg" class="msg"></div></form></div></div>
+<div id="loginView" class="login-shell"><div class="login-card"><div class="brand"><h1>Eltrox RKS</h1><p>Wersja online v15.12</p></div><form id="loginForm" class="form"><label>E-mail<input id="loginEmail" type="email" required></label><label>Hasło<input id="loginPassword" type="password" required></label><button id="loginBtn" type="submit" class="btn primary" onclick="window.loginNow && window.loginNow(event)">Zaloguj</button><div id="loginMsg" class="msg"></div></form></div></div>
 
 <div id="modeView" class="mode-shell hidden">
   <div class="mode-card">
@@ -758,7 +758,7 @@ button:disabled,.btn:disabled{opacity:.6;cursor:not-allowed}
   </div>
 </div>
 <div id="mobileActionStatus" class="mobile-action-status hidden"></div><div id="appView" class="hidden">
-<header class="header"><div><h1>Eltrox RKS – v15.11</h1><small id="headerUser"></small><div id="contextBar" class="context-bar">Region: — • Oddział: — • Okres: —</div><div id="regionSwitchStatus" class="muted" style="font-size:12px;margin-top:3px"></div></div><div class="ha">
+<header class="header"><div><h1>Eltrox RKS – v15.12</h1><small id="headerUser"></small><div id="contextBar" class="context-bar">Region: — • Oddział: — • Okres: —</div><div id="regionSwitchStatus" class="muted" style="font-size:12px;margin-top:3px"></div></div><div class="ha">
 <div class="searchbox"><input id="globalSearch" type="search" placeholder="Szukaj w aplikacji..."><div id="globalSearchResults" class="search-results hidden"></div></div>
 <label style="min-width:210px">Region<select id="regionSelect" onchange="window.switchRegionNow && window.switchRegionNow(this.value)" oninput="window.switchRegionNow && window.switchRegionNow(this.value)"></select></label>
 <span id="roleBadge" class="badge"></span><span id="workModeBadge" class="mode-badge"></span><button type="button" id="changeModeBtn" class="btn" onclick="window.mobileButtonAction && window.mobileButtonAction('changeModeBtn',event)">Zmień tryb</button>
@@ -2815,8 +2815,22 @@ function formatSalesPLN(v){
 function salesRatio(a,p){a=parseSalesEntryNumber(a);p=parseSalesEntryNumber(p);return Number.isFinite(a)&&Number.isFinite(p)&&p>0?a/p:NaN}
 function salesRatioText(v){return Number.isFinite(v)?new Intl.NumberFormat('pl-PL',{style:'percent',minimumFractionDigits:1,maximumFractionDigits:1}).format(v):'—'}
 function salesRatioClass(v){return !Number.isFinite(v)?'muted':v>=1?'good':v>=.9?'warn':'bad'}
+
+function ymdLocal(year,month,day){
+  return `${year}-${String(month).padStart(2,'0')}-${String(day).padStart(2,'0')}`;
+}
+function nextMonthStart(monthKey){
+  const [y,m]=monthKey.split('-').map(Number);
+  return m===12?`${y+1}-01-01`:`${y}-${String(m+1).padStart(2,'0')}-01`;
+}
+function monthLastDate(monthKey){
+  const [y,m]=monthKey.split('-').map(Number);
+  const days=new Date(y,m,0).getDate();
+  return ymdLocal(y,m,days);
+}
+
 async function salesMonthRows(month){
-  const [y,m]=month.split('-').map(Number),from=`${month}-01`,to=new Date(y,m,1).toISOString().slice(0,10);
+  const from=`${month}-01`,to=nextMonthStart(month);
   const {data,error}=await sb.from('sales_results').select('*').eq('region_id',rid()).gte('result_date',from).lt('result_date',to).order('result_date',{ascending:false});
   if(error)throw error;return data||[];
 }
@@ -2866,7 +2880,7 @@ async function renderSalesEntry(){
     $('salesDateStatus').textContent=exactRows.length
       ? `Wyświetlane dane: ${formatted}`
       : `Brak zapisanych wyników dla ${formatted}`;
-    if($('salesHistoricalHint'))$('salesHistoricalHint').textContent=date<today()?' • dane historyczne':'';
+    if($('salesHistoricalHint'))$('salesHistoricalHint').textContent=date<today()?' • dane historyczne • zapis dokładnie na wybrany dzień':'';
   }
 
   document.querySelectorAll('#salesEntryBody input').forEach(x=>{
@@ -2946,9 +2960,8 @@ async function saveSalesEntry(showAlert=true){
     if(!await ensureSalesMonthEditable(date.slice(0,7)))return;
 
     const month=date.slice(0,7);
-    const [y,m]=month.split('-').map(Number);
     const from=`${month}-01`;
-    const to=new Date(y,m,1).toISOString().slice(0,10);
+    const to=nextMonthStart(month);
     const isMonday=new Date(date+'T12:00:00').getDay()===1;
 
     let saved=0;
@@ -3035,6 +3048,9 @@ async function saveSalesEntry(showAlert=true){
     if(verifyError)errors.push(`Weryfikacja: ${verifyError.message}`);
     if(!verifyError && saved>0 && !(verify||[]).length){
       errors.push('Weryfikacja: po zapisie nie znaleziono danych dla wybranego dnia.');
+    }
+    if(!verifyError && saved>0 && (verify||[]).length){
+      console.info(`UK/Detal: potwierdzono ${(verify||[]).length} rekordów dla ${date}`);
     }
 
     if(errors.length){
@@ -3707,13 +3723,13 @@ async function saveBonusKpiOverride(month,branchId,value){
 async function latestSalesForBonus(month,cutoffDate=null){
   const [year,mon]=month.split('-').map(Number);
   const from=`${month}-01`;
-  const monthEnd=new Date(year,mon,0);
-  const endExclusive=new Date(year,mon,1).toISOString().slice(0,10);
+  const monthEnd=monthLastDate(month);
+  const endExclusive=nextMonthStart(month);
 
   // Dla bieżącego miesiąca nie patrzymy w przyszłość.
-  let cutoff=cutoffDate||monthEnd.toISOString().slice(0,10);
+  let cutoff=cutoffDate||monthEnd;
   if(cutoff<from)cutoff=from;
-  if(cutoff>=endExclusive)cutoff=monthEnd.toISOString().slice(0,10);
+  if(cutoff>=endExclusive)cutoff=monthEnd;
 
   const {data,error}=await sb.from('sales_results')
     .select('*')
@@ -3768,7 +3784,7 @@ async function calculateMonthlyBonus(){
   const month=`${year}-${String(monthNo).padStart(2,'0')}`;
   const todayKey=today();
   const monthStart=`${month}-01`;
-  const monthEnd=new Date(year,monthNo,0).toISOString().slice(0,10);
+  const monthEnd=monthLastDate(month);
   let asOf=$('bonusAsOfDate')?.value||todayKey;
   if(asOf<monthStart)asOf=monthStart;
   if(asOf>monthEnd)asOf=monthEnd;
@@ -3857,7 +3873,7 @@ async function calculateBonus(){
   for(const month of months){
     const [y,m]=month.split('-').map(Number);
     const nowKey=today();
-    const monthEnd=new Date(y,m,0).toISOString().slice(0,10);
+    const monthEnd=monthLastDate(month);
     const monthStart=`${month}-01`;
     const cutoff=month===nowKey.slice(0,7)?nowKey:(month<nowKey.slice(0,7)?monthEnd:monthStart);
     const sales=month>nowKey.slice(0,7)?new Map():await latestSalesForBonus(month,cutoff);
@@ -4540,7 +4556,7 @@ async function applyGlobalPeriodValue(){
   if($('salesEntryDate')){
     const now=today();
     const currentMonth=now.slice(0,7);
-    const lastDay=new Date(y,m,0).toISOString().slice(0,10);
+    const lastDay=monthLastDate(key);
     $('salesEntryDate').value=key<currentMonth?lastDay:(key===currentMonth?now:`${key}-01`);
   }
   if($('voipMonth'))$('voipMonth').value=key;
