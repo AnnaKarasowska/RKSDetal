@@ -2,7 +2,7 @@
 <html lang="pl">
 <head>
 <meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
-<title>Eltrox RKS – Supabase v14.12</title><meta name="theme-color" content="#ef6c00"><meta name="apple-mobile-web-app-capable" content="yes"><meta name="apple-mobile-web-app-status-bar-style" content="default"><meta name="apple-mobile-web-app-title" content="Eltrox RKS"><link rel="manifest" href="./manifest.webmanifest"><link rel="apple-touch-icon" href="./icon-192.png">
+<title>Eltrox RKS – Supabase v15.0</title><meta name="theme-color" content="#ef6c00"><meta name="apple-mobile-web-app-capable" content="yes"><meta name="apple-mobile-web-app-status-bar-style" content="default"><meta name="apple-mobile-web-app-title" content="Eltrox RKS"><link rel="manifest" href="./manifest.webmanifest"><link rel="apple-touch-icon" href="./icon-192.png">
 <style>
 :root{--o:#f36f21;--od:#d85d12;--bg:#eef1f4;--w:#fff;--line:#d9dde3;--t:#242424;--m:#6b7280;--r:#c9372c;--g:#25894b;--b:#2f71c8;--sh:0 8px 24px rgba(0,0,0,.08)}
 *{box-sizing:border-box}html,body{margin:0;min-height:100%;font-family:Arial,Helvetica,sans-serif;background:var(--bg);color:var(--t)}button,input,select,textarea{font:inherit}button{cursor:pointer}.hidden{display:none!important}
@@ -565,9 +565,84 @@ button,.btn,.tab,.quick-option{
 @media print{.header,.nav,.btn,.controls,.no-print{display:none!important}.view{display:none!important}.view.active{display:block!important}.main{width:100%;padding:0}.panel,.card{box-shadow:none}.print-only{display:block}}
 
 @media(max-width:950px){.g2,.g3,.g4{grid-template-columns:1fr}.header{align-items:flex-start;flex-direction:column}.nav{top:108px}}
+
+/* ===== v15 – stabilizacja interfejsu ===== */
+.context-bar{
+  margin-top:4px;
+  font-size:12px;
+  opacity:.82;
+  white-space:nowrap;
+  overflow:hidden;
+  text-overflow:ellipsis;
+  max-width:720px;
+}
+.pwa-update-banner{
+  position:fixed;
+  left:50%;
+  transform:translateX(-50%);
+  top:10px;
+  z-index:9999;
+  display:flex;
+  align-items:center;
+  gap:8px;
+  flex-wrap:wrap;
+  max-width:min(94vw,720px);
+  padding:10px 12px;
+  border-radius:12px;
+  background:#fff;
+  box-shadow:0 10px 30px rgba(0,0,0,.22);
+}
+.pwa-update-banner.hidden{display:none!important}
+.unsaved-indicator{
+  display:inline-flex;
+  align-items:center;
+  gap:6px;
+  font-size:12px;
+  font-weight:600;
+}
+.unsaved-indicator::before{
+  content:"";
+  width:8px;height:8px;border-radius:50%;
+  background:#f59e0b;
+}
+.mobile-action-status{
+  position:fixed;
+  left:50%;
+  bottom:16px;
+  transform:translateX(-50%);
+  z-index:9998;
+  max-width:min(92vw,520px);
+  padding:10px 14px;
+  border-radius:10px;
+  background:#fff;
+  box-shadow:0 10px 30px rgba(0,0,0,.20);
+  font-size:14px;
+}
+.mobile-action-status.ok{border-left:4px solid #22c55e}
+.mobile-action-status.error{border-left:4px solid #ef4444}
+.mobile-action-status.info{border-left:4px solid #3b82f6}
+button:disabled,.btn:disabled{opacity:.6;cursor:not-allowed}
+@media(max-width:800px){
+  .context-bar{max-width:92vw}
+  .header{gap:8px}
+  .header .controls{width:100%;overflow-x:auto;flex-wrap:nowrap;padding-bottom:3px}
+  .nav{overflow-x:auto;flex-wrap:nowrap;-webkit-overflow-scrolling:touch}
+  .nav .tab{flex:0 0 auto;white-space:nowrap}
+  .panel,.card{min-width:0}
+  table{min-width:620px}
+  .table{overflow-x:auto;-webkit-overflow-scrolling:touch}
+  .pwa-update-banner{top:6px}
+}
+
 </style></head>
 <body>
-<div id="loginView" class="login-shell"><div class="login-card"><div class="brand"><h1>Eltrox RKS</h1><p>Wersja online v14.12</p></div><form id="loginForm" class="form"><label>E-mail<input id="loginEmail" type="email" required></label><label>Hasło<input id="loginPassword" type="password" required></label><button id="loginBtn" type="submit" class="btn primary" onclick="window.loginNow && window.loginNow(event)">Zaloguj</button><div id="loginMsg" class="msg"></div></form></div></div>
+<div id="pwaUpdateBanner" class="pwa-update-banner hidden">
+  <span>Dostępna jest nowsza wersja aplikacji.</span>
+  <button type="button" id="reloadPwaBtn" class="btn primary">Odśwież teraz</button>
+  <button type="button" id="dismissPwaUpdateBtn" class="btn">Później</button>
+</div>
+
+<div id="loginView" class="login-shell"><div class="login-card"><div class="brand"><h1>Eltrox RKS</h1><p>Wersja online v15.0</p></div><form id="loginForm" class="form"><label>E-mail<input id="loginEmail" type="email" required></label><label>Hasło<input id="loginPassword" type="password" required></label><button id="loginBtn" type="submit" class="btn primary" onclick="window.loginNow && window.loginNow(event)">Zaloguj</button><div id="loginMsg" class="msg"></div></form></div></div>
 
 <div id="modeView" class="mode-shell hidden">
   <div class="mode-card">
@@ -585,8 +660,8 @@ button,.btn,.tab,.quick-option{
     <div style="margin-top:12px"><button id="modeLogoutBtn" class="btn" type="button" onclick="forceLogout()">Wyloguj</button></div>
   </div>
 </div>
-<div id="appView" class="hidden">
-<header class="header"><div><h1>Eltrox RKS – v6</h1><small id="headerUser"></small></div><div class="ha">
+<div id="mobileActionStatus" class="mobile-action-status hidden"></div><div id="appView" class="hidden">
+<header class="header"><div><h1>Eltrox RKS – v15</h1><small id="headerUser"></small><div id="contextBar" class="context-bar">Region: — • Oddział: — • Okres: —</div></div><div class="ha">
 <div class="searchbox"><input id="globalSearch" type="search" placeholder="Szukaj w aplikacji..."><div id="globalSearchResults" class="search-results hidden"></div></div>
 <label style="min-width:210px">Region<select id="regionSelect"></select></label>
 <span id="roleBadge" class="badge"></span><span id="workModeBadge" class="mode-badge"></span><button type="button" id="changeModeBtn" class="btn" onclick="window.mobileButtonAction && window.mobileButtonAction('changeModeBtn',event)">Zmień tryb</button>
@@ -1426,6 +1501,162 @@ async function loginNow(evt=null){
 }
 window.loginNow=loginNow;
 
+const APP_VERSION='15.0';
+const DRAFT_KEY='eltrox-rks-v15-drafts';
+let _uiDirty=false;
+let _uiDirtySource='';
+let _toastTimer=null;
+
+function showActionStatus(text,kind='info',timeout=2600){
+  const el=$('mobileActionStatus');
+  if(!el)return;
+  el.textContent=text||'';
+  el.className='mobile-action-status '+kind;
+  el.classList.toggle('hidden',!text);
+  clearTimeout(_toastTimer);
+  if(text&&timeout)_toastTimer=setTimeout(()=>el.classList.add('hidden'),timeout);
+}
+
+function setBusy(btn,busy,busyText='Zapisywanie…'){
+  if(!btn)return ()=>{};
+  const old={text:btn.textContent,disabled:btn.disabled};
+  btn.disabled=!!busy;
+  if(busy)btn.textContent=busyText;
+  return ()=>{
+    btn.disabled=old.disabled;
+    btn.textContent=old.text;
+  };
+}
+
+function markDirty(source='formularz'){
+  _uiDirty=true;
+  _uiDirtySource=source;
+}
+function clearDirty(){
+  _uiDirty=false;
+  _uiDirtySource='';
+}
+function confirmDiscardChanges(){
+  if(!_uiDirty)return true;
+  const ok=confirm(`Masz niezapisane zmiany${_uiDirtySource?` w: ${_uiDirtySource}`:''}. Opuścić formularz bez zapisywania?`);
+  if(ok)clearDirty();
+  return ok;
+}
+
+window.addEventListener('beforeunload',e=>{
+  if(!_uiDirty)return;
+  e.preventDefault();
+  e.returnValue='';
+});
+
+function updateContextBar(){
+  const el=$('contextBar');
+  if(!el)return;
+  const region=$('regionSelect')?.selectedOptions?.[0]?.textContent||'—';
+  const branchIds=['cardBranch','historyBranch','manageBranch','taskBranch','visitBranch','meetingBranch','logBranch','salesBranch','kpiBranch','noteBranch'];
+  let branch='—';
+  for(const id of branchIds){
+    const s=$(id);
+    if(s?.value && s.selectedOptions?.[0]?.textContent){branch=s.selectedOptions[0].textContent;break}
+  }
+  const gp=$('globalPeriod')?.value||'';
+  const fallbackMonth=typeof selectedPeriod==='function'?selectedPeriod():null;
+  const period=gp||((fallbackMonth&&fallbackMonth.year&&fallbackMonth.month)?`${fallbackMonth.month}/${fallbackMonth.year}`:'—');
+  el.textContent=`Region: ${region} • Oddział: ${branch} • Okres: ${period}`;
+}
+
+function loadDraftStore(){
+  try{return JSON.parse(localStorage.getItem(DRAFT_KEY)||'{}')}catch{return {}}
+}
+function saveDraftStore(store){
+  try{localStorage.setItem(DRAFT_KEY,JSON.stringify(store))}catch(e){console.warn('Draft save:',e)}
+}
+function saveDraft(name,fields){
+  const store=loadDraftStore();
+  store[name]={updated_at:new Date().toISOString(),values:{}};
+  fields.forEach(id=>{const el=$(id);if(el)store[name].values[id]=el.value});
+  saveDraftStore(store);
+}
+function restoreDraft(name,fields){
+  const store=loadDraftStore();
+  const d=store[name];
+  if(!d)return false;
+  let any=false;
+  fields.forEach(id=>{
+    const el=$(id);
+    if(el && d.values && Object.prototype.hasOwnProperty.call(d.values,id) && !el.value){
+      el.value=d.values[id]??'';
+      if(el.value)any=true;
+    }
+  });
+  return any;
+}
+function clearDraft(name){
+  const store=loadDraftStore();
+  delete store[name];
+  saveDraftStore(store);
+}
+
+const V15_DRAFTS={
+  visit:['visitBranch','visitDate','visitParticipants','visitTopics','visitNotes'],
+  meeting:['meetingBranch','meetingDate','meetingResults','meetingInvestments','meetingProblems','meetingOrganization','meetingRksComment','meetingSummary'],
+  decision:['decisionBranch','decisionTitle','decisionDescription','decisionOwner','decisionDeadline'],
+  monthlyComment:['manageBranch','monthlyComment']
+};
+
+function setupDraftAutosave(){
+  Object.entries(V15_DRAFTS).forEach(([name,fields])=>{
+    restoreDraft(name,fields);
+    fields.forEach(id=>{
+      const el=$(id);
+      if(!el)return;
+      const handler=()=>{
+        markDirty(name);
+        saveDraft(name,fields);
+      };
+      el.addEventListener('input',handler,{passive:true});
+      el.addEventListener('change',handler,{passive:true});
+    });
+  });
+}
+
+function clearDraftForAction(name){
+  clearDraft(name);
+  clearDirty();
+}
+
+function safeCall(fnName,...args){
+  try{
+    const fn=window[fnName];
+    if(typeof fn!=='function')throw new Error(`Funkcja ${fnName} nie jest dostępna.`);
+    return fn(...args);
+  }catch(e){
+    console.error(fnName,e);
+    showActionStatus(e?.message||'Nie udało się wykonać operacji.','error',4500);
+  }
+}
+
+function enablePwaUpdateNotice(){
+  if(!('serviceWorker' in navigator))return;
+  navigator.serviceWorker.addEventListener('controllerchange',()=>{
+    const b=$('pwaUpdateBanner');
+    if(b)b.classList.remove('hidden');
+  });
+  navigator.serviceWorker.getRegistration().then(reg=>{
+    if(!reg)return;
+    reg.addEventListener('updatefound',()=>{
+      const nw=reg.installing;
+      if(!nw)return;
+      nw.addEventListener('statechange',()=>{
+        if(nw.state==='installed' && navigator.serviceWorker.controller){
+          $('pwaUpdateBanner')?.classList.remove('hidden');
+        }
+      });
+    });
+  }).catch(()=>{});
+}
+
+
 
 async function mobileButtonAction(id,evt=null){
   if(evt){evt.preventDefault();evt.stopPropagation()}
@@ -2027,7 +2258,7 @@ async function saveVisit(evt=null){
     }
 
     if(btn)btn.textContent='Zapisz zmiany';
-    msg('visitMsg','Raport został zapisany.','ok');
+    clearDraftForAction('visit');msg('visitMsg','Raport został zapisany.','ok');showActionStatus('Raport wizyty zapisany.','ok');
     setTop('✓ Raport został zapisany.','ok');
 
     // Na telefonie komunikat zostaje w widocznym miejscu.
@@ -4468,8 +4699,16 @@ async function showApp(session,modeResolved=false){
   $('bonusYear').value=d.getFullYear();$('bonusQuarter').value=Math.floor(d.getMonth()/3)+1;$('bonusMonthYear').value=d.getFullYear();fillMonthSelect('bonusMonthSelect');$('bonusMonthSelect').value=d.getMonth()+1;$('archiveMonth').value=d.toISOString().slice(0,7);$('personnelDate').value=today();$('visitPlanDate').value=today();$('monthlyCommentMonth').value=d.toISOString().slice(0,7);$('globalPeriod').value=d.toISOString().slice(0,7);$('autoSummaryMonth').value=d.toISOString().slice(0,7);$('closeMonthKey').value=d.toISOString().slice(0,7);$('checklistMonth').value=d.toISOString().slice(0,7);{const ws=startOfWeek(d);$('weekStart').value=ws.toISOString().slice(0,10);$('weekActionDate').value=ws.toISOString().slice(0,10);}
 }
 function showLogin(){$('appView').classList.add('hidden');$('modeView').classList.add('hidden');$('loginView').classList.remove('hidden');workMode=null;workModeRegion=null}
-document.querySelectorAll('.tab').forEach(b=>b.onclick=()=>{document.querySelectorAll('.tab').forEach(x=>x.classList.toggle('active',x===b));document.querySelectorAll('.view').forEach(x=>x.classList.toggle('active',x.id===b.dataset.v));if(b.dataset.v==='dashboard')loadDashboard();if(b.dataset.v==='analysis')loadAnalysis();if(b.dataset.v==='comparison')loadComparison();if(b.dataset.v==='branchCompare')loadBranchCompare();if(b.dataset.v==='regionMap')loadRegionMap();if(b.dataset.v==='branchCard'){refreshBranchCard();}if(b.dataset.v==='history')loadHistory()});
+document.querySelectorAll('.tab').forEach(b=>b.onclick=()=>{if(!confirmDiscardChanges())return;document.querySelectorAll('.tab').forEach(x=>x.classList.toggle('active',x===b));document.querySelectorAll('.view').forEach(x=>x.classList.toggle('active',x.id===b.dataset.v));if(b.dataset.v==='dashboard')loadDashboard();if(b.dataset.v==='analysis')loadAnalysis();if(b.dataset.v==='comparison')loadComparison();if(b.dataset.v==='branchCompare')loadBranchCompare();if(b.dataset.v==='regionMap')loadRegionMap();if(b.dataset.v==='branchCard'){refreshBranchCard();}if(b.dataset.v==='history')refreshHistory();updateContextBar()});
 $('loginForm').onsubmit=(e)=>loginNow(e);
+
+['regionSelect','cardBranch','historyBranch','manageBranch','taskBranch','visitBranch','meetingBranch','logBranch','salesBranch','noteBranch','globalPeriod']
+  .forEach(id=>$(id)?.addEventListener('change',updateContextBar));
+
+
+$('reloadPwaBtn')&&($('reloadPwaBtn').onclick=()=>location.reload());
+$('dismissPwaUpdateBtn')&&($('dismissPwaUpdateBtn').onclick=()=>$('pwaUpdateBanner').classList.add('hidden'));
+
 $('tabOrderBtn').onclick=openTabOrder;
 $('cancelTabOrderBtn').onclick=closeTabOrder;
 $('saveTabOrderBtn').onclick=saveTabOrder;
@@ -4547,6 +4786,12 @@ $('saveVisit').onclick=(e)=>saveVisit(e);$('clearVisit').onclick=clearVisit;$('a
 $('salesEntryDate').onchange=renderSalesEntry;$('saveSalesEntry').onclick=()=>saveSalesEntry(true);$('saveMonthlyKpi').onclick=()=>saveMonthlyKpi(true);$('voipMonth').onchange=renderMonthlyKpi;$('controlKpiMonth').onchange=renderMonthlyKpi;
 $('saveNote').onclick=saveNote;$('clearNote').onclick=clearNote;$('noteFilter').onchange=loadNotes;$('cardBranch').onchange=()=>refreshBranchCard($('cardBranch').value);$('cardBranch').addEventListener('input',()=>refreshBranchCard($('cardBranch').value));$('historyBranch').onchange=()=>refreshHistory($('historyBranch').value);$('historyBranch').addEventListener('input',()=>refreshHistory($('historyBranch').value));$('historyFrom').onchange=()=>refreshHistory();$('historyTo').onchange=()=>refreshHistory();$('historySearch').oninput=()=>refreshHistory();document.querySelectorAll('.historyType').forEach(x=>x.onchange=()=>refreshHistory());$('clearHistoryFilters').onclick=()=>{$('historyFrom').value='';$('historyTo').value='';$('historySearch').value='';document.querySelectorAll('.historyType').forEach(x=>x.checked=true);refreshHistory()};
 (async()=>{let{data}=await sb.auth.getSession();if(data.session)showModeChooser(data.session,false);else showLogin()})();
+
+document.addEventListener('DOMContentLoaded',()=>{
+  try{setupDraftAutosave()}catch(e){console.warn('Draft init',e)}
+  try{updateContextBar()}catch(e){}
+  try{enablePwaUpdateNotice()}catch(e){}
+});
 </script>
 <div id="pwaHelpModal" class="quick-modal hidden">
   <div class="quick-card">
