@@ -1,4 +1,4 @@
-const CACHE='eltrox-rks-v15-0-shell';
+const CACHE='eltrox-rks-v15-1-shell';
 const ASSETS=['./index.html','./manifest.webmanifest','./icon-192.png','./icon-512.png'];
 
 self.addEventListener('install',event=>{

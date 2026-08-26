@@ -2,7 +2,7 @@
 <html lang="pl">
 <head>
 <meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
-<title>Eltrox RKS – Supabase v15.0</title><meta name="theme-color" content="#ef6c00"><meta name="apple-mobile-web-app-capable" content="yes"><meta name="apple-mobile-web-app-status-bar-style" content="default"><meta name="apple-mobile-web-app-title" content="Eltrox RKS"><link rel="manifest" href="./manifest.webmanifest"><link rel="apple-touch-icon" href="./icon-192.png">
+<title>Eltrox RKS – Supabase v15.1</title><meta name="theme-color" content="#ef6c00"><meta name="apple-mobile-web-app-capable" content="yes"><meta name="apple-mobile-web-app-status-bar-style" content="default"><meta name="apple-mobile-web-app-title" content="Eltrox RKS"><link rel="manifest" href="./manifest.webmanifest"><link rel="apple-touch-icon" href="./icon-192.png">
 <style>
 :root{--o:#f36f21;--od:#d85d12;--bg:#eef1f4;--w:#fff;--line:#d9dde3;--t:#242424;--m:#6b7280;--r:#c9372c;--g:#25894b;--b:#2f71c8;--sh:0 8px 24px rgba(0,0,0,.08)}
 *{box-sizing:border-box}html,body{margin:0;min-height:100%;font-family:Arial,Helvetica,sans-serif;background:var(--bg);color:var(--t)}button,input,select,textarea{font:inherit}button{cursor:pointer}.hidden{display:none!important}
@@ -642,7 +642,7 @@ button:disabled,.btn:disabled{opacity:.6;cursor:not-allowed}
   <button type="button" id="dismissPwaUpdateBtn" class="btn">Później</button>
 </div>
 
-<div id="loginView" class="login-shell"><div class="login-card"><div class="brand"><h1>Eltrox RKS</h1><p>Wersja online v15.0</p></div><form id="loginForm" class="form"><label>E-mail<input id="loginEmail" type="email" required></label><label>Hasło<input id="loginPassword" type="password" required></label><button id="loginBtn" type="submit" class="btn primary" onclick="window.loginNow && window.loginNow(event)">Zaloguj</button><div id="loginMsg" class="msg"></div></form></div></div>
+<div id="loginView" class="login-shell"><div class="login-card"><div class="brand"><h1>Eltrox RKS</h1><p>Wersja online v15.1</p></div><form id="loginForm" class="form"><label>E-mail<input id="loginEmail" type="email" required></label><label>Hasło<input id="loginPassword" type="password" required></label><button id="loginBtn" type="submit" class="btn primary" onclick="window.loginNow && window.loginNow(event)">Zaloguj</button><div id="loginMsg" class="msg"></div></form></div></div>
 
 <div id="modeView" class="mode-shell hidden">
   <div class="mode-card">
@@ -661,7 +661,7 @@ button:disabled,.btn:disabled{opacity:.6;cursor:not-allowed}
   </div>
 </div>
 <div id="mobileActionStatus" class="mobile-action-status hidden"></div><div id="appView" class="hidden">
-<header class="header"><div><h1>Eltrox RKS – v15</h1><small id="headerUser"></small><div id="contextBar" class="context-bar">Region: — • Oddział: — • Okres: —</div></div><div class="ha">
+<header class="header"><div><h1>Eltrox RKS – v15.1</h1><small id="headerUser"></small><div id="contextBar" class="context-bar">Region: — • Oddział: — • Okres: —</div></div><div class="ha">
 <div class="searchbox"><input id="globalSearch" type="search" placeholder="Szukaj w aplikacji..."><div id="globalSearchResults" class="search-results hidden"></div></div>
 <label style="min-width:210px">Region<select id="regionSelect"></select></label>
 <span id="roleBadge" class="badge"></span><span id="workModeBadge" class="mode-badge"></span><button type="button" id="changeModeBtn" class="btn" onclick="window.mobileButtonAction && window.mobileButtonAction('changeModeBtn',event)">Zmień tryb</button>
@@ -1869,7 +1869,22 @@ function sl(v){return v==='todo'?'Do zrobienia':v==='progress'?'W trakcie':'Wyko
 
 async function loadProfile(){let{data,error}=await sb.from('profiles').select('*').eq('id',user.id).single();if(error)throw error;profile=data;$('headerUser').textContent=(data.display_name||'Użytkownik')+' • '+data.email;$('roleBadge').textContent=data.role.toUpperCase()}
 async function loadRegions(){let{data,error}=await sb.from('regions').select('*').order('name');if(error)throw error;$('regionSelect').innerHTML=(data||[]).map(r=>`<option value="${r.id}">${esc(r.name)}</option>`).join('')}
-async function loadBranches(){let{data,error}=await sb.from('branches').select('*').eq('region_id',rid()).order('name');if(error)throw error;branches=data||[];fill();renderBranches();await Promise.all([loadContacts(),loadLogs(),loadMeetings(),loadTasks(),loadVisits(),loadSales(),loadKpis(),loadNotes(),loadDashboard(),loadCard(),loadHistory()])}
+async function loadBranches(){
+  let{data,error}=await sb.from('branches').select('*').eq('region_id',rid()).order('name');
+  if(error)throw error;
+  branches=data||[];
+  fill();
+  renderBranches();
+  const loaders=[
+    ['Kontakty',loadContacts],['Rejestr kontaktów',loadLogs],['1:1',loadMeetings],
+    ['Terminarz',loadTasks],['Wizyty',loadVisits],['UK / Detal',loadSales],
+    ['KPI',loadKpis],['Notatki',loadNotes],['Na dziś',loadDashboard],
+    ['Karta oddziału',()=>window.refreshBranchCardNow?.()||loadCard()],
+    ['Historia',()=>window.refreshHistoryNow?.()||loadHistory()]
+  ];
+  const results=await Promise.allSettled(loaders.map(([,fn])=>Promise.resolve().then(fn)));
+  results.forEach((r,i)=>{if(r.status==='rejected')console.error(`Błąd modułu ${loaders[i][0]} podczas startu:`,r.reason)});
+}
 function renderBranches(){$('branchList').innerHTML=branches.length?branches.map(b=>`<div class="item"><div class="top"><b>${esc(b.name)}</b><div class="actions"><button type="button" class="btn small" onclick="renameBranch('${b.id}')">Zmień</button><button type="button" class="btn small danger" onclick="deleteBranch('${b.id}')">Usuń</button></div></div></div>`).join(''):'<div class="empty">Brak oddziałów.</div>'}
 async function addBranch(){let name=$('newBranchName').value.trim();if(!name)return;let{error}=await sb.from('branches').insert({region_id:rid(),name});if(error)return msg('branchMsg',error.message,'error');$('newBranchName').value='';await loadBranches()}
 window.renameBranch=async id=>{let b=branches.find(x=>x.id===id),name=prompt('Nowa nazwa:',b.name);if(!name)return;let{error}=await sb.from('branches').update({name:name.trim()}).eq('id',id);if(error)return msg('branchMsg',error.message,'error');await loadBranches()};
@@ -2765,6 +2780,12 @@ async function analysisRangeRows(year,fromM,toM){
   return out;
 }
 async function loadAnalysis(){
+  const now=new Date();
+  if(!$('analysisFromM').options.length)fillMonthSelect('analysisFromM');
+  if(!$('analysisToM').options.length)fillMonthSelect('analysisToM');
+  if(!$('analysisYear').value)$('analysisYear').value=now.getFullYear();
+  if(!$('analysisFromM').value)$('analysisFromM').value=1;
+  if(!$('analysisToM').value)$('analysisToM').value=now.getMonth()+1;
   const year=Number($('analysisYear').value),from=Number($('analysisFromM').value),to=Number($('analysisToM').value);
   if(!year||!from||!to)return;
   if(from>to){$('analysisToM').value=from;return loadAnalysis()}
@@ -4679,10 +4700,37 @@ async function changeWorkMode(){
   if(data.session)await showModeChooser(data.session,true);
 }
 
+function initializePeriodControls(){
+  const d=new Date();
+  ['analysisFromM','analysisToM','bcFrom','bcTo','bcCompareFrom','bcCompareTo'].forEach(fillMonthSelect);
+  $('analysisYear').value=d.getFullYear();
+  $('analysisFromM').value=1;
+  $('analysisToM').value=d.getMonth()+1;
+  $('bcYear').value=d.getFullYear();
+  $('bcPrevYear').value=d.getFullYear()-1;
+  $('bcFrom').value=1;
+  $('bcTo').value=d.getMonth()+1;
+  $('bcCompareFrom').value=1;
+  $('bcCompareTo').value=d.getMonth()+1;
+  fillMonthSelect('bonusMonthSelect');
+  $('bonusMonthYear').value=d.getFullYear();
+  $('bonusMonthSelect').value=d.getMonth()+1;
+}
+function initializePeriodControlsIfNeeded(){
+  const d=new Date();
+  if(!$('analysisFromM').options.length)fillMonthSelect('analysisFromM');
+  if(!$('analysisToM').options.length)fillMonthSelect('analysisToM');
+  if(!$('analysisYear').value)$('analysisYear').value=d.getFullYear();
+  if(!$('analysisFromM').value)$('analysisFromM').value=1;
+  if(!$('analysisToM').value)$('analysisToM').value=d.getMonth()+1;
+}
+
 async function showApp(session,modeResolved=false){
   user=session?.user;if(!user)return showLogin();
   if(!modeResolved)return showModeChooser(session,false);
   $('loginView').classList.add('hidden');$('modeView').classList.add('hidden');$('appView').classList.remove('hidden');
+  initializePeriodControls();
+  updateContextBar();
   await loadProfile();updateWorkModeUi();await loadTabOrder();await loadRegions();
   if(workMode==='user'&&workModeRegion&&[...$('regionSelect').options].some(o=>o.value===workModeRegion)){
     $('regionSelect').value=workModeRegion;$('regionSelect').disabled=true;
@@ -4695,11 +4743,10 @@ async function showApp(session,modeResolved=false){
     $('voipMonth').value=`${vd.getFullYear()}-${String(vd.getMonth()+1).padStart(2,'0')}`;
     $('controlKpiMonth').value=`${cd.getFullYear()}-${String(cd.getMonth()+1).padStart(2,'0')}`;
   }$('comparisonYear').value=d.getFullYear();$('comparisonMonth').value=d.getMonth()+1;
-  ['analysisFromM','analysisToM','bcFrom','bcTo','bcCompareFrom','bcCompareTo'].forEach(fillMonthSelect);$('analysisYear').value=d.getFullYear();$('analysisFromM').value=1;$('analysisToM').value=d.getMonth()+1;$('bcYear').value=d.getFullYear();$('bcPrevYear').value=d.getFullYear()-1;$('bcFrom').value=1;$('bcTo').value=d.getMonth()+1;$('bcCompareFrom').value=1;$('bcCompareTo').value=d.getMonth()+1;
-  $('bonusYear').value=d.getFullYear();$('bonusQuarter').value=Math.floor(d.getMonth()/3)+1;$('bonusMonthYear').value=d.getFullYear();fillMonthSelect('bonusMonthSelect');$('bonusMonthSelect').value=d.getMonth()+1;$('archiveMonth').value=d.toISOString().slice(0,7);$('personnelDate').value=today();$('visitPlanDate').value=today();$('monthlyCommentMonth').value=d.toISOString().slice(0,7);$('globalPeriod').value=d.toISOString().slice(0,7);$('autoSummaryMonth').value=d.toISOString().slice(0,7);$('closeMonthKey').value=d.toISOString().slice(0,7);$('checklistMonth').value=d.toISOString().slice(0,7);{const ws=startOfWeek(d);$('weekStart').value=ws.toISOString().slice(0,10);$('weekActionDate').value=ws.toISOString().slice(0,10);}
+  $('bonusYear').value=d.getFullYear();$('bonusQuarter').value=Math.floor(d.getMonth()/3)+1;$('archiveMonth').value=d.toISOString().slice(0,7);$('personnelDate').value=today();$('visitPlanDate').value=today();$('monthlyCommentMonth').value=d.toISOString().slice(0,7);$('globalPeriod').value=d.toISOString().slice(0,7);$('autoSummaryMonth').value=d.toISOString().slice(0,7);$('closeMonthKey').value=d.toISOString().slice(0,7);$('checklistMonth').value=d.toISOString().slice(0,7);{const ws=startOfWeek(d);$('weekStart').value=ws.toISOString().slice(0,10);$('weekActionDate').value=ws.toISOString().slice(0,10);}
 }
 function showLogin(){$('appView').classList.add('hidden');$('modeView').classList.add('hidden');$('loginView').classList.remove('hidden');workMode=null;workModeRegion=null}
-document.querySelectorAll('.tab').forEach(b=>b.onclick=()=>{if(!confirmDiscardChanges())return;document.querySelectorAll('.tab').forEach(x=>x.classList.toggle('active',x===b));document.querySelectorAll('.view').forEach(x=>x.classList.toggle('active',x.id===b.dataset.v));if(b.dataset.v==='dashboard')loadDashboard();if(b.dataset.v==='analysis')loadAnalysis();if(b.dataset.v==='comparison')loadComparison();if(b.dataset.v==='branchCompare')loadBranchCompare();if(b.dataset.v==='regionMap')loadRegionMap();if(b.dataset.v==='branchCard'){refreshBranchCard();}if(b.dataset.v==='history')refreshHistory();updateContextBar()});
+document.querySelectorAll('.tab').forEach(b=>b.onclick=()=>{if(!confirmDiscardChanges())return;document.querySelectorAll('.tab').forEach(x=>x.classList.toggle('active',x===b));document.querySelectorAll('.view').forEach(x=>x.classList.toggle('active',x.id===b.dataset.v));if(b.dataset.v==='dashboard')loadDashboard();if(b.dataset.v==='analysis'){initializePeriodControlsIfNeeded();loadAnalysis();}if(b.dataset.v==='comparison')loadComparison();if(b.dataset.v==='branchCompare')loadBranchCompare();if(b.dataset.v==='regionMap')loadRegionMap();if(b.dataset.v==='branchCard'){refreshBranchCard();}if(b.dataset.v==='history')refreshHistory();updateContextBar()});
 $('loginForm').onsubmit=(e)=>loginNow(e);
 
 ['regionSelect','cardBranch','historyBranch','manageBranch','taskBranch','visitBranch','meetingBranch','logBranch','salesBranch','noteBranch','globalPeriod']
@@ -4788,6 +4835,7 @@ $('saveNote').onclick=saveNote;$('clearNote').onclick=clearNote;$('noteFilter').
 (async()=>{let{data}=await sb.auth.getSession();if(data.session)showModeChooser(data.session,false);else showLogin()})();
 
 document.addEventListener('DOMContentLoaded',()=>{
+  try{initializePeriodControlsIfNeeded()}catch(e){console.warn('Period init',e)}
   try{setupDraftAutosave()}catch(e){console.warn('Draft init',e)}
   try{updateContextBar()}catch(e){}
   try{enablePwaUpdateNotice()}catch(e){}
