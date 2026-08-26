@@ -2,7 +2,7 @@
 <html lang="pl">
 <head>
 <meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
-<title>Eltrox RKS – Supabase v15.1</title><meta name="theme-color" content="#ef6c00"><meta name="apple-mobile-web-app-capable" content="yes"><meta name="apple-mobile-web-app-status-bar-style" content="default"><meta name="apple-mobile-web-app-title" content="Eltrox RKS"><link rel="manifest" href="./manifest.webmanifest"><link rel="apple-touch-icon" href="./icon-192.png">
+<title>Eltrox RKS – Supabase v15.2</title><meta name="theme-color" content="#ef6c00"><meta name="apple-mobile-web-app-capable" content="yes"><meta name="apple-mobile-web-app-status-bar-style" content="default"><meta name="apple-mobile-web-app-title" content="Eltrox RKS"><link rel="manifest" href="./manifest.webmanifest"><link rel="apple-touch-icon" href="./icon-192.png">
 <style>
 :root{--o:#f36f21;--od:#d85d12;--bg:#eef1f4;--w:#fff;--line:#d9dde3;--t:#242424;--m:#6b7280;--r:#c9372c;--g:#25894b;--b:#2f71c8;--sh:0 8px 24px rgba(0,0,0,.08)}
 *{box-sizing:border-box}html,body{margin:0;min-height:100%;font-family:Arial,Helvetica,sans-serif;background:var(--bg);color:var(--t)}button,input,select,textarea{font:inherit}button{cursor:pointer}.hidden{display:none!important}
@@ -634,6 +634,40 @@ button:disabled,.btn:disabled{opacity:.6;cursor:not-allowed}
   .pwa-update-banner{top:6px}
 }
 
+
+/* v15.2 - natywne selecty miesięcy na telefonie */
+.native-month-select{
+  appearance:auto!important;
+  -webkit-appearance:menulist!important;
+  pointer-events:auto!important;
+  touch-action:manipulation!important;
+  position:relative!important;
+  z-index:5!important;
+  min-width:145px!important;
+  background:#fff!important;
+}
+@media(max-width:800px){
+  #analysis .controls{
+    display:grid!important;
+    grid-template-columns:1fr!important;
+    gap:10px!important;
+    width:100%!important;
+  }
+  #analysis .controls label{
+    width:100%!important;
+    min-width:0!important;
+  }
+  #analysis .controls input,
+  #analysis .controls select{
+    width:100%!important;
+    min-height:48px!important;
+    font-size:16px!important;
+  }
+  .native-month-select{
+    min-width:0!important;
+  }
+}
+
 </style></head>
 <body>
 <div id="pwaUpdateBanner" class="pwa-update-banner hidden">
@@ -642,7 +676,7 @@ button:disabled,.btn:disabled{opacity:.6;cursor:not-allowed}
   <button type="button" id="dismissPwaUpdateBtn" class="btn">Później</button>
 </div>
 
-<div id="loginView" class="login-shell"><div class="login-card"><div class="brand"><h1>Eltrox RKS</h1><p>Wersja online v15.1</p></div><form id="loginForm" class="form"><label>E-mail<input id="loginEmail" type="email" required></label><label>Hasło<input id="loginPassword" type="password" required></label><button id="loginBtn" type="submit" class="btn primary" onclick="window.loginNow && window.loginNow(event)">Zaloguj</button><div id="loginMsg" class="msg"></div></form></div></div>
+<div id="loginView" class="login-shell"><div class="login-card"><div class="brand"><h1>Eltrox RKS</h1><p>Wersja online v15.2</p></div><form id="loginForm" class="form"><label>E-mail<input id="loginEmail" type="email" required></label><label>Hasło<input id="loginPassword" type="password" required></label><button id="loginBtn" type="submit" class="btn primary" onclick="window.loginNow && window.loginNow(event)">Zaloguj</button><div id="loginMsg" class="msg"></div></form></div></div>
 
 <div id="modeView" class="mode-shell hidden">
   <div class="mode-card">
@@ -661,7 +695,7 @@ button:disabled,.btn:disabled{opacity:.6;cursor:not-allowed}
   </div>
 </div>
 <div id="mobileActionStatus" class="mobile-action-status hidden"></div><div id="appView" class="hidden">
-<header class="header"><div><h1>Eltrox RKS – v15.1</h1><small id="headerUser"></small><div id="contextBar" class="context-bar">Region: — • Oddział: — • Okres: —</div></div><div class="ha">
+<header class="header"><div><h1>Eltrox RKS – v15.2</h1><small id="headerUser"></small><div id="contextBar" class="context-bar">Region: — • Oddział: — • Okres: —</div></div><div class="ha">
 <div class="searchbox"><input id="globalSearch" type="search" placeholder="Szukaj w aplikacji..."><div id="globalSearchResults" class="search-results hidden"></div></div>
 <label style="min-width:210px">Region<select id="regionSelect"></select></label>
 <span id="roleBadge" class="badge"></span><span id="workModeBadge" class="mode-badge"></span><button type="button" id="changeModeBtn" class="btn" onclick="window.mobileButtonAction && window.mobileButtonAction('changeModeBtn',event)">Zmień tryb</button>
@@ -732,8 +766,8 @@ button:disabled,.btn:disabled{opacity:.6;cursor:not-allowed}
       <div><h2>Analiza regionu</h2><p>Najważniejsze wyniki i sygnały wymagające uwagi.</p></div>
       <div class="controls">
         <label>Rok<input id="analysisYear" type="number" min="2020" max="2100"></label>
-        <label>Od miesiąca<select id="analysisFromM"></select></label>
-        <label>Do miesiąca<select id="analysisToM"></select></label>
+        <label>Od miesiąca<select id="analysisFromM" class="native-month-select" onchange="window.loadAnalysis && window.loadAnalysis()"><option value="1">Styczeń</option><option value="2">Luty</option><option value="3">Marzec</option><option value="4">Kwiecień</option><option value="5">Maj</option><option value="6">Czerwiec</option><option value="7">Lipiec</option><option value="8">Sierpień</option><option value="9">Wrzesień</option><option value="10">Październik</option><option value="11">Listopad</option><option value="12">Grudzień</option></select></label>
+        <label>Do miesiąca<select id="analysisToM" class="native-month-select" onchange="window.loadAnalysis && window.loadAnalysis()"><option value="1">Styczeń</option><option value="2">Luty</option><option value="3">Marzec</option><option value="4">Kwiecień</option><option value="5">Maj</option><option value="6">Czerwiec</option><option value="7">Lipiec</option><option value="8">Sierpień</option><option value="9">Wrzesień</option><option value="10">Październik</option><option value="11">Listopad</option><option value="12">Grudzień</option></select></label>
       </div>
     </div>
 
@@ -2649,7 +2683,7 @@ async function loadComparison(){
 
 
 const MONTH_NAMES=['Styczeń','Luty','Marzec','Kwiecień','Maj','Czerwiec','Lipiec','Sierpień','Wrzesień','Październik','Listopad','Grudzień'];
-function fillMonthSelect(id){const el=$(id);if(!el)return;el.innerHTML=MONTH_NAMES.map((x,i)=>`<option value="${i+1}">${x}</option>`).join('')}
+function fillMonthSelect(id){const el=$(id);if(!el)return;if(el.options&&el.options.length)return;el.innerHTML=MONTH_NAMES.map((x,i)=>`<option value="${i+1}">${x}</option>`).join('')}
 function clamp(v,min=0,max=100){return Math.max(min,Math.min(max,Number(v)||0))}
 function scoreYoy(v){return clamp(50+(Number(v)||0)*2.5)}
 function calc360(s,k,prev){
@@ -3832,6 +3866,8 @@ async function saveRisk(){const r={region_id:rid(),branch_id:$('manageBranch').v
 async function saveVisitPlan(){const r={region_id:rid(),branch_id:$('manageBranch').value,planned_date:$('visitPlanDate').value,purpose:$('visitPlanPurpose').value.trim(),created_by:user.id};if(!r.planned_date)return;const{error}=await sb.from('visit_plans').insert(r);if(error)return msg('managementMsg',error.message,'error');$('visitPlanPurpose').value='';await loadManagement();await loadDashboard()}
 async function savePersonnel(){const r={region_id:rid(),branch_id:$('manageBranch').value,event_date:$('personnelDate').value||today(),description:$('personnelText').value.trim(),created_by:user.id};if(!r.description)return;const{error}=await sb.from('personnel_history').insert(r);if(error)return msg('managementMsg',error.message,'error');$('personnelText').value='';await loadManagement();await loadCard()}
 async function saveMonthlyComment(){const r={region_id:rid(),branch_id:$('manageBranch').value,month_key:$('monthlyCommentMonth').value,comment:$('monthlyCommentText').value.trim(),created_by:user.id};if(!r.month_key||!r.comment)return;const{error}=await sb.from('monthly_rks_comments').upsert(r,{onConflict:'branch_id,month_key'});if(error)return msg('managementMsg',error.message,'error');await loadManagement();await loadCard()}
+window.loadAnalysis=loadAnalysis;
+
 async function loadRegionBrief(){
   if(!$('regionBriefMetrics'))return;
   const [risks,staff,plans,goals]=await Promise.all([
@@ -4835,6 +4871,12 @@ $('saveNote').onclick=saveNote;$('clearNote').onclick=clearNote;$('noteFilter').
 (async()=>{let{data}=await sb.auth.getSession();if(data.session)showModeChooser(data.session,false);else showLogin()})();
 
 document.addEventListener('DOMContentLoaded',()=>{
+  try{
+    const d=new Date();
+    if($('analysisFromM'))$('analysisFromM').value=$('analysisFromM').value||'1';
+    if($('analysisToM'))$('analysisToM').value=$('analysisToM').value||String(d.getMonth()+1);
+  }catch(e){console.warn('Analysis month init',e)}
+
   try{initializePeriodControlsIfNeeded()}catch(e){console.warn('Period init',e)}
   try{setupDraftAutosave()}catch(e){console.warn('Draft init',e)}
   try{updateContextBar()}catch(e){}
