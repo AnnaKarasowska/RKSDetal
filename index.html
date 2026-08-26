@@ -2,7 +2,7 @@
 <html lang="pl">
 <head>
 <meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
-<title>Eltrox RKS – Supabase v15.2</title><meta name="theme-color" content="#ef6c00"><meta name="apple-mobile-web-app-capable" content="yes"><meta name="apple-mobile-web-app-status-bar-style" content="default"><meta name="apple-mobile-web-app-title" content="Eltrox RKS"><link rel="manifest" href="./manifest.webmanifest"><link rel="apple-touch-icon" href="./icon-192.png">
+<title>Eltrox RKS – Supabase v15.3</title><meta name="theme-color" content="#ef6c00"><meta name="apple-mobile-web-app-capable" content="yes"><meta name="apple-mobile-web-app-status-bar-style" content="default"><meta name="apple-mobile-web-app-title" content="Eltrox RKS"><link rel="manifest" href="./manifest.webmanifest"><link rel="apple-touch-icon" href="./icon-192.png">
 <style>
 :root{--o:#f36f21;--od:#d85d12;--bg:#eef1f4;--w:#fff;--line:#d9dde3;--t:#242424;--m:#6b7280;--r:#c9372c;--g:#25894b;--b:#2f71c8;--sh:0 8px 24px rgba(0,0,0,.08)}
 *{box-sizing:border-box}html,body{margin:0;min-height:100%;font-family:Arial,Helvetica,sans-serif;background:var(--bg);color:var(--t)}button,input,select,textarea{font:inherit}button{cursor:pointer}.hidden{display:none!important}
@@ -668,6 +668,12 @@ button:disabled,.btn:disabled{opacity:.6;cursor:not-allowed}
   }
 }
 
+
+@media(max-width:800px){
+  #sales .head .controls{width:100%;display:grid;grid-template-columns:1fr;gap:8px}
+  #salesEntryDate,#saveSalesEntry{width:100%;min-height:48px;font-size:16px}
+  #salesDateStatus{display:block;min-height:18px}
+}
 </style></head>
 <body>
 <div id="pwaUpdateBanner" class="pwa-update-banner hidden">
@@ -676,7 +682,7 @@ button:disabled,.btn:disabled{opacity:.6;cursor:not-allowed}
   <button type="button" id="dismissPwaUpdateBtn" class="btn">Później</button>
 </div>
 
-<div id="loginView" class="login-shell"><div class="login-card"><div class="brand"><h1>Eltrox RKS</h1><p>Wersja online v15.2</p></div><form id="loginForm" class="form"><label>E-mail<input id="loginEmail" type="email" required></label><label>Hasło<input id="loginPassword" type="password" required></label><button id="loginBtn" type="submit" class="btn primary" onclick="window.loginNow && window.loginNow(event)">Zaloguj</button><div id="loginMsg" class="msg"></div></form></div></div>
+<div id="loginView" class="login-shell"><div class="login-card"><div class="brand"><h1>Eltrox RKS</h1><p>Wersja online v15.3</p></div><form id="loginForm" class="form"><label>E-mail<input id="loginEmail" type="email" required></label><label>Hasło<input id="loginPassword" type="password" required></label><button id="loginBtn" type="submit" class="btn primary" onclick="window.loginNow && window.loginNow(event)">Zaloguj</button><div id="loginMsg" class="msg"></div></form></div></div>
 
 <div id="modeView" class="mode-shell hidden">
   <div class="mode-card">
@@ -695,7 +701,7 @@ button:disabled,.btn:disabled{opacity:.6;cursor:not-allowed}
   </div>
 </div>
 <div id="mobileActionStatus" class="mobile-action-status hidden"></div><div id="appView" class="hidden">
-<header class="header"><div><h1>Eltrox RKS – v15.2</h1><small id="headerUser"></small><div id="contextBar" class="context-bar">Region: — • Oddział: — • Okres: —</div></div><div class="ha">
+<header class="header"><div><h1>Eltrox RKS – v15.3</h1><small id="headerUser"></small><div id="contextBar" class="context-bar">Region: — • Oddział: — • Okres: —</div></div><div class="ha">
 <div class="searchbox"><input id="globalSearch" type="search" placeholder="Szukaj w aplikacji..."><div id="globalSearchResults" class="search-results hidden"></div></div>
 <label style="min-width:210px">Region<select id="regionSelect"></select></label>
 <span id="roleBadge" class="badge"></span><span id="workModeBadge" class="mode-badge"></span><button type="button" id="changeModeBtn" class="btn" onclick="window.mobileButtonAction && window.mobileButtonAction('changeModeBtn',event)">Zmień tryb</button>
@@ -1041,7 +1047,7 @@ button:disabled,.btn:disabled{opacity:.6;cursor:not-allowed}
 
 <section id="sales" class="view"><div class="inner">
 <div class="head"><div><h2>Wprowadzanie wyników UK / Detal</h2><p>Jedna tabela dla wszystkich oddziałów. Plan jest miesięczny, wykonanie narastające na wybrany dzień.</p></div>
-<div class="controls"><label>Data wyników<input id="salesEntryDate" type="date"></label><button type="button" class="btn primary" id="saveSalesEntry" onclick="window.mobileButtonAction && window.mobileButtonAction('saveSalesEntry',event)">Zapisz wyniki</button><span id="salesEntryStatus" class="sales-save-status"></span></div></div>
+<div class="controls"><label>Data wyników<input id="salesEntryDate" type="date" onchange="window.renderSalesEntryNow && window.renderSalesEntryNow(this.value)"></label><button type="button" class="btn primary" id="saveSalesEntry" onclick="window.mobileButtonAction && window.mobileButtonAction('saveSalesEntry',event)">Zapisz wyniki</button><span id="salesEntryStatus" class="sales-save-status"></span><span id="salesDateStatus" class="muted" style="font-size:12px"></span></div></div>
 <div class="sales-entry-grid">
 <div class="sales-entry-card"><span>UK – realizacja regionu</span><strong id="salesUkRegion">—</strong></div>
 <div class="sales-entry-card"><span>Detal – realizacja regionu</span><strong id="salesDetailRegion">—</strong></div>
@@ -2390,17 +2396,17 @@ async function renderSalesEntry(){
   const date=$('salesEntryDate').value;if(!date)return;
   const month=date.slice(0,7),isMonday=new Date(date+'T12:00:00').getDay()===1;
   const rows=await salesMonthRows(month);
-  const exact=new Map(rows.filter(x=>x.result_date===date).map(x=>[x.branch_id,x]));
-  const latestOnOrBefore=new Map();
-  rows.filter(x=>x.result_date<=date).forEach(x=>{
-    if(!latestOnOrBefore.has(x.branch_id))latestOnOrBefore.set(x.branch_id,x);
-  });
+  const rowDate=r=>String(r?.result_date||'').slice(0,10);
+  const exactRows=rows.filter(x=>rowDate(x)===date);
+  const exact=new Map(exactRows.map(x=>[x.branch_id,x]));
   let up=0,ue=0,dp=0,de=0;
 
+  // Plan jest miesięczny, ale wykonanie pokazujemy WYŁĄCZNIE dla wybranego dnia.
+  // Brak wpisu w danym dniu = puste wykonanie, a nie dane z wcześniejszej daty.
   $('salesEntryBody').innerHTML=branches.map(b=>{
-    const day=exact.get(b.id)||latestOnOrBefore.get(b.id)||{};
+    const day=exact.get(b.id)||{};
     const uplan=salesPlanFromMonth(rows,b.id,'uk_plan'),dplan=salesPlanFromMonth(rows,b.id,'detail_plan');
-    const uexec=day.uk_execution??'',dexec=day.detail_execution??'',est=exact.get(b.id)?.uk_estimate??'';
+    const uexec=day.uk_execution??'',dexec=day.detail_execution??'',est=day.uk_estimate??'';
     const ur=salesRatio(uexec,uplan),dr=salesRatio(dexec,dplan);
     const n1=parseSalesEntryNumber(uplan),n2=parseSalesEntryNumber(uexec),n3=parseSalesEntryNumber(dplan),n4=parseSalesEntryNumber(dexec);
     if(Number.isFinite(n1))up+=n1;if(Number.isFinite(n2))ue+=n2;if(Number.isFinite(n3))dp+=n3;if(Number.isFinite(n4))de+=n4;
@@ -2422,6 +2428,12 @@ async function renderSalesEntry(){
   $('salesDetailRegion').textContent=salesRatioText(dp?de/dp:NaN);
   $('salesUkExec').textContent=money(ue);
   $('salesDetailExec').textContent=money(de);
+  if($('salesDateStatus')){
+    const formatted=new Intl.DateTimeFormat('pl-PL').format(new Date(date+'T12:00:00'));
+    $('salesDateStatus').textContent=exactRows.length
+      ? `Wyświetlane dane: ${formatted}`
+      : `Brak zapisanych wyników dla ${formatted}`;
+  }
 
   document.querySelectorAll('#salesEntryBody input').forEach(x=>{
     x.onfocus=()=>{x.value=x.dataset.raw??'';setTimeout(()=>x.select(),0)};
@@ -2442,6 +2454,7 @@ async function renderSalesEntry(){
     x.onblur=()=>{const n=parseSalesEntryNumber(x.value);if(Number.isFinite(n))x.dataset.raw=String(n);x.value=formatSalesPLN(x.dataset.raw)};
   });
 }
+window.renderSalesEntryNow=()=>renderSalesEntry();
 async function saveSalesEntry(showAlert=true){
   const date=$('salesEntryDate').value;if(!date)return;
   if(await isMonthClosed(date.slice(0,7)))return msg('salesMsg','Ten miesiąc jest zamknięty. Otwórz go w Raporty / premia, aby edytować wyniki.','error');
@@ -2449,9 +2462,19 @@ async function saveSalesEntry(showAlert=true){
   const from=`${month}-01`,to=new Date(y,m,1).toISOString().slice(0,10);
   const isMonday=new Date(date+'T12:00:00').getDay()===1;
   const oldRows=await salesMonthRows(month);
-  const oldExact=new Map(oldRows.filter(x=>x.result_date===date).map(x=>[x.branch_id,x]));
+  const oldExact=new Map(oldRows.filter(x=>String(x.result_date||'').slice(0,10)===date).map(x=>[x.branch_id,x]));
   const get=(cls,id)=>[...document.querySelectorAll(cls)].find(x=>x.dataset.id===id);
-  const val=el=>{if(!el)return null;const raw=String(el.dataset.raw??'').trim();if(raw==='')return null;const n=parseSalesEntryNumber(raw);return Number.isFinite(n)?n:null};
+  const val=el=>{
+    if(!el)return null;
+    const visible=String(el.value??'').trim();
+    const stored=String(el.dataset.raw??'').trim();
+    let raw=stored;
+    if(document.activeElement===el)raw=visible;
+    else if(visible && !visible.includes('zł'))raw=visible;
+    if(raw==='')return null;
+    const n=parseSalesEntryNumber(raw);
+    return Number.isFinite(n)?n:null;
+  };
 
   for(const b of branches){
     const up=val(get('.se-up',b.id)),ue=val(get('.se-ue',b.id)),dp=val(get('.se-dp',b.id)),de=val(get('.se-de',b.id));
@@ -2482,7 +2505,7 @@ async function saveSalesEntry(showAlert=true){
   }
   $('salesEntryStatus').textContent='Zapisano';
   setTimeout(()=>{if($('salesEntryStatus'))$('salesEntryStatus').textContent=''},1800);
-  if(showAlert)alert('Wyniki UK / Detal zostały zapisane.');
+  if(showAlert)showActionStatus('Wyniki UK / Detal zostały zapisane dla wybranego dnia.','ok');
   await renderSalesEntry();await loadCard();
 }
 async function loadSales(){return renderSalesEntry()}
@@ -4866,7 +4889,7 @@ $('meetingAttendance').onchange=toggleComment;$('refreshMeetingPreviewBtn').oncl
 $('saveMeeting').onclick=saveMeeting;$('clearMeeting').onclick=clearMeeting;$('meetingFilter').onchange=loadMeetings;
 $('saveTask').onclick=(e)=>saveTask(e);$('clearTask').onclick=clearTask;$('taskFilter').onchange=loadTasks;$('taskStatusFilter').onchange=loadTasks;
 $('saveVisit').onclick=(e)=>saveVisit(e);$('clearVisit').onclick=clearVisit;$('addVisitRecommendation').onclick=()=>addVisitRecommendationRow();$('generateVisitForm').onclick=generateVisitSignatureForm;$('printVisitReport').onclick=printVisitSignatureForm;
-$('salesEntryDate').onchange=renderSalesEntry;$('saveSalesEntry').onclick=()=>saveSalesEntry(true);$('saveMonthlyKpi').onclick=()=>saveMonthlyKpi(true);$('voipMonth').onchange=renderMonthlyKpi;$('controlKpiMonth').onchange=renderMonthlyKpi;
+$('salesEntryDate').onchange=()=>renderSalesEntry();$('saveSalesEntry').onclick=()=>saveSalesEntry(true);$('saveMonthlyKpi').onclick=()=>saveMonthlyKpi(true);$('voipMonth').onchange=renderMonthlyKpi;$('controlKpiMonth').onchange=renderMonthlyKpi;
 $('saveNote').onclick=saveNote;$('clearNote').onclick=clearNote;$('noteFilter').onchange=loadNotes;$('cardBranch').onchange=()=>refreshBranchCard($('cardBranch').value);$('cardBranch').addEventListener('input',()=>refreshBranchCard($('cardBranch').value));$('historyBranch').onchange=()=>refreshHistory($('historyBranch').value);$('historyBranch').addEventListener('input',()=>refreshHistory($('historyBranch').value));$('historyFrom').onchange=()=>refreshHistory();$('historyTo').onchange=()=>refreshHistory();$('historySearch').oninput=()=>refreshHistory();document.querySelectorAll('.historyType').forEach(x=>x.onchange=()=>refreshHistory());$('clearHistoryFilters').onclick=()=>{$('historyFrom').value='';$('historyTo').value='';$('historySearch').value='';document.querySelectorAll('.historyType').forEach(x=>x.checked=true);refreshHistory()};
 (async()=>{let{data}=await sb.auth.getSession();if(data.session)showModeChooser(data.session,false);else showLogin()})();
 
