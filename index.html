@@ -2,7 +2,7 @@
 <html lang="pl">
 <head>
 <meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
-<title>Eltrox RKS – Supabase v14.11</title><meta name="theme-color" content="#ef6c00"><meta name="apple-mobile-web-app-capable" content="yes"><meta name="apple-mobile-web-app-status-bar-style" content="default"><meta name="apple-mobile-web-app-title" content="Eltrox RKS"><link rel="manifest" href="./manifest.webmanifest"><link rel="apple-touch-icon" href="./icon-192.png">
+<title>Eltrox RKS – Supabase v14.12</title><meta name="theme-color" content="#ef6c00"><meta name="apple-mobile-web-app-capable" content="yes"><meta name="apple-mobile-web-app-status-bar-style" content="default"><meta name="apple-mobile-web-app-title" content="Eltrox RKS"><link rel="manifest" href="./manifest.webmanifest"><link rel="apple-touch-icon" href="./icon-192.png">
 <style>
 :root{--o:#f36f21;--od:#d85d12;--bg:#eef1f4;--w:#fff;--line:#d9dde3;--t:#242424;--m:#6b7280;--r:#c9372c;--g:#25894b;--b:#2f71c8;--sh:0 8px 24px rgba(0,0,0,.08)}
 *{box-sizing:border-box}html,body{margin:0;min-height:100%;font-family:Arial,Helvetica,sans-serif;background:var(--bg);color:var(--t)}button,input,select,textarea{font:inherit}button{cursor:pointer}.hidden{display:none!important}
@@ -478,6 +478,12 @@ input,select,textarea{width:100%;padding:9px 10px;border:1px solid var(--line);b
 /* v14.10 — mobilne zapisywanie Terminarza */
 
 /* v14.11 — globalna obsługa przycisków na telefonie */
+
+#loginBtn{touch-action:manipulation;-webkit-tap-highlight-color:transparent}
+@media(max-width:800px){
+  #loginBtn{min-height:50px;font-size:16px;width:100%}
+}
+
 button,.btn,.tab,.quick-option{
   touch-action:manipulation;
   -webkit-tap-highlight-color:transparent;
@@ -561,7 +567,7 @@ button,.btn,.tab,.quick-option{
 @media(max-width:950px){.g2,.g3,.g4{grid-template-columns:1fr}.header{align-items:flex-start;flex-direction:column}.nav{top:108px}}
 </style></head>
 <body>
-<div id="loginView" class="login-shell"><div class="login-card"><div class="brand"><h1>Eltrox RKS</h1><p>Wersja online v14.11</p></div><form id="loginForm" class="form"><label>E-mail<input id="loginEmail" type="email" required></label><label>Hasło<input id="loginPassword" type="password" required></label><button type="button" class="btn primary">Zaloguj</button><div id="loginMsg" class="msg"></div></form></div></div>
+<div id="loginView" class="login-shell"><div class="login-card"><div class="brand"><h1>Eltrox RKS</h1><p>Wersja online v14.12</p></div><form id="loginForm" class="form"><label>E-mail<input id="loginEmail" type="email" required></label><label>Hasło<input id="loginPassword" type="password" required></label><button id="loginBtn" type="submit" class="btn primary" onclick="window.loginNow && window.loginNow(event)">Zaloguj</button><div id="loginMsg" class="msg"></div></form></div></div>
 
 <div id="modeView" class="mode-shell hidden">
   <div class="mode-card">
@@ -1387,6 +1393,40 @@ async function forceLogout(){
 }
 window.forceLogout=forceLogout;
 
+async function loginNow(evt=null){
+  if(evt){evt.preventDefault();evt.stopPropagation()}
+  const btn=$('loginBtn');
+  const email=$('loginEmail')?.value.trim()||'';
+  const password=$('loginPassword')?.value||'';
+
+  if(!email||!password){
+    msg('loginMsg','Wpisz e-mail i hasło.','error');
+    return false;
+  }
+
+  if(btn?.disabled)return false;
+  const oldText=btn?.textContent||'Zaloguj';
+  if(btn){btn.disabled=true;btn.textContent='Logowanie…'}
+  msg('loginMsg','Logowanie…','');
+
+  try{
+    const {data,error}=await sb.auth.signInWithPassword({email,password});
+    if(error)throw error;
+    if(!data?.session)throw new Error('Nie udało się utworzyć sesji użytkownika.');
+    msg('loginMsg','','');
+    await showApp(data.session);
+    return true;
+  }catch(e){
+    console.error('Logowanie:',e);
+    msg('loginMsg',e?.message||'Nie udało się zalogować.','error');
+    return false;
+  }finally{
+    if(btn){btn.disabled=false;btn.textContent=oldText}
+  }
+}
+window.loginNow=loginNow;
+
+
 async function mobileButtonAction(id,evt=null){
   if(evt){evt.preventDefault();evt.stopPropagation()}
   try{
@@ -1459,6 +1499,7 @@ async function mobileButtonAction(id,evt=null){
       confirmUserModeBtn:'confirmUserMode'
     };
 
+    if(id==='loginBtn')return loginNow(evt);
     if(id==='logoutBtn'||id==='modeLogoutBtn')return forceLogout();
     if(id==='saveLog')return (window.saveLogNow||saveLog)(evt);
     if(id==='saveTask')return (window.saveTaskNow||saveTask)(evt);
@@ -4428,7 +4469,7 @@ async function showApp(session,modeResolved=false){
 }
 function showLogin(){$('appView').classList.add('hidden');$('modeView').classList.add('hidden');$('loginView').classList.remove('hidden');workMode=null;workModeRegion=null}
 document.querySelectorAll('.tab').forEach(b=>b.onclick=()=>{document.querySelectorAll('.tab').forEach(x=>x.classList.toggle('active',x===b));document.querySelectorAll('.view').forEach(x=>x.classList.toggle('active',x.id===b.dataset.v));if(b.dataset.v==='dashboard')loadDashboard();if(b.dataset.v==='analysis')loadAnalysis();if(b.dataset.v==='comparison')loadComparison();if(b.dataset.v==='branchCompare')loadBranchCompare();if(b.dataset.v==='regionMap')loadRegionMap();if(b.dataset.v==='branchCard'){refreshBranchCard();}if(b.dataset.v==='history')loadHistory()});
-$('loginForm').onsubmit=async e=>{e.preventDefault();let{data,error}=await sb.auth.signInWithPassword({email:$('loginEmail').value.trim(),password:$('loginPassword').value});if(error)return msg('loginMsg',error.message,'error');showApp(data.session)};
+$('loginForm').onsubmit=(e)=>loginNow(e);
 $('tabOrderBtn').onclick=openTabOrder;
 $('cancelTabOrderBtn').onclick=closeTabOrder;
 $('saveTabOrderBtn').onclick=saveTabOrder;
