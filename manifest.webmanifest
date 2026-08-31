@@ -6,7 +6,7 @@
   "display": "standalone",
   "background_color": "#f6f7f9",
   "theme_color": "#ef6c00",
-  "description": "Centrum zarządzania regionem RKS - naprawa zapisu UK Detal v15.16",
+  "description": "Centrum zarządzania regionem RKS - Rejestr kontaktów v15.17",
   "icons": [
     {
       "src": "./icon-192.png",

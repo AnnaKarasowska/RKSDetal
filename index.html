@@ -2,7 +2,7 @@
 <html lang="pl">
 <head>
 <meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
-<title>Eltrox RKS – Supabase v15.16</title><meta name="theme-color" content="#ef6c00"><meta name="apple-mobile-web-app-capable" content="yes"><meta name="apple-mobile-web-app-status-bar-style" content="default"><meta name="apple-mobile-web-app-title" content="Eltrox RKS"><link rel="manifest" href="./manifest.webmanifest"><link rel="apple-touch-icon" href="./icon-192.png">
+<title>Eltrox RKS – Supabase v15.17</title><meta name="theme-color" content="#ef6c00"><meta name="apple-mobile-web-app-capable" content="yes"><meta name="apple-mobile-web-app-status-bar-style" content="default"><meta name="apple-mobile-web-app-title" content="Eltrox RKS"><link rel="manifest" href="./manifest.webmanifest"><link rel="apple-touch-icon" href="./icon-192.png">
 <style>
 :root{--o:#f36f21;--od:#d85d12;--bg:#eef1f4;--w:#fff;--line:#d9dde3;--t:#242424;--m:#6b7280;--r:#c9372c;--g:#25894b;--b:#2f71c8;--sh:0 8px 24px rgba(0,0,0,.08)}
 *{box-sizing:border-box}html,body{margin:0;min-height:100%;font-family:Arial,Helvetica,sans-serif;background:var(--bg);color:var(--t)}button,input,select,textarea{font:inherit}button{cursor:pointer}.hidden{display:none!important}
@@ -743,6 +743,17 @@ button:disabled,.btn:disabled{opacity:.6;cursor:not-allowed}
 @media(max-width:800px){
   #contactFilter{width:100%!important;min-height:48px!important;font-size:16px!important}
 }
+
+#logFilter{
+  appearance:auto!important;
+  -webkit-appearance:menulist!important;
+  pointer-events:auto!important;
+  touch-action:manipulation!important;
+}
+@media(max-width:800px){
+  #saveLog,#clearLog,#logFilter{min-height:48px!important;font-size:16px!important}
+  #saveLog{width:100%!important}
+}
 </style></head>
 <body>
 <div id="pwaUpdateBanner" class="pwa-update-banner hidden">
@@ -751,7 +762,7 @@ button:disabled,.btn:disabled{opacity:.6;cursor:not-allowed}
   <button type="button" id="dismissPwaUpdateBtn" class="btn">Później</button>
 </div>
 
-<div id="loginView" class="login-shell"><div class="login-card"><div class="brand"><h1>Eltrox RKS</h1><p>Wersja online v15.16</p></div><form id="loginForm" class="form"><label>E-mail<input id="loginEmail" type="email" required></label><label>Hasło<input id="loginPassword" type="password" required></label><button id="loginBtn" type="submit" class="btn primary" onclick="window.loginNow && window.loginNow(event)">Zaloguj</button><div id="loginMsg" class="msg"></div></form></div></div>
+<div id="loginView" class="login-shell"><div class="login-card"><div class="brand"><h1>Eltrox RKS</h1><p>Wersja online v15.17</p></div><form id="loginForm" class="form"><label>E-mail<input id="loginEmail" type="email" required></label><label>Hasło<input id="loginPassword" type="password" required></label><button id="loginBtn" type="submit" class="btn primary" onclick="window.loginNow && window.loginNow(event)">Zaloguj</button><div id="loginMsg" class="msg"></div></form></div></div>
 
 <div id="modeView" class="mode-shell hidden">
   <div class="mode-card">
@@ -770,7 +781,7 @@ button:disabled,.btn:disabled{opacity:.6;cursor:not-allowed}
   </div>
 </div>
 <div id="mobileActionStatus" class="mobile-action-status hidden"></div><div id="appView" class="hidden">
-<header class="header"><div><h1>Eltrox RKS – v15.16</h1><small id="headerUser"></small><div id="contextBar" class="context-bar">Region: — • Oddział: — • Okres: —</div><div id="regionSwitchStatus" class="muted" style="font-size:12px;margin-top:3px"></div></div><div class="ha">
+<header class="header"><div><h1>Eltrox RKS – v15.17</h1><small id="headerUser"></small><div id="contextBar" class="context-bar">Region: — • Oddział: — • Okres: —</div><div id="regionSwitchStatus" class="muted" style="font-size:12px;margin-top:3px"></div></div><div class="ha">
 <div class="searchbox"><input id="globalSearch" type="search" placeholder="Szukaj w aplikacji..."><div id="globalSearchResults" class="search-results hidden"></div></div>
 <label style="min-width:210px">Region<select id="regionSelect" onchange="window.switchRegionNow && window.switchRegionNow(this.value)" oninput="window.switchRegionNow && window.switchRegionNow(this.value)"></select></label>
 <span id="roleBadge" class="badge"></span><span id="workModeBadge" class="mode-badge"></span><button type="button" id="changeModeBtn" class="btn" onclick="window.mobileButtonAction && window.mobileButtonAction('changeModeBtn',event)">Zmień tryb</button>
@@ -990,7 +1001,7 @@ button:disabled,.btn:disabled{opacity:.6;cursor:not-allowed}
 
 <section id="contacts" class="view"><div class="head"><div><h2>Kontakty</h2><p>Osoby kontaktowe w oddziałach.</p></div></div><div class="g2"><div class="panel"><h3 id="contactTitle">Dodaj kontakt</h3><div class="form"><label>Oddział<select id="contactBranch"></select></label><label>Imię<input id="contactFirst"></label><label>Nazwisko<input id="contactLast"></label><label>Stanowisko<input id="contactPos"></label><label>Telefon<input id="contactPhone"></label><label>GG<input id="contactGG"></label><label>E-mail<input id="contactEmail"></label><div class="controls"><button type="button" id="saveContact" class="btn primary mobile-save-action" onclick="window.mobileButtonAction && window.mobileButtonAction('saveContact',event)">Zapisz</button><button type="button" id="clearContact" class="btn" onclick="window.mobileButtonAction && window.mobileButtonAction('clearContact',event)">Wyczyść</button></div></div><div id="contactMsg" class="msg"></div></div><div class="panel"><div class="controls"><label>Oddział<select id="contactFilter" onchange="window.refreshContactsNow && window.refreshContactsNow()" oninput="window.refreshContactsNow && window.refreshContactsNow()"></select></label><label>Szukaj<input id="contactSearch"></label></div><div id="contactFilterStatus" class="muted" style="font-size:11px;margin-top:8px"></div><div id="contactsTable" class="table" style="margin-top:10px"></div></div></div></section>
 
-<section id="contactLogs" class="view"><div class="head"><div><h2>Rejestr kontaktów</h2><p>Telefon, e-mail i GG – baza „ostatniego kontaktu”.</p></div></div><div class="g2"><div class="panel"><h3 id="logTitle">Dodaj kontakt</h3><div class="form"><label>Oddział<select id="logBranch"></select></label><label>Data<input id="logDate" type="date"></label><label>Kanał<select id="logChannel"><option value="phone">Telefon</option><option value="email">E-mail</option><option value="gg">GG</option></select></label><label>Osoba<input id="logPerson"></label><label>Notatka<textarea id="logNote"></textarea></label><div class="controls"><button type="button" id="saveLog" class="btn primary log-save-btn" onclick="window.saveLogNow && window.saveLogNow(event)">Zapisz</button><button type="button" id="clearLog" class="btn" onclick="window.mobileButtonAction && window.mobileButtonAction('clearLog',event)">Wyczyść</button></div></div><div id="logSaveTopMsg" class="msg log-save-top-msg"></div><div id="logMsg" class="msg"></div></div><div class="panel"><label>Oddział<select id="logFilter"></select></label><div id="logList" class="list" style="margin-top:10px"></div></div></div></section>
+<section id="contactLogs" class="view"><div class="head"><div><h2>Rejestr kontaktów</h2><p>Telefon, e-mail i GG – baza „ostatniego kontaktu”.</p></div></div><div class="g2"><div class="panel"><h3 id="logTitle">Dodaj kontakt</h3><div class="form"><label>Oddział<select id="logBranch"></select></label><label>Data<input id="logDate" type="date"></label><label>Kanał<select id="logChannel"><option value="phone">Telefon</option><option value="email">E-mail</option><option value="gg">GG</option></select></label><label>Osoba<input id="logPerson"></label><label>Notatka<textarea id="logNote"></textarea></label><div class="controls"><button type="button" id="saveLog" class="btn primary log-save-btn" onclick="window.saveLogNow && window.saveLogNow(event)">Zapisz</button><button type="button" id="clearLog" class="btn" onclick="window.mobileButtonAction && window.mobileButtonAction('clearLog',event)">Wyczyść</button></div></div><div id="logSaveTopMsg" class="msg log-save-top-msg"></div><div id="logMsg" class="msg"></div></div><div class="panel"><label>Oddział<select id="logFilter" onchange="window.refreshLogsNow && window.refreshLogsNow()" oninput="window.refreshLogsNow && window.refreshLogsNow()"></select></label><div id="logList" class="list" style="margin-top:10px"></div></div></div></section>
 
 <section id="meetings" class="view">
   <div class="head">
@@ -2108,6 +2119,187 @@ async function loadContacts(){
 window.refreshContactsNow=()=>loadContacts();
 
 window.saveLogNow=saveLog;
+
+async function loadLogs(){
+  const x=await q('contact_logs');
+  if(x.error){
+    console.error('Rejestr kontaktów - odczyt:',x.error);
+    msg('logMsg','Nie udało się pobrać rejestru kontaktów: '+x.error.message,'error');
+    $('logList').innerHTML=`<div class="empty">${esc(x.error.message)}</div>`;
+    return;
+  }
+
+  window._logs=x.data||[];
+  const f=$('logFilter')?.value||'all';
+  const rows=window._logs
+    .filter(v=>f==='all'||String(v.branch_id)===String(f))
+    .sort((a,b)=>(b.contact_date||'').localeCompare(a.contact_date||''));
+
+  $('logList').innerHTML=rows.length?rows.map(v=>`<div class="item">
+    <div class="top">
+      <div>
+        <b>${esc(bn(v.branch_id))} • ${fd(v.contact_date)} • ${esc(v.channel||'')}</b>
+        <div class="meta">${esc(v.person||'')}</div>
+      </div>
+      <div class="actions">
+        <button type="button" class="btn small" onclick="window.editLogNow && window.editLogNow('${v.id}',event)">Edytuj</button>
+        <button type="button" class="btn small danger" onclick="window.deleteLogNow && window.deleteLogNow('${v.id}',event)">Usuń</button>
+      </div>
+    </div>
+    <div class="text">${esc(v.note||'')}</div>
+  </div>`).join(''):'<div class="empty">Brak wpisów dla wybranego oddziału.</div>';
+}
+window.refreshLogsNow=()=>loadLogs();
+
+function clearLog(){
+  edit.log=null;
+  $('logTitle').textContent='Dodaj kontakt';
+  $('logDate').value=today();
+  $('logPerson').value='';
+  $('logNote').value='';
+  $('logChannel').value='phone';
+  if($('saveLog'))$('saveLog').textContent='Zapisz';
+  msg('logMsg','');
+  if($('logSaveTopMsg')){
+    $('logSaveTopMsg').textContent='';
+    $('logSaveTopMsg').className='msg log-save-top-msg';
+  }
+}
+
+async function saveLog(evt=null){
+  if(evt){evt.preventDefault();evt.stopPropagation()}
+
+  const btn=$('saveLog');
+  const topMsg=$('logSaveTopMsg');
+  const setTop=(text,kind='')=>{
+    if(!topMsg)return;
+    topMsg.textContent=text||'';
+    topMsg.className='msg log-save-top-msg'+(kind?' '+kind:'');
+  };
+
+  const editingId=edit.log;
+  const r={
+    region_id:rid(),
+    branch_id:$('logBranch').value,
+    contact_date:$('logDate').value,
+    channel:$('logChannel').value,
+    person:$('logPerson').value.trim(),
+    note:$('logNote').value.trim(),
+    created_by:user.id,
+    updated_at:new Date().toISOString()
+  };
+
+  if(!r.branch_id){
+    msg('logMsg','Wybierz oddział.','error');
+    setTop('Wybierz oddział.','error');
+    return;
+  }
+  if(!r.contact_date){
+    msg('logMsg','Wybierz datę kontaktu.','error');
+    setTop('Wybierz datę kontaktu.','error');
+    return;
+  }
+  if(!r.note && !r.person){
+    msg('logMsg','Wpisz osobę lub notatkę z kontaktu.','error');
+    setTop('Wpisz osobę lub notatkę z kontaktu.','error');
+    return;
+  }
+
+  if(btn?.disabled)return;
+  const oldText=btn?.textContent||'Zapisz';
+  if(btn){
+    btn.disabled=true;
+    btn.textContent=editingId?'Zapisywanie zmian…':'Zapisywanie…';
+  }
+  setTop(editingId?'Zapisywanie zmian…':'Zapisywanie kontaktu…');
+
+  try{
+    let result;
+    if(editingId){
+      result=await sb.from('contact_logs')
+        .update(r)
+        .eq('region_id',rid())
+        .eq('id',editingId);
+    }else{
+      result=await sb.from('contact_logs').insert(r);
+    }
+
+    if(result.error)throw result.error;
+
+    const wasEdit=!!editingId;
+    clearLog();
+
+    // Po zapisie filtr ustawiamy na oddział, którego dotyczył wpis.
+    if($('logFilter') && [...$('logFilter').options].some(o=>o.value===r.branch_id)){
+      $('logFilter').value=r.branch_id;
+    }
+
+    await loadLogs();
+
+    // Dodatkowe odświeżenia nie mogą zepsuć komunikatu o udanym zapisie.
+    for(const fn of [
+      ()=>loadDashboard(),
+      ()=>window.refreshBranchCardNow?.(r.branch_id),
+      ()=>window.refreshHistoryNow?.(r.branch_id)
+    ]){
+      try{await fn()}catch(e){console.warn('Rejestr kontaktów - odświeżenie pomocnicze:',e)}
+    }
+
+    msg('logMsg',wasEdit?'Zmiany zostały zapisane.':'Kontakt został zapisany.','ok');
+    setTop(wasEdit?'✓ Zmiany zostały zapisane.':'✓ Kontakt został zapisany.','ok');
+    showActionStatus(wasEdit?'Zmiany w rejestrze kontaktów zapisane.':'Kontakt zapisany w rejestrze.','ok',2800);
+  }catch(e){
+    console.error('Rejestr kontaktów - zapis:',e);
+    const text=e?.message||'Nie udało się zapisać kontaktu.';
+    msg('logMsg',text,'error');
+    setTop('Błąd zapisu: '+text,'error');
+    showActionStatus('Nie udało się zapisać kontaktu w rejestrze.','error',5500);
+    if(btn)btn.textContent=oldText;
+  }finally{
+    if(btn)btn.disabled=false;
+  }
+}
+
+window.saveLogNow=(evt=null)=>{
+  if(evt){evt.preventDefault();evt.stopPropagation()}
+  return saveLog(evt);
+};
+
+window.editLogNow=(id,evt=null)=>{
+  if(evt){evt.preventDefault();evt.stopPropagation()}
+  const v=(window._logs||[]).find(x=>x.id===id);
+  if(!v)return;
+
+  edit.log=id;
+  $('logTitle').textContent='Edytuj kontakt';
+  $('logBranch').value=v.branch_id||'';
+  $('logDate').value=v.contact_date||today();
+  $('logChannel').value=v.channel||'phone';
+  $('logPerson').value=v.person||'';
+  $('logNote').value=v.note||'';
+  $('saveLog').textContent='Zapisz zmiany';
+  msg('logMsg','Edytujesz wybrany wpis.');
+  document.querySelector('#contactLogs .panel')?.scrollIntoView({behavior:'smooth',block:'start'});
+};
+
+window.deleteLogNow=async(id,evt=null)=>{
+  if(evt){evt.preventDefault();evt.stopPropagation()}
+  const v=(window._logs||[]).find(x=>x.id===id);
+  if(!v)return;
+  if(!confirm('Usunąć ten wpis z rejestru kontaktów?'))return;
+
+  try{
+    await softDeleteRecord('contact_logs',id,rid(),v.branch_id,v);
+    await loadLogs();
+    try{await loadTrash()}catch(e){}
+    try{await loadDashboard()}catch(e){}
+    showActionStatus('Wpis przeniesiono do Kosza.','ok',2500);
+  }catch(e){
+    console.error('Rejestr kontaktów - usuwanie:',e);
+    showActionStatus(e?.message||'Nie udało się usunąć wpisu.','error',5000);
+  }
+};
+
 function meetingPctValue(v){
   return Number.isFinite(v)?new Intl.NumberFormat("pl-PL",{minimumFractionDigits:1,maximumFractionDigits:1}).format(v)+" %":"—";
 }
@@ -5654,7 +5846,7 @@ $('addPinnedNoteBtn').onclick=addPinnedNote;$('installPwaBtn').onclick=installPw
 $('logoutBtn').onclick=forceLogout;
 $('loadComparisonBtn').onclick=loadComparison;$('regionSelect').onchange=()=>switchRegion($('regionSelect').value);$('regionSelect').addEventListener('input',()=>switchRegion($('regionSelect').value));$('addBranchBtn').onclick=addBranch;
 $('saveContact').onclick=saveContact;$('clearContact').onclick=clearContact;$('contactFilter').onchange=()=>window.refreshContactsNow();$('contactFilter').addEventListener('input',()=>window.refreshContactsNow());$('contactSearch').oninput=()=>window.refreshContactsNow();
-$('saveLog').onclick=(e)=>saveLog(e);$('clearLog').onclick=clearLog;$('logFilter').onchange=loadLogs;
+$('saveLog').onclick=(e)=>window.saveLogNow(e);$('clearLog').onclick=clearLog;$('logFilter').onchange=()=>window.refreshLogsNow();$('logFilter').addEventListener('input',()=>window.refreshLogsNow());
 $('meetingAttendance').onchange=()=>{toggleComment();renderMeetingNoteV45()};$('refreshMeetingPreviewBtn').onclick=(e)=>window.renderMeetingPreviewNow(e);
 ['meetingBranch','meetingDate','meetingAttendance'].forEach(id=>$(id).addEventListener('change',renderMeetingNoteV45));
 ['meetingTopics','meetingComment'].forEach(id=>$(id).addEventListener('input',()=>renderMeetingNoteV45()));
