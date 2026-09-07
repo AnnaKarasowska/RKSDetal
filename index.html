@@ -2,7 +2,7 @@
 <html lang="pl">
 <head>
 <meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
-<title>Eltrox RKS – Supabase v15.19</title><meta name="theme-color" content="#ef6c00"><meta name="apple-mobile-web-app-capable" content="yes"><meta name="apple-mobile-web-app-status-bar-style" content="default"><meta name="apple-mobile-web-app-title" content="Eltrox RKS"><link rel="manifest" href="./manifest.webmanifest"><link rel="apple-touch-icon" href="./icon-192.png">
+<title>Eltrox RKS – Supabase v15.20</title><meta name="theme-color" content="#ef6c00"><meta name="apple-mobile-web-app-capable" content="yes"><meta name="apple-mobile-web-app-status-bar-style" content="default"><meta name="apple-mobile-web-app-title" content="Eltrox RKS"><link rel="manifest" href="./manifest.webmanifest"><link rel="apple-touch-icon" href="./icon-192.png">
 <style>
 :root{--o:#f36f21;--od:#d85d12;--bg:#eef1f4;--w:#fff;--line:#d9dde3;--t:#242424;--m:#6b7280;--r:#c9372c;--g:#25894b;--b:#2f71c8;--sh:0 8px 24px rgba(0,0,0,.08)}
 *{box-sizing:border-box}html,body{margin:0;min-height:100%;font-family:Arial,Helvetica,sans-serif;background:var(--bg);color:var(--t)}button,input,select,textarea{font:inherit}button{cursor:pointer}.hidden{display:none!important}
@@ -767,6 +767,18 @@ button:disabled,.btn:disabled{opacity:.6;cursor:not-allowed}
 @media(max-width:800px){
   #refreshMeetingPreviewBtn,#printMeetingBtn{min-height:48px!important;width:100%!important}
 }
+
+#meetingFilter{
+  appearance:auto!important;
+  -webkit-appearance:menulist!important;
+  pointer-events:auto!important;
+  touch-action:manipulation!important;
+  position:relative!important;
+  z-index:5!important;
+}
+@media(max-width:800px){
+  #meetingFilter{width:100%!important;min-height:48px!important;font-size:16px!important}
+}
 </style></head>
 <body>
 <div id="pwaUpdateBanner" class="pwa-update-banner hidden">
@@ -775,7 +787,7 @@ button:disabled,.btn:disabled{opacity:.6;cursor:not-allowed}
   <button type="button" id="dismissPwaUpdateBtn" class="btn">Później</button>
 </div>
 
-<div id="loginView" class="login-shell"><div class="login-card"><div class="brand"><h1>Eltrox RKS</h1><p>Wersja online v15.19</p></div><form id="loginForm" class="form"><label>E-mail<input id="loginEmail" type="email" required></label><label>Hasło<input id="loginPassword" type="password" required></label><button id="loginBtn" type="submit" class="btn primary" onclick="window.loginNow && window.loginNow(event)">Zaloguj</button><div id="loginMsg" class="msg"></div></form></div></div>
+<div id="loginView" class="login-shell"><div class="login-card"><div class="brand"><h1>Eltrox RKS</h1><p>Wersja online v15.20</p></div><form id="loginForm" class="form"><label>E-mail<input id="loginEmail" type="email" required></label><label>Hasło<input id="loginPassword" type="password" required></label><button id="loginBtn" type="submit" class="btn primary" onclick="window.loginNow && window.loginNow(event)">Zaloguj</button><div id="loginMsg" class="msg"></div></form></div></div>
 
 <div id="modeView" class="mode-shell hidden">
   <div class="mode-card">
@@ -794,7 +806,7 @@ button:disabled,.btn:disabled{opacity:.6;cursor:not-allowed}
   </div>
 </div>
 <div id="mobileActionStatus" class="mobile-action-status hidden"></div><div id="appView" class="hidden">
-<header class="header"><div><h1>Eltrox RKS – v15.19</h1><small id="headerUser"></small><div id="contextBar" class="context-bar">Region: — • Oddział: — • Okres: —</div><div id="regionSwitchStatus" class="muted" style="font-size:12px;margin-top:3px"></div></div><div class="ha">
+<header class="header"><div><h1>Eltrox RKS – v15.20</h1><small id="headerUser"></small><div id="contextBar" class="context-bar">Region: — • Oddział: — • Okres: —</div><div id="regionSwitchStatus" class="muted" style="font-size:12px;margin-top:3px"></div></div><div class="ha">
 <div class="searchbox"><input id="globalSearch" type="search" placeholder="Szukaj w aplikacji..."><div id="globalSearchResults" class="search-results hidden"></div></div>
 <label style="min-width:210px">Region<select id="regionSelect" onchange="window.switchRegionNow && window.switchRegionNow(this.value)" oninput="window.switchRegionNow && window.switchRegionNow(this.value)"></select></label>
 <span id="roleBadge" class="badge"></span><span id="workModeBadge" class="mode-badge"></span><button type="button" id="changeModeBtn" class="btn" onclick="window.mobileButtonAction && window.mobileButtonAction('changeModeBtn',event)">Zmień tryb</button>
@@ -1031,7 +1043,8 @@ button:disabled,.btn:disabled{opacity:.6;cursor:not-allowed}
     <section class="meeting-notes-list">
       <h3>Zapisane notatki</h3>
       <div class="sub">Notatki przypisane do wybranego oddziału.</div>
-      <label>Oddział<select id="meetingFilter"></select></label>
+      <label>Oddział<select id="meetingFilter" onchange="window.refreshMeetingListNow && window.refreshMeetingListNow()" oninput="window.refreshMeetingListNow && window.refreshMeetingListNow()"></select></label>
+      <div id="meetingListStatus" class="muted" style="font-size:11px;margin-top:7px"></div>
       <div id="meetingList" class="list" style="margin-top:10px"></div>
     </section>
 
@@ -2656,8 +2669,47 @@ function toggleComment(){
 }
 window.toggleComment=toggleComment;
 
-async function loadMeetings(){let x=await q('meeting_notes');if(x.error)return;window._meetings=x.data||[];let f=$('meetingFilter').value,a=window._meetings.filter(v=>f==='all'||v.branch_id===f).sort((a,b)=>b.meeting_date.localeCompare(a.meeting_date));$('meetingList').innerHTML=a.length?a.map(v=>`<div class="item"><div class="top"><div><b>${esc(bn(v.branch_id))} • ${fd(v.meeting_date)}</b><div class="meta">${att(v.attendance)}</div></div><div class="actions"><button type="button" class="btn small" onclick="editMeeting('${v.id}')">Edytuj</button><button type="button" class="btn small danger" onclick="delMeeting('${v.id}')">Usuń</button></div></div><div class="text">${esc(v.urgent_topics||'')}</div></div>`).join(''):'<div class="empty">Brak notatek 1:1.</div>';await renderMeetingNoteV45();
+async function loadMeetings(){
+  const x=await q('meeting_notes');
+  if(x.error){
+    console.error('1:1 - odczyt notatek:',x.error);
+    $('meetingList').innerHTML=`<div class="empty">${esc(x.error.message)}</div>`;
+    if($('meetingListStatus'))$('meetingListStatus').textContent='Błąd odczytu notatek';
+    return;
+  }
+
+  window._meetings=x.data||[];
+  const f=$('meetingFilter')?.value||'all';
+
+  const a=window._meetings
+    .filter(v=>f==='all'||String(v.branch_id)===String(f))
+    .sort((a,b)=>(b.meeting_date||'').localeCompare(a.meeting_date||''));
+
+  $('meetingList').innerHTML=a.length?a.map(v=>`<div class="item">
+    <div class="top">
+      <div>
+        <b>${esc(bn(v.branch_id))} • ${fd(v.meeting_date)}</b>
+        <div class="meta">${esc(att(v.attendance))}</div>
+      </div>
+      <div class="actions">
+        <button type="button" class="btn small" onclick="window.editMeeting && window.editMeeting('${v.id}')">Edytuj</button>
+        <button type="button" class="btn small danger" onclick="window.delMeeting && window.delMeeting('${v.id}')">Usuń</button>
+      </div>
+    </div>
+    <div class="text">${esc(v.urgent_topics||'')}</div>
+  </div>`).join(''):'<div class="empty">Brak notatek 1:1 dla wybranego oddziału.</div>';
+
+  if($('meetingListStatus')){
+    const branchName=f==='all'
+      ?'wszystkie oddziały'
+      :($('meetingFilter')?.selectedOptions?.[0]?.textContent||bn(f)||'');
+    $('meetingListStatus').textContent=`Wyświetlane notatki: ${branchName} • ${a.length}`;
+  }
+
+  // Zmiana filtra zapisanych notatek nie powinna przełączać formularza ani podglądu.
 }
+window.refreshMeetingListNow=()=>loadMeetings();
+
 function clearMeeting(){
   edit.meeting=null;
   $('meetingTitle').textContent='Nowa notatka';
@@ -6016,7 +6068,7 @@ $('saveLog').onclick=(e)=>window.saveLogNow(e);$('clearLog').onclick=clearLog;$(
 $('meetingAttendance').onchange=()=>{toggleComment();renderMeetingNoteV45()};$('refreshMeetingPreviewBtn').onclick=(e)=>window.renderMeetingPreviewNow(e);
 ['meetingBranch','meetingDate','meetingAttendance'].forEach(id=>$(id).addEventListener('change',renderMeetingNoteV45));
 ['meetingTopics','meetingComment'].forEach(id=>$(id).addEventListener('input',()=>renderMeetingNoteV45()));
-$('saveMeeting').onclick=(e)=>window.saveMeetingNow(e);$('clearMeeting').onclick=clearMeeting;$('meetingFilter').onchange=loadMeetings;
+$('saveMeeting').onclick=(e)=>window.saveMeetingNow(e);$('clearMeeting').onclick=clearMeeting;$('meetingFilter').onchange=()=>window.refreshMeetingListNow();$('meetingFilter').addEventListener('input',()=>window.refreshMeetingListNow());
 $('saveTask').onclick=(e)=>window.saveTaskNow(e);$('clearTask').onclick=clearTask;$('taskFilter').onchange=()=>loadTasks();$('taskStatusFilter').onchange=()=>loadTasks();
 $('saveVisit').onclick=(e)=>saveVisit(e);$('clearVisit').onclick=clearVisit;$('addVisitRecommendation').onclick=()=>addVisitRecommendationRow();$('generateVisitForm').onclick=generateVisitSignatureForm;$('printVisitReport').onclick=printVisitSignatureForm;
 $('salesEntryDate').onchange=()=>renderSalesEntry();$('saveSalesEntry').onclick=(e)=>window.saveSalesEntryNow(e,true);$('saveMonthlyKpi').onclick=(e)=>{e?.preventDefault();saveMonthlyKpi(true)};$('voipMonth').onchange=()=>renderMonthlyKpi();$('controlKpiMonth').onchange=()=>renderMonthlyKpi();
