@@ -2,7 +2,7 @@
 <html lang="pl">
 <head>
 <meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
-<title>Eltrox RKS – Supabase v15.18</title><meta name="theme-color" content="#ef6c00"><meta name="apple-mobile-web-app-capable" content="yes"><meta name="apple-mobile-web-app-status-bar-style" content="default"><meta name="apple-mobile-web-app-title" content="Eltrox RKS"><link rel="manifest" href="./manifest.webmanifest"><link rel="apple-touch-icon" href="./icon-192.png">
+<title>Eltrox RKS – Supabase v15.19</title><meta name="theme-color" content="#ef6c00"><meta name="apple-mobile-web-app-capable" content="yes"><meta name="apple-mobile-web-app-status-bar-style" content="default"><meta name="apple-mobile-web-app-title" content="Eltrox RKS"><link rel="manifest" href="./manifest.webmanifest"><link rel="apple-touch-icon" href="./icon-192.png">
 <style>
 :root{--o:#f36f21;--od:#d85d12;--bg:#eef1f4;--w:#fff;--line:#d9dde3;--t:#242424;--m:#6b7280;--r:#c9372c;--g:#25894b;--b:#2f71c8;--sh:0 8px 24px rgba(0,0,0,.08)}
 *{box-sizing:border-box}html,body{margin:0;min-height:100%;font-family:Arial,Helvetica,sans-serif;background:var(--bg);color:var(--t)}button,input,select,textarea{font:inherit}button{cursor:pointer}.hidden{display:none!important}
@@ -775,7 +775,7 @@ button:disabled,.btn:disabled{opacity:.6;cursor:not-allowed}
   <button type="button" id="dismissPwaUpdateBtn" class="btn">Później</button>
 </div>
 
-<div id="loginView" class="login-shell"><div class="login-card"><div class="brand"><h1>Eltrox RKS</h1><p>Wersja online v15.18</p></div><form id="loginForm" class="form"><label>E-mail<input id="loginEmail" type="email" required></label><label>Hasło<input id="loginPassword" type="password" required></label><button id="loginBtn" type="submit" class="btn primary" onclick="window.loginNow && window.loginNow(event)">Zaloguj</button><div id="loginMsg" class="msg"></div></form></div></div>
+<div id="loginView" class="login-shell"><div class="login-card"><div class="brand"><h1>Eltrox RKS</h1><p>Wersja online v15.19</p></div><form id="loginForm" class="form"><label>E-mail<input id="loginEmail" type="email" required></label><label>Hasło<input id="loginPassword" type="password" required></label><button id="loginBtn" type="submit" class="btn primary" onclick="window.loginNow && window.loginNow(event)">Zaloguj</button><div id="loginMsg" class="msg"></div></form></div></div>
 
 <div id="modeView" class="mode-shell hidden">
   <div class="mode-card">
@@ -794,7 +794,7 @@ button:disabled,.btn:disabled{opacity:.6;cursor:not-allowed}
   </div>
 </div>
 <div id="mobileActionStatus" class="mobile-action-status hidden"></div><div id="appView" class="hidden">
-<header class="header"><div><h1>Eltrox RKS – v15.18</h1><small id="headerUser"></small><div id="contextBar" class="context-bar">Region: — • Oddział: — • Okres: —</div><div id="regionSwitchStatus" class="muted" style="font-size:12px;margin-top:3px"></div></div><div class="ha">
+<header class="header"><div><h1>Eltrox RKS – v15.19</h1><small id="headerUser"></small><div id="contextBar" class="context-bar">Region: — • Oddział: — • Okres: —</div><div id="regionSwitchStatus" class="muted" style="font-size:12px;margin-top:3px"></div></div><div class="ha">
 <div class="searchbox"><input id="globalSearch" type="search" placeholder="Szukaj w aplikacji..."><div id="globalSearchResults" class="search-results hidden"></div></div>
 <label style="min-width:210px">Region<select id="regionSelect" onchange="window.switchRegionNow && window.switchRegionNow(this.value)" oninput="window.switchRegionNow && window.switchRegionNow(this.value)"></select></label>
 <span id="roleBadge" class="badge"></span><span id="workModeBadge" class="mode-badge"></span><button type="button" id="changeModeBtn" class="btn" onclick="window.mobileButtonAction && window.mobileButtonAction('changeModeBtn',event)">Zmień tryb</button>
@@ -1064,12 +1064,12 @@ button:disabled,.btn:disabled{opacity:.6;cursor:not-allowed}
         </div>
 
         <div class="controls">
-          <button type="button" id="saveMeeting" class="btn primary mobile-save-action" onclick="window.mobileButtonAction && window.mobileButtonAction('saveMeeting',event)">Zapisz notatkę</button>
+          <button type="button" id="saveMeeting" class="btn primary mobile-save-action" onclick="window.saveMeetingNow && window.saveMeetingNow(event)">Zapisz notatkę</button>
           <button type="button" id="prepareNextMeetingBtn" class="btn" onclick="window.mobileButtonAction && window.mobileButtonAction('prepareNextMeetingBtn',event)">Automatycznie przygotuj 1:1</button>
           <button type="button" id="clearMeeting" class="btn" onclick="window.mobileButtonAction && window.mobileButtonAction('clearMeeting',event)">Nowa notatka</button>
         </div>
       </div>
-      <div id="meetingMsg" class="msg"></div>
+      <div id="meetingSaveHint" class="muted" style="font-size:11px;margin-top:6px">Po poprawnym zapisie pojawi się zielony komunikat „Notatka 1:1 została zapisana”.</div><div id="meetingMsg" class="msg"></div>
     </section>
 
     <section class="meeting-note-preview">
@@ -2640,11 +2640,131 @@ window.printMeetingNow=(evt=null)=>{
   return printMeeting();
 };
 
+
+function toggleComment(){
+  const attendance=$('meetingAttendance')?.value||'present_manager';
+  const label=$('meetingCommentLabel');
+  const comment=$('meetingComment');
+  const required=attendance==='absent_excused';
+
+  if(label)label.style.display=required?'':'none';
+  if(comment)comment.required=required;
+
+  if(!required && comment && !edit.meeting){
+    comment.value='';
+  }
+}
+window.toggleComment=toggleComment;
+
 async function loadMeetings(){let x=await q('meeting_notes');if(x.error)return;window._meetings=x.data||[];let f=$('meetingFilter').value,a=window._meetings.filter(v=>f==='all'||v.branch_id===f).sort((a,b)=>b.meeting_date.localeCompare(a.meeting_date));$('meetingList').innerHTML=a.length?a.map(v=>`<div class="item"><div class="top"><div><b>${esc(bn(v.branch_id))} • ${fd(v.meeting_date)}</b><div class="meta">${att(v.attendance)}</div></div><div class="actions"><button type="button" class="btn small" onclick="editMeeting('${v.id}')">Edytuj</button><button type="button" class="btn small danger" onclick="delMeeting('${v.id}')">Usuń</button></div></div><div class="text">${esc(v.urgent_topics||'')}</div></div>`).join(''):'<div class="empty">Brak notatek 1:1.</div>';await renderMeetingNoteV45();
 }
-function clearMeeting(){edit.meeting=null;$('meetingTitle').textContent='Nowa notatka';$('meetingDate').value=today();$('meetingAttendance').value='present_manager';$('meetingComment').value='';$('meetingTopics').value='';setMeetingContent({});toggleComment();renderMeetingNoteV45()}
-async function saveMeeting(){let a=$('meetingAttendance').value,c=$('meetingComment').value.trim();if(a==='absent_excused'&&!c)return msg('meetingMsg','Wpisz komentarz do usprawiedliwienia.','error');let r={region_id:rid(),branch_id:$('meetingBranch').value,meeting_date:$('meetingDate').value,attendance:a,attendance_comment:c||null,urgent_topics:$('meetingTopics').value.trim(),content:meetingContent(),created_by:user.id};let z=edit.meeting?await sb.from('meeting_notes').update(r).eq('id',edit.meeting):await sb.from('meeting_notes').insert(r);if(z.error)return msg('meetingMsg',z.error.message,'error');clearMeeting();loadMeetings();loadCard();loadHistory()}
-window.editMeeting=async id=>{let v=window._meetings.find(x=>x.id===id);if(!v)return;edit.meeting=id;$('meetingTitle').textContent='Edytuj notatkę';$('meetingBranch').value=v.branch_id;$('meetingDate').value=v.meeting_date;$('meetingAttendance').value=v.attendance;$('meetingComment').value=v.attendance_comment||'';$('meetingTopics').value=v.urgent_topics||'';setMeetingContent(v.content||{});toggleComment();await renderMeetingNoteV45();document.querySelector('.meeting-note-preview')?.scrollIntoView({behavior:'smooth',block:'start'})};
+function clearMeeting(){
+  edit.meeting=null;
+  $('meetingTitle').textContent='Nowa notatka';
+  $('meetingDate').value=today();
+  $('meetingAttendance').value='present_manager';
+  $('meetingComment').value='';
+  $('meetingTopics').value='';
+  setMeetingContent({});
+  toggleComment();
+  if($('saveMeeting'))$('saveMeeting').textContent='Zapisz notatkę';
+  msg('meetingMsg','');
+  renderMeetingNoteV45().catch(e=>console.warn('1:1 - podgląd po wyczyszczeniu:',e));
+}
+
+async function saveMeeting(evt=null){
+  if(evt){evt.preventDefault();evt.stopPropagation()}
+
+  const btn=$('saveMeeting');
+  const editingId=edit.meeting;
+  const attendance=$('meetingAttendance').value;
+  const comment=$('meetingComment').value.trim();
+
+  if(!$('meetingBranch').value){
+    msg('meetingMsg','Wybierz oddział.','error');
+    return;
+  }
+  if(!$('meetingDate').value){
+    msg('meetingMsg','Wybierz datę spotkania.','error');
+    return;
+  }
+  if(attendance==='absent_excused'&&!comment){
+    msg('meetingMsg','Wpisz komentarz do usprawiedliwienia.','error');
+    return;
+  }
+
+  const row={
+    region_id:rid(),
+    branch_id:$('meetingBranch').value,
+    meeting_date:$('meetingDate').value,
+    attendance,
+    attendance_comment:comment||null,
+    urgent_topics:$('meetingTopics').value.trim(),
+    content:meetingContent(),
+    created_by:user.id
+  };
+
+  if(btn?.disabled)return;
+  const oldText=btn?.textContent||'Zapisz notatkę';
+  if(btn){
+    btn.disabled=true;
+    btn.textContent=editingId?'Zapisywanie zmian…':'Zapisywanie…';
+  }
+
+  try{
+    let result;
+    if(editingId){
+      result=await sb.from('meeting_notes')
+        .update(row)
+        .eq('region_id',rid())
+        .eq('id',editingId);
+    }else{
+      result=await sb.from('meeting_notes').insert(row);
+    }
+
+    if(result.error)throw result.error;
+
+    const wasEdit=!!editingId;
+
+    // Najpierw potwierdzamy zapis, dopiero potem czyścimy formularz.
+    msg('meetingMsg',wasEdit?'Zmiany w notatce zostały zapisane.':'Notatka 1:1 została zapisana.','ok');
+    showActionStatus(wasEdit?'Zmiany w notatce 1:1 zapisane.':'Notatka 1:1 została zapisana.','ok',3000);
+
+    clearMeeting();
+
+    try{await loadMeetings()}catch(e){console.warn('1:1 - lista notatek:',e)}
+    try{await loadCard()}catch(e){console.warn('1:1 - karta oddziału:',e)}
+    try{await loadHistory()}catch(e){console.warn('1:1 - historia:',e)}
+  }catch(e){
+    console.error('1:1 - zapis:',e);
+    const text=e?.message||'Nie udało się zapisać notatki.';
+    msg('meetingMsg',text,'error');
+    showActionStatus('Nie udało się zapisać notatki 1:1: '+text,'error',6500);
+    if(btn)btn.textContent=oldText;
+  }finally{
+    if(btn)btn.disabled=false;
+  }
+}
+window.saveMeetingNow=(evt=null)=>saveMeeting(evt);
+
+window.editMeeting=async id=>{
+  const v=(window._meetings||[]).find(x=>x.id===id);
+  if(!v)return;
+
+  edit.meeting=id;
+  $('meetingTitle').textContent='Edytuj notatkę';
+  $('meetingBranch').value=v.branch_id;
+  $('meetingDate').value=v.meeting_date;
+  $('meetingAttendance').value=v.attendance;
+  $('meetingComment').value=v.attendance_comment||'';
+  $('meetingTopics').value=v.urgent_topics||'';
+  setMeetingContent(v.content||{});
+  toggleComment();
+
+  if($('saveMeeting'))$('saveMeeting').textContent='Zapisz zmiany';
+  await renderMeetingNoteV45();
+  document.querySelector('.meeting-note-preview')?.scrollIntoView({behavior:'smooth',block:'start'});
+};
 window.delMeeting=async id=>{if(confirm('Usunąć notatkę?')){await sb.from('meeting_notes').delete().eq('id',id);loadMeetings();loadCard();loadHistory()}};
 
 async function loadTasks(){
@@ -5896,7 +6016,7 @@ $('saveLog').onclick=(e)=>window.saveLogNow(e);$('clearLog').onclick=clearLog;$(
 $('meetingAttendance').onchange=()=>{toggleComment();renderMeetingNoteV45()};$('refreshMeetingPreviewBtn').onclick=(e)=>window.renderMeetingPreviewNow(e);
 ['meetingBranch','meetingDate','meetingAttendance'].forEach(id=>$(id).addEventListener('change',renderMeetingNoteV45));
 ['meetingTopics','meetingComment'].forEach(id=>$(id).addEventListener('input',()=>renderMeetingNoteV45()));
-$('saveMeeting').onclick=saveMeeting;$('clearMeeting').onclick=clearMeeting;$('meetingFilter').onchange=loadMeetings;
+$('saveMeeting').onclick=(e)=>window.saveMeetingNow(e);$('clearMeeting').onclick=clearMeeting;$('meetingFilter').onchange=loadMeetings;
 $('saveTask').onclick=(e)=>window.saveTaskNow(e);$('clearTask').onclick=clearTask;$('taskFilter').onchange=()=>loadTasks();$('taskStatusFilter').onchange=()=>loadTasks();
 $('saveVisit').onclick=(e)=>saveVisit(e);$('clearVisit').onclick=clearVisit;$('addVisitRecommendation').onclick=()=>addVisitRecommendationRow();$('generateVisitForm').onclick=generateVisitSignatureForm;$('printVisitReport').onclick=printVisitSignatureForm;
 $('salesEntryDate').onchange=()=>renderSalesEntry();$('saveSalesEntry').onclick=(e)=>window.saveSalesEntryNow(e,true);$('saveMonthlyKpi').onclick=(e)=>{e?.preventDefault();saveMonthlyKpi(true)};$('voipMonth').onchange=()=>renderMonthlyKpi();$('controlKpiMonth').onchange=()=>renderMonthlyKpi();
